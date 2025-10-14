@@ -58,7 +58,7 @@ class UserForm
                                 false => 'غير نشط',
                             ])
                             ->default(true),
-                    ]),
+                    ]) ->columnSpan('full'),
                 
                 // القسم الثاني: المعلومات الإضافية
                 Section::make('معلومات إضافية')
