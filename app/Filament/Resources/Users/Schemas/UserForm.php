@@ -17,26 +17,16 @@ class UserForm
     {
         return $schema
             ->components([
+                // القسم الأول: المعلومات الأساسية
                 Section::make('المعلومات الأساسية')
                     ->description('المعلومات الشخصية الأساسية للمستخدم')
+                    ->collapsible()
                     ->schema([
                         TextInput::make('name')
                             ->label('الاسم الكامل')
                             ->required()
                             ->maxLength(255),
-                        
-                        TextInput::make('email')
-                            ->label('البريد الإلكتروني')
-                            ->email()
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255),
-                        
-                        TextInput::make('phone')
-                            ->label(' رقم الهاتف ')
-                            ->tel()
-                            ->maxLength(20),
-                        
+
                         Select::make('type')
                             ->label('نوع المستخدم')
                             ->options([
@@ -70,8 +60,10 @@ class UserForm
                             ->default(true),
                     ]),
                 
+                // القسم الثاني: المعلومات الإضافية
                 Section::make('معلومات إضافية')
                     ->description('معلومات تفصيلية حسب نوع المستخدم')
+                    ->collapsible()
                     ->schema([
                         // معلومات خاصة بالطلاب
                         TextInput::make('student_id')
@@ -148,9 +140,24 @@ class UserForm
                             ->maxLength(100),
                             ]),
                 
-                Section::make('كلمة المرور')
-                    ->description('إعدادات كلمة المرور والأمان')
+                // القسم الثالث: معلومات الحساب
+                Section::make('معلومات الحساب')
+                    ->description('إعدادات معلومات الحساب مثل البريد الإلكتروني وكلمة المرور')
+                    ->collapsible()
                     ->schema([
+                                                
+                        TextInput::make('email')
+                            ->label('البريد الإلكتروني')
+                            ->email()
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255),
+                        
+                        TextInput::make('phone')
+                            ->label(' رقم الهاتف ')
+                            ->tel()
+                            ->maxLength(20),
+                        
                         TextInput::make('password')
                             ->label('كلمة المرور')
                             ->password()
