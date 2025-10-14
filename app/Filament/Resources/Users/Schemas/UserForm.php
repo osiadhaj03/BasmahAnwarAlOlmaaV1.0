@@ -65,24 +65,65 @@ class UserForm
                     ])->columns(2),
                 
                 Section::make('معلومات إضافية')
-                    ->description('معلومات تفصيلية اختيارية')
+                    ->description('معلومات تفصيلية حسب نوع المستخدم')
                     ->schema([
+                        // معلومات خاصة بالطلاب
                         TextInput::make('student_id')
                             ->label('رقم الطالب')
                             ->unique(ignoreRecord: true)
                             ->maxLength(50)
+                            ->required(fn ($get) => $get('type') === 'student')
                             ->visible(fn ($get) => $get('type') === 'student'),
                         
+                        Select::make('academic_level')
+                            ->label('المستوى الأكاديمي')
+                            ->options([
+                                'elementary' => 'ابتدائي',
+                                'middle' => 'متوسط',
+                                'high' => 'ثانوي',
+                                'university' => 'جامعي',
+                            ])
+                            ->visible(fn ($get) => $get('type') === 'student'),
+                        
+                        // معلومات خاصة بالمعلمين والمديرين
                         TextInput::make('employee_id')
                             ->label('رقم الموظف')
                             ->unique(ignoreRecord: true)
                             ->maxLength(50)
+                            ->required(fn ($get) => in_array($get('type'), ['admin', 'teacher']))
                             ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
                         
                         TextInput::make('department')
                             ->label('القسم')
-                            ->maxLength(100),
+                            ->maxLength(100)
+                            ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
                         
+                        Select::make('specialization')
+                            ->label('التخصص')
+                            ->options([
+                                'arabic' => 'اللغة العربية',
+                                'english' => 'اللغة الإنجليزية',
+                                'math' => 'الرياضيات',
+                                'science' => 'العلوم',
+                                'physics' => 'الفيزياء',
+                                'chemistry' => 'الكيمياء',
+                                'biology' => 'الأحياء',
+                                'history' => 'التاريخ',
+                                'geography' => 'الجغرافيا',
+                                'islamic' => 'التربية الإسلامية',
+                                'computer' => 'الحاسوب',
+                                'art' => 'التربية الفنية',
+                                'sports' => 'التربية الرياضية',
+                                'music' => 'التربية الموسيقية',
+                                'other' => 'أخرى',
+                            ])
+                            ->visible(fn ($get) => $get('type') === 'teacher'),
+                        
+                        DatePicker::make('hire_date')
+                            ->label('تاريخ التوظيف')
+                            ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
+                        
+                        // معلومات عامة
                         Textarea::make('bio')
                             ->label('نبذة شخصية')
                             ->maxLength(500)
