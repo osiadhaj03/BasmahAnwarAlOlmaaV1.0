@@ -15,6 +15,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class LessonResource extends Resource
 {
@@ -50,6 +52,25 @@ class LessonResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        // إذا كان المستخدم معلم، عرض دروسه فقط
+        if (Auth::check() && Auth::user()->type === 'teacher') {
+            $query->where('teacher_id', Auth::id());
+        }
+        
+        // إذا كان المستخدم طالب، عرض الدروس المسجل فيها فقط
+        if (Auth::check() && Auth::user()->type === 'student') {
+            $query->whereHas('students', function ($studentQuery) {
+                $studentQuery->where('student_id', Auth::id());
+            });
+        }
+        
+        return $query;
     }
 
     public static function getPages(): array

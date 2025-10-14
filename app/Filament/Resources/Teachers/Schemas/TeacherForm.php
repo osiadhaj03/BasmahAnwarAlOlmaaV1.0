@@ -34,6 +34,21 @@ class TeacherForm
                             ->maxLength(255)
                             ->placeholder('example@domain.com'),
 
+                        TextInput::make('password')
+                            ->label('كلمة المرور')
+                            ->password()
+                            ->required()
+                            ->minLength(8)
+                            ->placeholder('أدخل كلمة مرور قوية')
+                            ->helperText('يجب أن تكون كلمة المرور 8 أحرف على الأقل'),
+
+                        TextInput::make('password_confirmation')
+                            ->label('تأكيد كلمة المرور')
+                            ->password()
+                            ->required()
+                            ->same('password')
+                            ->placeholder('أعد إدخال كلمة المرور'),
+
                         TextInput::make('phone')
                             ->label('رقم الهاتف')
                             ->tel()
@@ -75,38 +90,7 @@ class TeacherForm
                             ->searchable()
                             ->placeholder('اختر القسم'),
 
-                        TextInput::make('specialization')
-                            ->label('التخصص')
-                            ->maxLength(255)
-                            ->placeholder('أدخل التخصص الدقيق'),
 
-                        Select::make('qualification')
-                            ->label('المؤهل العلمي')
-                            ->options([
-                                'bachelor' => 'بكالوريوس',
-                                'master' => 'ماجستير',
-                                'phd' => 'دكتوراه',
-                                'diploma' => 'دبلوم',
-                                'other' => 'أخرى',
-                            ])
-                            ->placeholder('اختر المؤهل العلمي'),
-
-                        DatePicker::make('hire_date')
-                            ->label('تاريخ التوظيف')
-                            ->maxDate(now())
-                            ->displayFormat('Y-m-d'),
-
-                        Select::make('employment_status')
-                            ->label('حالة التوظيف')
-                            ->options([
-                                'active' => 'نشط',
-                                'inactive' => 'غير نشط',
-                                'on_leave' => 'في إجازة',
-                                'terminated' => 'منتهي الخدمة',
-                            ])
-                            ->default('active')
-                            ->required()
-                            ->placeholder('اختر حالة التوظيف'),
                     ]),
 
                 Section::make('معلومات الاتصال')
@@ -120,41 +104,6 @@ class TeacherForm
                             ->columnSpanFull()
                             ->placeholder('أدخل العنوان الكامل'),
 
-                        TextInput::make('emergency_contact_name')
-                            ->label('اسم جهة الاتصال في الطوارئ')
-                            ->maxLength(255)
-                            ->placeholder('أدخل اسم الشخص للاتصال في الطوارئ'),
-
-                        TextInput::make('emergency_contact_phone')
-                            ->label('رقم هاتف الطوارئ')
-                            ->tel()
-                            ->maxLength(20)
-                            ->placeholder('+966 50 123 4567'),
-
-                        Select::make('emergency_contact_relationship')
-                            ->label('صلة القرابة')
-                            ->options([
-                                'spouse' => 'الزوج/الزوجة',
-                                'parent' => 'الوالد/الوالدة',
-                                'sibling' => 'الأخ/الأخت',
-                                'child' => 'الابن/الابنة',
-                                'friend' => 'صديق',
-                                'other' => 'أخرى',
-                            ])
-                            ->placeholder('اختر صلة القرابة'),
-                    ]),
-
-                Section::make('ملاحظات إضافية')
-                    ->description('أي ملاحظات أو معلومات إضافية')
-                    ->icon('heroicon-o-document-text')
-                    ->collapsible()
-                    ->collapsed()
-                    ->schema([
-                        Textarea::make('notes')
-                            ->label('ملاحظات')
-                            ->rows(4)
-                            ->columnSpanFull()
-                            ->placeholder('أدخل أي ملاحظات إضافية حول المعلم'),
                     ]),
             ]);
     }

@@ -29,6 +29,21 @@ class StudentForm
                             ->unique(ignoreRecord: true)
                             ->maxLength(255)
                             ->placeholder('student@example.com'),
+
+                        TextInput::make('password')
+                            ->label('كلمة المرور')
+                            ->password()
+                            ->required()
+                            ->minLength(8)
+                            ->placeholder('أدخل كلمة مرور قوية')
+                            ->helperText('يجب أن تكون كلمة المرور 8 أحرف على الأقل'),
+
+                        TextInput::make('password_confirmation')
+                            ->label('تأكيد كلمة المرور')
+                            ->password()
+                            ->required()
+                            ->same('password')
+                            ->placeholder('أعد إدخال كلمة المرور'),
                         
                         TextInput::make('phone')
                             ->label('رقم الهاتف')
@@ -51,34 +66,6 @@ class StudentForm
                             ->maxLength(50)
                             ->placeholder('202312345')
                             ->helperText('الرقم الجامعي الفريد للطالب'),
-                        
-                        Select::make('level')
-                            ->label('المستوى الدراسي')
-                            ->options([
-                                'freshman' => 'السنة الأولى',
-                                'sophomore' => 'السنة الثانية',
-                                'junior' => 'السنة الثالثة',
-                                'senior' => 'السنة الرابعة',
-                                'graduate' => 'دراسات عليا',
-                            ])
-                            ->placeholder('اختر المستوى الدراسي'),
-                        
-                        TextInput::make('major')
-                            ->label('التخصص')
-                            ->maxLength(100)
-                            ->placeholder('علوم الحاسب'),
-                        
-                        Select::make('status')
-                            ->label('حالة الطالب')
-                            ->options([
-                                'active' => 'نشط',
-                                'inactive' => 'غير نشط',
-                                'graduated' => 'متخرج',
-                                'suspended' => 'موقوف',
-                                'transferred' => 'محول',
-                            ])
-                            ->default('active')
-                            ->required(),
                     ])
                     ->columns(2),
                 
@@ -89,44 +76,8 @@ class StudentForm
                             ->maxLength(500)
                             ->rows(3)
                             ->placeholder('أدخل العنوان الكامل'),
-                        
-                        TextInput::make('emergency_contact_name')
-                            ->label('اسم جهة الاتصال في الطوارئ')
-                            ->maxLength(255)
-                            ->placeholder('اسم ولي الأمر أو المسؤول'),
-                        
-                        TextInput::make('emergency_contact_phone')
-                            ->label('رقم هاتف الطوارئ')
-                            ->tel()
-                            ->maxLength(20)
-                            ->placeholder('+966 50 123 4567'),
-                        
-                        Select::make('emergency_contact_relation')
-                            ->label('صلة القرابة')
-                            ->options([
-                                'father' => 'الأب',
-                                'mother' => 'الأم',
-                                'brother' => 'الأخ',
-                                'sister' => 'الأخت',
-                                'uncle' => 'العم',
-                                'aunt' => 'العمة',
-                                'guardian' => 'الوصي',
-                                'other' => 'أخرى',
-                            ])
-                            ->placeholder('اختر صلة القرابة'),
                     ])
                     ->columns(2),
-                
-                Section::make('ملاحظات إضافية')
-                    ->schema([
-                        Textarea::make('notes')
-                            ->label('ملاحظات')
-                            ->maxLength(1000)
-                            ->rows(4)
-                            ->placeholder('أي ملاحظات إضافية حول الطالب'),
-                    ])
-                    ->collapsible()
-                    ->collapsed(),
             ]);
     }
 }

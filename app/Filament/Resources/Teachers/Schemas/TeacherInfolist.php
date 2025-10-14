@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Teachers\Schemas;
 
 use Filament\Infolists\Components\BadgeEntry;
-use Filament\Infolists\Components\Section;
+use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 

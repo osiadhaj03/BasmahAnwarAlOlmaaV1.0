@@ -5,13 +5,10 @@ namespace App\Filament\Resources\Admins\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class AdminsTable
@@ -143,9 +140,6 @@ class AdminsTable
                         '0' => 'غير نشط',
                     ])
                     ->placeholder('جميع الحالات'),
-
-                TrashedFilter::make()
-                    ->label('المحذوفات'),
             ])
             ->recordActions([
                 ViewAction::make()
@@ -157,10 +151,6 @@ class AdminsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->label('حذف المحدد'),
-                    ForceDeleteBulkAction::make()
-                        ->label('حذف نهائي'),
-                    RestoreBulkAction::make()
-                        ->label('استعادة'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')

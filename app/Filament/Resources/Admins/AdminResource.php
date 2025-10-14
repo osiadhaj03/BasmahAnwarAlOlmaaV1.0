@@ -16,7 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class AdminResource extends Resource
 {
@@ -33,6 +33,12 @@ class AdminResource extends Resource
     protected static ?int $navigationSort = 7;
     
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // إخفاء مورد المديرين عن الطلاب والمعلمين
+        return Auth::check() && Auth::user()->type === 'admin';
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -69,18 +75,12 @@ class AdminResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('role', 'admin')
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+            ->where('role', 'admin');
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()
-            ->where('role', 'admin')
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+            ->where('role', 'admin');
     }
 }

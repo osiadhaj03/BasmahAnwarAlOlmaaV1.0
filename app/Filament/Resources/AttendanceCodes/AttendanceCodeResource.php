@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceCodeResource extends Resource
 {
@@ -29,6 +30,12 @@ class AttendanceCodeResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-qr-code';
     
     protected static ?int $navigationSort = 4;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // إخفاء مورد أكواد الحضور عن الطلاب
+        return Auth::check() && Auth::user()->type !== 'student';
+    }
 
     public static function form(Schema $schema): Schema
     {

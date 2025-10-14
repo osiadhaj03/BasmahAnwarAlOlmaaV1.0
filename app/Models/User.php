@@ -45,7 +45,7 @@ class User extends Authenticatable implements FilamentUser
     // Filament Access Control
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_active && in_array($this->type, ['admin', 'teacher']);
+        return $this->is_active && in_array($this->type, ['admin', 'teacher', 'student']);
     }
 
     // العلاقات

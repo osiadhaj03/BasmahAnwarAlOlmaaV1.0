@@ -16,6 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherResource extends Resource
 {
@@ -32,6 +33,12 @@ class TeacherResource extends Resource
     protected static ?int $navigationSort = 6;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // إخفاء مورد المعلمين عن الطلاب
+        return Auth::check() && Auth::user()->type !== 'student';
+    }
 
     public static function form(Schema $schema): Schema
     {

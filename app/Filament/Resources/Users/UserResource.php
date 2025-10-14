@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
@@ -29,6 +30,12 @@ class UserResource extends Resource
     protected static ?string $pluralModelLabel = 'المستخدمون';
     
     protected static ?int $navigationSort = 1;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // إخفاء مورد المستخدمين عن الطلاب
+        return Auth::check() && Auth::user()->type !== 'student';
+    }
 
     public static function form(Schema $schema): Schema
     {

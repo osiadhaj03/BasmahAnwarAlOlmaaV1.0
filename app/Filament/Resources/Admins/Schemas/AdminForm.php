@@ -86,17 +86,6 @@ class AdminForm
                     ->icon('heroicon-o-shield-check')
                     ->columns(2)
                     ->schema([
-                        Select::make('admin_level')
-                            ->label('مستوى الإدارة')
-                            ->options([
-                                'super_admin' => 'مدير عام',
-                                'admin' => 'إداري',
-                                'moderator' => 'مشرف',
-                            ])
-                            ->default('admin')
-                            ->required()
-                            ->native(false),
-
                         Select::make('department')
                             ->label('القسم')
                             ->options([
@@ -115,12 +104,6 @@ class AdminForm
                             ->unique(ignoreRecord: true)
                             ->maxLength(50)
                             ->placeholder('EMP001'),
-
-                        DatePicker::make('hire_date')
-                            ->label('تاريخ التوظيف')
-                            ->native(false)
-                            ->displayFormat('Y-m-d')
-                            ->default(now()),
                     ]),
 
                 Section::make('معلومات الاتصال')
@@ -134,43 +117,6 @@ class AdminForm
                             ->columnSpanFull()
                             ->placeholder('أدخل العنوان الكامل'),
 
-                        TextInput::make('emergency_contact_name')
-                            ->label('اسم جهة الاتصال في الطوارئ')
-                            ->maxLength(255)
-                            ->placeholder('اسم الشخص للاتصال في الطوارئ'),
-
-                        TextInput::make('emergency_contact_phone')
-                            ->label('هاتف جهة الاتصال في الطوارئ')
-                            ->tel()
-                            ->maxLength(20)
-                            ->placeholder('+966 50 123 4567'),
-
-                        Select::make('emergency_contact_relationship')
-                            ->label('صلة القرابة')
-                            ->options([
-                                'parent' => 'والد/والدة',
-                                'spouse' => 'زوج/زوجة',
-                                'sibling' => 'أخ/أخت',
-                                'child' => 'ابن/ابنة',
-                                'relative' => 'قريب',
-                                'friend' => 'صديق',
-                                'other' => 'أخرى',
-                            ])
-                            ->native(false)
-                            ->placeholder('اختر صلة القرابة'),
-                    ]),
-
-                Section::make('ملاحظات إضافية')
-                    ->description('أي ملاحظات أو معلومات إضافية')
-                    ->icon('heroicon-o-document-text')
-                    ->collapsible()
-                    ->collapsed()
-                    ->schema([
-                        Textarea::make('notes')
-                            ->label('ملاحظات')
-                            ->rows(4)
-                            ->columnSpanFull()
-                            ->placeholder('أدخل أي ملاحظات إضافية حول الإداري'),
                     ]),
             ]);
     }

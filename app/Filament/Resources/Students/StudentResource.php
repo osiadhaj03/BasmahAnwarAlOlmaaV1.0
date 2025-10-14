@@ -16,7 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class StudentResource extends Resource
 {
@@ -33,6 +33,12 @@ class StudentResource extends Resource
     protected static ?int $navigationSort = 5;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // إخفاء مورد الطلاب عن الطلاب أنفسهم
+        return Auth::check() && Auth::user()->type !== 'student';
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -68,15 +74,21 @@ class StudentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('type', 'student');
+        $query = parent::getEloquentQuery()->where('type', 'student');
+        
+        // إذا كان المستخدم معلم، عرض طلابه فقط (الطلاب المسجلين في دروسه)
+        if (Auth::check() && Auth::user()->type === 'teacher') {
+            $query->whereHas('studentLessons', function ($lessonQuery) {
+                $lessonQuery->where('teacher_id', Auth::id());
+            });
+        }
+        
+        return $query;
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()
-            ->where('type', 'student')
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+            ->where('type', 'student');
     }
 }
