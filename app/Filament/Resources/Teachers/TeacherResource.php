@@ -9,16 +9,17 @@ use App\Filament\Resources\Teachers\Pages\ViewTeacher;
 use App\Filament\Resources\Teachers\Schemas\TeacherForm;
 use App\Filament\Resources\Teachers\Schemas\TeacherInfolist;
 use App\Filament\Resources\Teachers\Tables\TeachersTable;
-use App\Models\Teacher;
+use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class TeacherResource extends Resource
 {
-    protected static ?string $model = Teacher::class;
+    protected static ?string $model = User::class;
 
     protected static ?string $navigationLabel = 'المعلمين';
 
@@ -52,6 +53,11 @@ class TeacherResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('type', 'teacher');
     }
 
     public static function getPages(): array

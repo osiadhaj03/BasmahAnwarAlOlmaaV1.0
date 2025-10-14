@@ -9,7 +9,7 @@ use App\Filament\Resources\Students\Pages\ViewStudent;
 use App\Filament\Resources\Students\Schemas\StudentForm;
 use App\Filament\Resources\Students\Schemas\StudentInfolist;
 use App\Filament\Resources\Students\Tables\StudentsTable;
-use App\Models\Student;
+use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StudentResource extends Resource
 {
-    protected static ?string $model = Student::class;
+    protected static ?string $model = User::class;
 
     protected static ?string $navigationLabel = 'الطلاب';
     
@@ -66,9 +66,15 @@ class StudentResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('type', 'student');
+    }
+
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()
+            ->where('type', 'student')
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
