@@ -50,7 +50,14 @@ class UserForm
                         DatePicker::make('birth_date')
                             ->label('تاريخ الميلاد')
                             ->nullable(),
+                        Textarea::make('address')
+                            ->label('العنوان')
+                            ->maxLength(500)
+                            ->rows(2),
                         
+                        TextInput::make('nationality')
+                            ->label('الجنسية')
+                            ->maxLength(100),
                         
                     ]) ->columnSpan('full'),
                 
@@ -117,27 +124,10 @@ class UserForm
                         //DatePicker::make('hire_date')
                         //    ->label('تاريخ التوظيف')
                         //    ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
-                    ]),
+                    ]) ->columnSpan('full'),
                 
                 // القسم الثالث: معلومات عامة
-                Section::make('معلومات عامة')
-                    ->description('المعلومات الشخصية العامة للمستخدم')
-                    ->collapsible()
-                    ->schema([
-                        Textarea::make('bio')
-                            ->label('نبذة شخصية')
-                            ->maxLength(500)
-                            ->rows(3),
-                        
-                        Textarea::make('address')
-                            ->label('العنوان')
-                            ->maxLength(500)
-                            ->rows(2),
-                        
-                        TextInput::make('nationality')
-                            ->label('الجنسية')
-                            ->maxLength(100),
-                    ]),
+               
                 
                 // القسم الرابع: معلومات الحساب
                 Section::make('معلومات الحساب')
@@ -179,7 +169,18 @@ class UserForm
                             ->default(true),    
                         
 
-                    ]),
+                    ]) ->columnSpan('full'),
+                     Section::make('معلومات عامة')
+                    ->description('المعلومات الشخصية العامة للمستخدم')
+                    ->collapsible()
+                    ->schema([
+                        Textarea::make('bio')
+                            ->label('نبذة شخصية')
+                            ->maxLength(500)
+                            ->rows(3),
+                        
+                        
+                    ]) ->columnSpan('full'),
             ]);
     }
 }
