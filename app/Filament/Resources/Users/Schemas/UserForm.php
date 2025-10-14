@@ -64,7 +64,7 @@ class UserForm
                         Toggle::make('is_active')
                             ->label('نشط')
                             ->default(true),
-                    ])->columns(2),
+                    ]),
                 
                 Section::make('معلومات إضافية')
                     ->description('معلومات تفصيلية حسب نوع المستخدم')
@@ -135,7 +135,7 @@ class UserForm
                             ->label('العنوان')
                             ->maxLength(500)
                             ->rows(2),
-                    ])->columns(2),
+                            ]),
                 
                 Section::make('كلمة المرور')
                     ->description('إعدادات كلمة المرور والأمان')
@@ -162,7 +162,7 @@ class UserForm
                             ->label('آخر تسجيل دخول')
                             ->disabled()
                             ->nullable(),
-                    ])->columns(2),
+                    ]),
             ]);
     }
 }
