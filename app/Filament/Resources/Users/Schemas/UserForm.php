@@ -33,7 +33,7 @@ class UserForm
                             ->maxLength(255),
                         
                         TextInput::make('phone')
-                            ->label('رقم الهاتف')
+                            ->label(' رقم الهاتف ')
                             ->tel()
                             ->maxLength(20),
                         
@@ -61,8 +61,12 @@ class UserForm
                             ->label('تاريخ الميلاد')
                             ->nullable(),
                         
-                        Toggle::make('is_active')
+                        Select::make('is_active')
                             ->label('نشط')
+                            ->options([
+                                true => 'نشط',
+                                false => 'غير نشط',
+                            ])
                             ->default(true),
                     ]),
                 
@@ -71,19 +75,21 @@ class UserForm
                     ->schema([
                         // معلومات خاصة بالطلاب
                         TextInput::make('student_id')
-                            ->label('رقم الطالب')
+                            ->label(' رقم الطالب الجامعي')
                             ->unique(ignoreRecord: true)
                             ->maxLength(50)
-                            ->required(fn ($get) => $get('type') === 'student')
+                            //->required(fn ($get) => $get('type') === 'student')
                             ->visible(fn ($get) => $get('type') === 'student'),
                         
                         Select::make('academic_level')
                             ->label('المستوى الأكاديمي')
                             ->options([
-                                'elementary' => 'بكارلويس',
-                                'middle' => 'متوسط',
-                                'high' => 'ثانوي',
-                                'university' => 'جامعي',
+                                'bachelor' => 'بكالوريس',
+                                'master' => 'ماجستير',
+                                'doctorate' => 'دكتوراه',
+                                'intermediate_diploma' => 'دبلوم متوسط',
+                                'higher_diploma' => 'دبلوم عالي',
+                                'other' => 'أخرى',
                             ])
                             ->visible(fn ($get) => $get('type') === 'student'),
                         
@@ -95,35 +101,35 @@ class UserForm
                             ->required(fn ($get) => in_array($get('type'), ['admin', 'teacher']))
                             ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
                         
-                        TextInput::make('department')
-                            ->label('القسم')
-                            ->maxLength(100)
-                            ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
+                        //TextInput::make('department')
+                        //    ->label('القسم')
+                        //    ->maxLength(100)
+                        //    ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
                         
-                        Select::make('specialization')
-                            ->label('التخصص')
-                            ->options([
-                                'arabic' => 'اللغة العربية',
-                                'english' => 'اللغة الإنجليزية',
-                                'math' => 'الرياضيات',
-                                'science' => 'العلوم',
-                                'physics' => 'الفيزياء',
-                                'chemistry' => 'الكيمياء',
-                                'biology' => 'الأحياء',
-                                'history' => 'التاريخ',
-                                'geography' => 'الجغرافيا',
-                                'islamic' => 'التربية الإسلامية',
-                                'computer' => 'الحاسوب',
-                                'art' => 'التربية الفنية',
-                                'sports' => 'التربية الرياضية',
-                                'music' => 'التربية الموسيقية',
-                                'other' => 'أخرى',
-                            ])
-                            ->visible(fn ($get) => $get('type') === 'teacher'),
+                        //Select::make('specialization')
+                        //    ->label('التخصص')
+                        //    ->options([
+                        //        'arabic' => 'اللغة العربية',
+                        //        'english' => 'اللغة الإنجليزية',
+                        //        'math' => 'الرياضيات',
+                        //        'science' => 'العلوم',
+                        //        'physics' => 'الفيزياء',
+                        //        'chemistry' => 'الكيمياء',
+                        //        'biology' => 'الأحياء',
+                        //        'history' => 'التاريخ',
+                        //        'geography' => 'الجغرافيا',
+                        //        'islamic' => 'التربية الإسلامية',
+                        //        'computer' => 'الحاسوب',
+                        //        'art' => 'التربية الفنية',
+                        //        'sports' => 'التربية الرياضية',
+                        //        'music' => 'التربية الموسيقية',
+                        //        'other' => 'أخرى',
+                        //    ])
+                        //    ->visible(fn ($get) => $get('type') === 'teacher'),
                         
-                        DatePicker::make('hire_date')
-                            ->label('تاريخ التوظيف')
-                            ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
+                        //DatePicker::make('hire_date')
+                        //    ->label('تاريخ التوظيف')
+                        //    ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
                         
                         // معلومات عامة
                         Textarea::make('bio')
@@ -158,14 +164,7 @@ class UserForm
                             ->required(fn (string $context): bool => $context === 'create')
                             ->dehydrated(false),
                         
-                        DateTimePicker::make('email_verified_at')
-                            ->label('تاريخ تأكيد البريد الإلكتروني')
-                            ->nullable(),
-                        
-                        DateTimePicker::make('last_login_at')
-                            ->label('آخر تسجيل دخول')
-                            ->disabled()
-                            ->nullable(),
+
                     ]),
             ]);
     }
