@@ -89,10 +89,10 @@ class UserForm
                                 'higher_diploma' => 'دبلوم عالي',
                                 'other' => 'أخرى',
                             ])
-                            ->visible(fn ($get) => $get('type') === 'student'),
+                            ->visible(fn ($get) => in_array($get('type'), ['student', 'teacher'])),
                         
                         
-                    ]) ->columnSpan('full'),
+                    ]) ->columnSpan('full') ->columns(2),
                 
                
                 
