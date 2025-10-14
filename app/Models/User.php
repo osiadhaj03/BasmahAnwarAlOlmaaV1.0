@@ -21,7 +21,6 @@ class User extends Authenticatable implements FilamentUser
         'student_id',
         'academic_level',
         'employee_id',
-        'department',
         'specialization',
         'hire_date',
         'bio',

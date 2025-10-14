@@ -58,8 +58,7 @@ class UserForm
 
                         Textarea::make('address')
                             ->label('العنوان')
-                            ->maxLength(500)
-                            ->columnSpan('full') ,
+                            ->maxLength(500),
                             
                         
                         
@@ -92,49 +91,12 @@ class UserForm
                             ])
                             ->visible(fn ($get) => $get('type') === 'student'),
                         
-                        // معلومات خاصة بالمعلمين والمديرين
-                        //TextInput::make('employee_id')
-                        //    ->label('رقم الموظف')
-                        //    ->unique(ignoreRecord: true)
-                        //    ->maxLength(50)
-                        //    ->required(fn ($get) => in_array($get('type'), ['admin', 'teacher']))
-                        //    ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
                         
-                        //TextInput::make('department')
-                        //    ->label('القسم')
-                        //    ->maxLength(100)
-                        //    ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
-                        
-                        //Select::make('specialization')
-                        //    ->label('التخصص')
-                        //    ->options([
-                        //        'arabic' => 'اللغة العربية',
-                        //        'english' => 'اللغة الإنجليزية',
-                        //        'math' => 'الرياضيات',
-                        //        'science' => 'العلوم',
-                        //        'physics' => 'الفيزياء',
-                        //        'chemistry' => 'الكيمياء',
-                        //        'biology' => 'الأحياء',
-                        //        'history' => 'التاريخ',
-                        //        'geography' => 'الجغرافيا',
-                        //        'islamic' => 'التربية الإسلامية',
-                        //        'computer' => 'الحاسوب',
-                        //        'art' => 'التربية الفنية',
-                        //        'sports' => 'التربية الرياضية',
-                        //        'music' => 'التربية الموسيقية',
-                        //        'other' => 'أخرى',
-                        //    ])
-                        //    ->visible(fn ($get) => $get('type') === 'teacher'),
-                        
-                        //DatePicker::make('hire_date')
-                        //    ->label('تاريخ التوظيف')
-                        //    ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
                     ]) ->columnSpan('full'),
                 
-                // القسم الثالث: معلومات عامة
                
                 
-                // القسم الرابع: معلومات الحساب
+                // القسم : معلومات الحساب
                 Section::make('معلومات الحساب')
                     ->description('إعدادات معلومات الحساب مثل البريد الإلكتروني وكلمة المرور')
                     ->collapsible()
@@ -165,17 +127,17 @@ class UserForm
                             ->password()
                             ->required(fn (string $context): bool => $context === 'create')
                             ->dehydrated(false),
+                        
                         Select::make('is_active')
                             ->label('نشط')
                             ->options([
                                 true => 'نشط',
                                 false => 'غير نشط',
                             ])
-                            ->default(true),    
-                        
-
-                    ]) ->columnSpan('full'),
-                     Section::make('معلومات عامة')
+                           
+                    ]) ->columnSpan('full') ->columns(2),
+                    
+                    Section::make('معلومات عامة')
                     ->description('المعلومات الشخصية العامة للمستخدم')
                     ->collapsible()
                     ->schema([
@@ -183,9 +145,8 @@ class UserForm
                             ->label('نبذة شخصية')
                             ->maxLength(500)
                             ->rows(3),
-                        
-                        
-                    ]) ->columnSpan('full'),
+                      
+                    ])  ->columnSpan('full') ,
             ]);
     }
 }
