@@ -79,7 +79,8 @@ class UserForm
                             ->unique(ignoreRecord: true)
                             ->maxLength(50)
                             //->required(fn ($get) => $get('type') === 'student')
-                            ->visible(fn ($get) => $get('type') === 'student'),
+                            ->visible(fn ($get) => $get('type') === 'student')
+                            ->placeholder('ادخل رقمك الجامعي إن كنت من طلاب كلية الفقه الحنفي '),
                         
                         Select::make('academic_level')
                             ->label('المستوى الأكاديمي')
@@ -94,12 +95,12 @@ class UserForm
                             ->visible(fn ($get) => $get('type') === 'student'),
                         
                         // معلومات خاصة بالمعلمين والمديرين
-                        TextInput::make('employee_id')
-                            ->label('رقم الموظف')
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(50)
-                            ->required(fn ($get) => in_array($get('type'), ['admin', 'teacher']))
-                            ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
+                        //TextInput::make('employee_id')
+                        //    ->label('رقم الموظف')
+                        //    ->unique(ignoreRecord: true)
+                        //    ->maxLength(50)
+                        //    ->required(fn ($get) => in_array($get('type'), ['admin', 'teacher']))
+                        //    ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
                         
                         //TextInput::make('department')
                         //    ->label('القسم')
