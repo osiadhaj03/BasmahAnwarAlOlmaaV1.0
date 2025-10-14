@@ -25,7 +25,8 @@ class UserForm
                         TextInput::make('name')
                             ->label('الاسم الكامل')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpan('full'),
 
                         Select::make('type')
                             ->label('نوع المستخدم')
@@ -50,16 +51,20 @@ class UserForm
                         DatePicker::make('birth_date')
                             ->label('تاريخ الميلاد')
                             ->nullable(),
-                        Textarea::make('address')
-                            ->label('العنوان')
-                            ->maxLength(500)
-                            ->rows(2),
-                        
+
                         TextInput::make('nationality')
                             ->label('الجنسية')
                             ->maxLength(100),
+
+                        Textarea::make('address')
+                            ->label('العنوان')
+                            ->maxLength(500)
+                            ->columnSpan('full') ,
+                            
                         
-                    ]) ->columnSpan('full'),
+                        
+                        
+                    ]) ->columnSpan('full') ->columns(2),
                 
                 // القسم الثاني: المعلومات الإضافية
                 Section::make('معلومات إضافية')
