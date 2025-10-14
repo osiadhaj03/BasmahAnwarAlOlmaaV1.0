@@ -45,7 +45,9 @@ class UserForm
                                 'student' => 'طالب',
                             ])
                             ->required()
-                            ->default('student'),
+                            ->default('student')
+                            ->reactive()
+                            ->live(),
                         
                         Select::make('gender')
                             ->label('الجنس')
@@ -78,7 +80,7 @@ class UserForm
                         Select::make('academic_level')
                             ->label('المستوى الأكاديمي')
                             ->options([
-                                'elementary' => 'ابتدائي',
+                                'elementary' => 'بكارلويس',
                                 'middle' => 'متوسط',
                                 'high' => 'ثانوي',
                                 'university' => 'جامعي',
