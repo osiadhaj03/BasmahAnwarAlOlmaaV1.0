@@ -51,13 +51,7 @@ class UserForm
                             ->label('تاريخ الميلاد')
                             ->nullable(),
                         
-                        Select::make('is_active')
-                            ->label('نشط')
-                            ->options([
-                                true => 'نشط',
-                                false => 'غير نشط',
-                            ])
-                            ->default(true),
+                        
                     ]) ->columnSpan('full'),
                 
                 // القسم الثاني: المعلومات الإضافية
@@ -123,8 +117,13 @@ class UserForm
                         //DatePicker::make('hire_date')
                         //    ->label('تاريخ التوظيف')
                         //    ->visible(fn ($get) => in_array($get('type'), ['admin', 'teacher'])),
-                        
-                        // معلومات عامة
+                    ]),
+                
+                // القسم الثالث: معلومات عامة
+                Section::make('معلومات عامة')
+                    ->description('المعلومات الشخصية العامة للمستخدم')
+                    ->collapsible()
+                    ->schema([
                         Textarea::make('bio')
                             ->label('نبذة شخصية')
                             ->maxLength(500)
@@ -138,9 +137,9 @@ class UserForm
                         TextInput::make('nationality')
                             ->label('الجنسية')
                             ->maxLength(100),
-                            ]),
+                    ]),
                 
-                // القسم الثالث: معلومات الحساب
+                // القسم الرابع: معلومات الحساب
                 Section::make('معلومات الحساب')
                     ->description('إعدادات معلومات الحساب مثل البريد الإلكتروني وكلمة المرور')
                     ->collapsible()
@@ -171,6 +170,13 @@ class UserForm
                             ->password()
                             ->required(fn (string $context): bool => $context === 'create')
                             ->dehydrated(false),
+                        Select::make('is_active')
+                            ->label('نشط')
+                            ->options([
+                                true => 'نشط',
+                                false => 'غير نشط',
+                            ])
+                            ->default(true),    
                         
 
                     ]),
