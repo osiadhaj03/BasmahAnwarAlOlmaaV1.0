@@ -135,6 +135,10 @@ class UserForm
                             ->label('العنوان')
                             ->maxLength(500)
                             ->rows(2),
+                        
+                        TextInput::make('nationality')
+                            ->label('الجنسية')
+                            ->maxLength(100),
                             ]),
                 
                 Section::make('كلمة المرور')
