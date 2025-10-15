@@ -128,19 +128,6 @@ class LessonForm
                             ->required()
                             ->live(),
                         
-                        TextInput::make('location_details')
-                            ->label(fn (Get $get) => $get('location_type') === 'online' ? 'تفاصيل المنصة' : 'عنوان المكان')
-                            ->placeholder(fn (Get $get) => $get('location_type') === 'online' ? 'مثل: Zoom, Teams, Google Meet' : 'مثل: قاعة المحاضرات رقم 1')
-                            ->helperText(fn (Get $get) => $get('location_type') === 'online' ? 'للدورات الأونلاين' : 'للدورات الحضورية')
-                            ->maxLength(255),
-                        
-                        TextInput::make('meeting_link')
-                            ->label('رابط الاجتماع')
-                            ->url()
-                            ->placeholder('https://zoom.us/j/123456789')
-                            ->helperText('رابط الاجتماع للدورات الأونلاين')
-                            ->visible(fn (Get $get) => $get('location_type') === 'online')
-                            ->maxLength(500),
                     ])->columns(2),
                 
                 Section::make('إعدادات إضافية')
@@ -150,8 +137,8 @@ class LessonForm
                             ->label('العدد الأقصى للطلاب')
                             ->numeric()
                             ->minValue(1)
-                            ->maxValue(100)
-                            ->default(20)
+                            ->maxValue(1000)
+                            
                             ->helperText('العدد الأقصى للطلاب في الدورة'),
                         
                         Textarea::make('notes')
