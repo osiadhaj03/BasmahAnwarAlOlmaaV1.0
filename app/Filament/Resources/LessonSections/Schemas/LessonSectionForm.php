@@ -19,10 +19,7 @@ class LessonSectionForm
                     ->default(null)
                     ->columnSpanFull(),
                 Toggle::make('is_active')
-                    ->options([
-                        'true' => 'نشط',
-                        'false' => 'غير نشط',
-                    ])
+                    
                     ->default(true)
                     ->required(),
                 //TextInput::make('color')
