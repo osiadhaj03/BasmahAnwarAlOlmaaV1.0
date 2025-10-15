@@ -28,7 +28,8 @@ class LessonForm
                         TextInput::make('title')
                             ->label('عنوان الدورة')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpan('full'),
                         
                         Select::make('lesson_section_id')
                             ->label('قسم الدورة')
@@ -37,20 +38,22 @@ class LessonForm
                             ->preload()
                             ->placeholder('اختر قسم الدورة')
                             ->helperText('اختر القسم الذي ينتمي إليه هذه الدورة'),
-                        
-                        Textarea::make('description')
-                            ->label('وصف الدورة')
-                            ->maxLength(1000)
-                            ->rows(3)
-                            ->columnSpanFull(),
-                        
+                            
                         Select::make('teacher_id')
                             ->label('المعلم')
                             ->options(User::where('type', 'teacher')->pluck('name', 'id'))
                             ->required()
                             ->searchable()
                             ->preload(),
-                    ])->columns(2),
+
+                        Textarea::make('description')
+                            ->label('وصف الدورة')
+                            ->maxLength(1000)
+                            ->rows(3)
+                            ->columnSpan('full'),
+                        
+                        
+                    ]) ->columnSpan('full') ->columns(2),
                 
                 Section::make('التوقيت والجدولة')
                     ->description('معلومات التوقيت والجدولة')
