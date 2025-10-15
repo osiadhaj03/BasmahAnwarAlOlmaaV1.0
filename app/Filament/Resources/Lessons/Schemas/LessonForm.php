@@ -12,7 +12,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\Grid;
+
 use Filament\Schemas\Schema;
 
 class LessonForm
@@ -54,37 +54,20 @@ class LessonForm
                 Section::make('التوقيت والجدولة')
                     ->description('معلومات التوقيت والجدولة')
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                DatePicker::make('start_date')
-                                    ->label('تاريخ البداية')
-                                    ->required()
-                                    ->native(false)
-                                    ->displayFormat('Y-m-d')
-                                    ->minDate(now()),
-                                
-                                DatePicker::make('end_date')
-                                    ->label('تاريخ النهاية')
-                                    ->required()
-                                    ->native(false)
-                                    ->displayFormat('Y-m-d')
-                                    ->minDate(now())
-                                    ->afterOrEqual('start_date'),
-                            ]),
+                        DatePicker::make('start_date')
+                            ->label('تاريخ البداية')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('Y-m-d')
+                            ->minDate(now()),
                         
-                        Grid::make(2)
-                            ->schema([
-                                TimePicker::make('start_time')
-                                    ->label('وقت البداية')
-                                    ->required()
-                                    ->seconds(false),
-                                
-                                TimePicker::make('end_time')
-                                    ->label('وقت النهاية')
-                                    ->required()
-                                    ->seconds(false)
-                                    ->after('start_time'),
-                            ]),
+                        DatePicker::make('end_date')
+                            ->label('تاريخ النهاية')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('Y-m-d')
+                            ->minDate(now())
+                            ->afterOrEqual('start_date'),
                         
                         CheckboxList::make('lesson_days')
                             ->label('أيام الدرس')
@@ -97,28 +80,38 @@ class LessonForm
                                 'friday' => 'الجمعة',
                                 'saturday' => 'السبت',
                             ])
+                            ->columns(3)
                             ->required()
-                            ->columns(4)
-                            ->columnSpanFull(),
+                            ->helperText('اختر أيام الأسبوع التي سيتم فيها الدرس'),
                         
-                        Grid::make(2)
-                            ->schema([
-                                Toggle::make('is_recurring')
-                                    ->label('درس متكرر')
-                                    ->default(true)
-                                    ->helperText('هل يتكرر هذا الدرس أسبوعياً؟'),
-                                
-                                Select::make('status')
-                                    ->label('حالة الدرس')
-                                    ->options([
-                                        'active' => 'نشط',
-                                        'cancelled' => 'ملغي',
-                                        'completed' => 'مكتمل',
-                                    ])
-                                    ->default('active')
-                                    ->required(),
-                            ]),
-                    ]),
+                        TimePicker::make('start_time')
+                            ->label('وقت البداية')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('H:i'),
+                        
+                        TimePicker::make('end_time')
+                            ->label('وقت النهاية')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('H:i')
+                            ->after('start_time'),
+                        
+                        Select::make('status')
+                            ->label('حالة الدرس')
+                            ->options([
+                                'active' => 'نشط',
+                                'cancelled' => 'ملغي',
+                                'completed' => 'مكتمل',
+                            ])
+                            ->default('active')
+                            ->required(),
+                        
+                        Toggle::make('is_recurring')
+                            ->label('درس متكرر')
+                            ->default(true)
+                            ->helperText('هل هذا الدرس متكرر أم لمرة واحدة فقط؟'),
+                     ])->columns(2),
                 
                 Section::make('المكان والموقع')
                     ->description('تحديد مكان إقامة الدرس')
