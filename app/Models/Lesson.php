@@ -149,22 +149,6 @@ class Lesson extends Model
 
     public function scopeToday($query)
     {
-        return $query->whereDate('start_date', '<=', now()->toDateString())
-                     ->whereDate('end_date', '>=', now()->toDateString());
-    }
-
-    public function scopeOnline($query)
-    {
-        return $query->where('location_type', 'online');
-    }
-
-    public function scopeOffline($query)
-    {
-        return $query->where('location_type', 'offline');
-    }
-
-    public function scopeRecurring($query)
-    {
-        return $query->where('is_recurring', true);
+        return $query->where('lesson_date', now()->toDateString());
     }
 }

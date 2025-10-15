@@ -18,6 +18,8 @@ use Filament\Schemas\Schema;
 
 class LessonForm
 {
+
+    
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -72,7 +74,8 @@ class LessonForm
                             ->required()
                             ->native(false)
                             ->displayFormat('Y-m-d')
-                            ->minDate(now()),
+                            //->minDate(now())
+                            ,
                         
                         DatePicker::make('end_date')
                             ->label('تاريخ النهاية')
