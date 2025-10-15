@@ -98,13 +98,13 @@ class LessonForm
                             CheckboxList::make('lesson_days')
                             ->label('أيام الدورة')
                             ->options([
+                                'saturday' => 'السبت',
                                 'sunday' => 'الأحد',
                                 'monday' => 'الاثنين',
                                 'tuesday' => 'الثلاثاء',
                                 'wednesday' => 'الأربعاء',
                                 'thursday' => 'الخميس',
                                 'friday' => 'الجمعة',
-                                'saturday' => 'السبت',
                             ])
                             ->columns(4)
                             ->required()
