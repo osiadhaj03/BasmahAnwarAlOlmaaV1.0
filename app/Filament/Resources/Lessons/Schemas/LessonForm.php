@@ -127,13 +127,7 @@ class LessonForm
                         //    ->default(false),
                      ])->columns(2),
                 
-                Section::make('المكان والموقع')
-                    ->description('تفاصيل مكان إقامة الدورة')
-                    ->schema([
-                        
-                        
-                    ])->columns(2),
-                
+
                 Section::make('إعدادات إضافية')
                     ->description('إعدادات وملاحظات إضافية')
                     ->schema([
