@@ -10,6 +10,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TimePicker;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Grid;
 use Filament\Schemas\Schema;
 
 class LessonForm
@@ -46,42 +49,103 @@ class LessonForm
                             ->required()
                             ->searchable()
                             ->preload(),
-                        
-                        TextInput::make('location')
-                            ->label('مكان الدرس')
-                            ->maxLength(255),
                     ])->columns(2),
                 
                 Section::make('التوقيت والجدولة')
                     ->description('معلومات التوقيت والجدولة')
                     ->schema([
-                        DatePicker::make('lesson_date')
-                            ->label('تاريخ الدرس')
-                            ->required()
-                            ->native(false)
-                            ->displayFormat('Y-m-d')
-                            ->minDate(now()),
+                        Grid::make(2)
+                            ->schema([
+                                DatePicker::make('start_date')
+                                    ->label('تاريخ البداية')
+                                    ->required()
+                                    ->native(false)
+                                    ->displayFormat('Y-m-d')
+                                    ->minDate(now()),
+                                
+                                DatePicker::make('end_date')
+                                    ->label('تاريخ النهاية')
+                                    ->required()
+                                    ->native(false)
+                                    ->displayFormat('Y-m-d')
+                                    ->minDate(now())
+                                    ->afterOrEqual('start_date'),
+                            ]),
                         
-                        TimePicker::make('start_time')
-                            ->label('وقت البداية')
-                            ->required()
-                            ->seconds(false),
+                        Grid::make(2)
+                            ->schema([
+                                TimePicker::make('start_time')
+                                    ->label('وقت البداية')
+                                    ->required()
+                                    ->seconds(false),
+                                
+                                TimePicker::make('end_time')
+                                    ->label('وقت النهاية')
+                                    ->required()
+                                    ->seconds(false)
+                                    ->after('start_time'),
+                            ]),
                         
-                        TimePicker::make('end_time')
-                            ->label('وقت النهاية')
-                            ->required()
-                            ->seconds(false)
-                            ->after('start_time'),
-                        
-                        Select::make('status')
-                            ->label('حالة الدرس')
+                        CheckboxList::make('lesson_days')
+                            ->label('أيام الدرس')
                             ->options([
-                                'active' => 'نشط',
-                                'cancelled' => 'ملغي',
-                                'completed' => 'مكتمل',
+                                'sunday' => 'الأحد',
+                                'monday' => 'الاثنين',
+                                'tuesday' => 'الثلاثاء',
+                                'wednesday' => 'الأربعاء',
+                                'thursday' => 'الخميس',
+                                'friday' => 'الجمعة',
+                                'saturday' => 'السبت',
                             ])
-                            ->default('active')
-                            ->required(),
+                            ->required()
+                            ->columns(4)
+                            ->columnSpanFull(),
+                        
+                        Grid::make(2)
+                            ->schema([
+                                Toggle::make('is_recurring')
+                                    ->label('درس متكرر')
+                                    ->default(true)
+                                    ->helperText('هل يتكرر هذا الدرس أسبوعياً؟'),
+                                
+                                Select::make('status')
+                                    ->label('حالة الدرس')
+                                    ->options([
+                                        'active' => 'نشط',
+                                        'cancelled' => 'ملغي',
+                                        'completed' => 'مكتمل',
+                                    ])
+                                    ->default('active')
+                                    ->required(),
+                            ]),
+                    ]),
+                
+                Section::make('المكان والموقع')
+                    ->description('تحديد مكان إقامة الدرس')
+                    ->schema([
+                        Select::make('location_type')
+                            ->label('نوع المكان')
+                            ->options([
+                                'online' => 'أونلاين',
+                                'offline' => 'حضوري',
+                            ])
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(fn (callable $set) => $set('location_details', null)),
+                        
+                        TextInput::make('location_details')
+                            ->label(fn (callable $get) => $get('location_type') === 'online' ? 'تفاصيل المنصة' : 'عنوان المكان')
+                            ->placeholder(fn (callable $get) => $get('location_type') === 'online' ? 'مثل: Zoom, Teams, Google Meet' : 'أدخل عنوان المكان')
+                            ->maxLength(255)
+                            ->visible(fn (callable $get) => filled($get('location_type'))),
+                        
+                        TextInput::make('meeting_link')
+                            ->label('رابط الاجتماع')
+                            ->url()
+                            ->placeholder('https://zoom.us/j/...')
+                            ->maxLength(500)
+                            ->visible(fn (callable $get) => $get('location_type') === 'online')
+                            ->helperText('رابط الاجتماع للدروس الأونلاين'),
                     ])->columns(2),
                 
                 Section::make('إعدادات إضافية')

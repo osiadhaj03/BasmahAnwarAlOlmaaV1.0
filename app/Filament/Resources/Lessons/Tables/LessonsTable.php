@@ -36,10 +36,21 @@ class LessonsTable
                     ->badge()
                     ->color(fn ($record) => $record->lessonSection?->color ?? 'gray'),
                 
-                TextColumn::make('lesson_date')
-                    ->label('تاريخ الدرس')
+                TextColumn::make('start_date')
+                    ->label('تاريخ البداية')
                     ->date('Y-m-d')
                     ->sortable(),
+                
+                TextColumn::make('end_date')
+                    ->label('تاريخ النهاية')
+                    ->date('Y-m-d')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                
+                TextColumn::make('lesson_days_arabic')
+                    ->label('أيام الدرس')
+                    ->placeholder('غير محدد')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 
                 TextColumn::make('start_time')
                     ->label('وقت البداية')
@@ -51,10 +62,23 @@ class LessonsTable
                     ->time('H:i')
                     ->sortable(),
                 
-                TextColumn::make('location')
-                    ->label('المكان')
+                BadgeColumn::make('location_type')
+                    ->label('نوع المكان')
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'online' => 'أونلاين',
+                        'offline' => 'حضوري',
+                        default => $state,
+                    })
+                    ->colors([
+                        'success' => 'online',
+                        'warning' => 'offline',
+                    ]),
+                
+                TextColumn::make('location_details')
+                    ->label('تفاصيل المكان')
                     ->searchable()
-                    ->placeholder('غير محدد'),
+                    ->placeholder('غير محدد')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 
                 BadgeColumn::make('status')
                     ->label('الحالة')
@@ -75,6 +99,15 @@ class LessonsTable
                     ->numeric()
                     ->sortable()
                     ->placeholder('غير محدود'),
+                
+                BadgeColumn::make('is_recurring')
+                    ->label('متكرر')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'نعم' : 'لا')
+                    ->colors([
+                        'success' => true,
+                        'secondary' => false,
+                    ])
+                    ->toggleable(isToggledHiddenByDefault: true),
                 
                 TextColumn::make('attendances_count')
                     ->label('عدد الحضور')
@@ -113,6 +146,20 @@ class LessonsTable
                     ->relationship('lessonSection', 'name')
                     ->searchable()
                     ->preload(),
+                
+                SelectFilter::make('location_type')
+                    ->label('نوع المكان')
+                    ->options([
+                        'online' => 'أونلاين',
+                        'offline' => 'حضوري',
+                    ]),
+                
+                SelectFilter::make('is_recurring')
+                    ->label('الدروس المتكررة')
+                    ->options([
+                        1 => 'متكرر',
+                        0 => 'غير متكرر',
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make()
@@ -126,7 +173,7 @@ class LessonsTable
                         ->label('حذف المحدد'),
                 ]),
             ])
-            ->defaultSort('lesson_date', 'desc')
+            ->defaultSort('start_date', 'desc')
             ->striped();
     }
 }

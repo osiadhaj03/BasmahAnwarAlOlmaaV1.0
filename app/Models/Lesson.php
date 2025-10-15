@@ -15,19 +15,27 @@ class Lesson extends Model
         'description',
         'teacher_id',
         'lesson_section_id',
-        'lesson_date',
+        'start_date',
+        'end_date',
         'start_time',
         'end_time',
-        'location',
+        'lesson_days',
+        'location_type',
+        'location_details',
+        'meeting_link',
+        'is_recurring',
         'status',
         'max_students',
         'notes',
     ];
 
     protected $casts = [
-        'lesson_date' => 'date',
+        'start_date' => 'date',
+        'end_date' => 'date',
         'start_time' => 'datetime:H:i',
         'end_time' => 'datetime:H:i',
+        'lesson_days' => 'array',
+        'is_recurring' => 'boolean',
         'max_students' => 'integer',
     ];
 
@@ -65,9 +73,36 @@ class Lesson extends Model
     }
 
     // Helper methods
+    public function getLessonDaysArabicAttribute()
+    {
+        $daysMap = [
+            'sunday' => 'الأحد',
+            'monday' => 'الاثنين',
+            'tuesday' => 'الثلاثاء',
+            'wednesday' => 'الأربعاء',
+            'thursday' => 'الخميس',
+            'friday' => 'الجمعة',
+            'saturday' => 'السبت',
+        ];
+
+        if (!$this->lesson_days || !is_array($this->lesson_days)) {
+            return '';
+        }
+
+        $arabicDays = array_map(function($day) use ($daysMap) {
+            return $daysMap[strtolower($day)] ?? $day;
+        }, $this->lesson_days);
+
+        return implode(', ', $arabicDays);
+    }
+
     public function getFullDateTimeAttribute()
     {
-        return $this->lesson_date->format('Y-m-d') . ' ' . $this->start_time . ' - ' . $this->end_time;
+        $dateRange = $this->start_date->format('Y-m-d');
+        if ($this->end_date && $this->end_date != $this->start_date) {
+            $dateRange .= ' إلى ' . $this->end_date->format('Y-m-d');
+        }
+        return $dateRange . ' ' . $this->start_time . ' - ' . $this->end_time;
     }
 
     public function getDurationAttribute()
@@ -109,11 +144,27 @@ class Lesson extends Model
 
     public function scopeUpcoming($query)
     {
-        return $query->where('lesson_date', '>=', now()->toDateString());
+        return $query->where('start_date', '>=', now()->toDateString());
     }
 
     public function scopeToday($query)
     {
-        return $query->where('lesson_date', now()->toDateString());
+        return $query->whereDate('start_date', '<=', now()->toDateString())
+                     ->whereDate('end_date', '>=', now()->toDateString());
+    }
+
+    public function scopeOnline($query)
+    {
+        return $query->where('location_type', 'online');
+    }
+
+    public function scopeOffline($query)
+    {
+        return $query->where('location_type', 'offline');
+    }
+
+    public function scopeRecurring($query)
+    {
+        return $query->where('is_recurring', true);
     }
 }
