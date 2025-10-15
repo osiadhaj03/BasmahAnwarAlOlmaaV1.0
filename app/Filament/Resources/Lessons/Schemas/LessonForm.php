@@ -21,24 +21,24 @@ class LessonForm
     {
         return $schema
             ->components([
-                Section::make('معلومات الدرس الأساسية')
-                    ->description('المعلومات الأساسية للدرس')
+                Section::make('معلومات الدورة الأساسية')
+                    ->description('المعلومات الأساسية للدورة')
                     ->schema([
                         TextInput::make('title')
-                            ->label('عنوان الدرس')
+                            ->label('عنوان الدورة')
                             ->required()
                             ->maxLength(255),
                         
                         Select::make('lesson_section_id')
-                            ->label('قسم الدرس')
+                            ->label('قسم الدورة')
                             ->options(LessonSection::active()->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
-                            ->placeholder('اختر قسم الدرس')
-                            ->helperText('اختر القسم الذي ينتمي إليه هذا الدرس'),
+                            ->placeholder('اختر قسم الدورة')
+                            ->helperText('اختر القسم الذي ينتمي إليه هذه الدورة'),
                         
                         Textarea::make('description')
-                            ->label('وصف الدرس')
+                            ->label('وصف الدورة')
                             ->maxLength(1000)
                             ->rows(3)
                             ->columnSpanFull(),
@@ -70,7 +70,7 @@ class LessonForm
                             ->afterOrEqual('start_date'),
                         
                         CheckboxList::make('lesson_days')
-                            ->label('أيام الدرس')
+                            ->label('أيام الدورة')
                             ->options([
                                 'sunday' => 'الأحد',
                                 'monday' => 'الاثنين',
@@ -82,7 +82,7 @@ class LessonForm
                             ])
                             ->columns(3)
                             ->required()
-                            ->helperText('اختر أيام الأسبوع التي سيتم فيها الدرس'),
+                            ->helperText('اختر أيام الأسبوع التي سيتم فيها الدورة'),
                         
                         TimePicker::make('start_time')
                             ->label('وقت البداية')
@@ -98,23 +98,24 @@ class LessonForm
                             ->after('start_time'),
                         
                         Select::make('status')
-                            ->label('حالة الدرس')
+                            ->label('حالة الدورة')
                             ->options([
-                                'active' => 'نشط',
-                                'cancelled' => 'ملغي',
+                                'scheduled' => 'مجدول',
+                                'in_progress' => 'جاري',
                                 'completed' => 'مكتمل',
+                                'cancelled' => 'ملغي',
                             ])
-                            ->default('active')
+                            ->default('scheduled')
                             ->required(),
                         
                         Toggle::make('is_recurring')
-                            ->label('درس متكرر')
-                            ->default(true)
-                            ->helperText('هل هذا الدرس متكرر أم لمرة واحدة فقط؟'),
+                            ->label('الدورة متكررة')
+                            ->helperText('هل هذه الدورة تتكرر بانتظام؟')
+                            ->default(false),
                      ])->columns(2),
                 
                 Section::make('المكان والموقع')
-                    ->description('تحديد مكان إقامة الدرس')
+                    ->description('تفاصيل مكان إقامة الدورة')
                     ->schema([
                         Select::make('location_type')
                             ->label('نوع المكان')
@@ -122,39 +123,41 @@ class LessonForm
                                 'online' => 'أونلاين',
                                 'offline' => 'حضوري',
                             ])
+                            ->default('offline')
                             ->required()
-                            ->reactive()
-                            ->afterStateUpdated(fn (callable $set) => $set('location_details', null)),
+                            ->live(),
                         
                         TextInput::make('location_details')
-                            ->label(fn (callable $get) => $get('location_type') === 'online' ? 'تفاصيل المنصة' : 'عنوان المكان')
-                            ->placeholder(fn (callable $get) => $get('location_type') === 'online' ? 'مثل: Zoom, Teams, Google Meet' : 'أدخل عنوان المكان')
-                            ->maxLength(255)
-                            ->visible(fn (callable $get) => filled($get('location_type'))),
+                            ->label(fn (Get $get) => $get('location_type') === 'online' ? 'تفاصيل المنصة' : 'عنوان المكان')
+                            ->placeholder(fn (Get $get) => $get('location_type') === 'online' ? 'مثل: Zoom, Teams, Google Meet' : 'مثل: قاعة المحاضرات رقم 1')
+                            ->helperText(fn (Get $get) => $get('location_type') === 'online' ? 'للدورات الأونلاين' : 'للدورات الحضورية')
+                            ->maxLength(255),
                         
                         TextInput::make('meeting_link')
                             ->label('رابط الاجتماع')
                             ->url()
-                            ->placeholder('https://zoom.us/j/...')
-                            ->maxLength(500)
-                            ->visible(fn (callable $get) => $get('location_type') === 'online')
-                            ->helperText('رابط الاجتماع للدروس الأونلاين'),
+                            ->placeholder('https://zoom.us/j/123456789')
+                            ->helperText('رابط الاجتماع للدورات الأونلاين')
+                            ->visible(fn (Get $get) => $get('location_type') === 'online')
+                            ->maxLength(500),
                     ])->columns(2),
                 
                 Section::make('إعدادات إضافية')
                     ->description('إعدادات وملاحظات إضافية')
                     ->schema([
                         TextInput::make('max_students')
-                            ->label('الحد الأقصى للطلاب')
+                            ->label('العدد الأقصى للطلاب')
                             ->numeric()
                             ->minValue(1)
-                            ->maxValue(1000)
-                            ->placeholder('غير محدود'),
+                            ->maxValue(100)
+                            ->default(20)
+                            ->helperText('العدد الأقصى للطلاب في الدورة'),
                         
                         Textarea::make('notes')
                             ->label('ملاحظات')
                             ->maxLength(1000)
                             ->rows(3)
+                            ->helperText('ملاحظات إضافية حول الدورة')
                             ->columnSpanFull(),
                     ])->columns(1),
             ]);
