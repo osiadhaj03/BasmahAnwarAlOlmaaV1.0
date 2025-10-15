@@ -38,13 +38,22 @@ class LessonForm
                             ->preload()
                             ->placeholder('اختر قسم الدورة')
                             ->helperText('اختر القسم الذي ينتمي إليه هذه الدورة'),
-                            
+
                         Select::make('teacher_id')
                             ->label('المعلم')
                             ->options(User::where('type', 'teacher')->pluck('name', 'id'))
                             ->required()
                             ->searchable()
                             ->preload(),
+                        Select::make('location_type')
+                            ->label('نوع المكان')
+                            ->options([
+                                'online' => 'أونلاين',
+                                'offline' => 'حضوري',
+                            ])
+                            ->default('offline')
+                            ->required()
+                            ->live(),    
 
                         Textarea::make('description')
                             ->label('وصف الدورة')
@@ -53,7 +62,7 @@ class LessonForm
                             ->columnSpan('full'),
                         
                         
-                    ]) ->columnSpan('full') ->columns(2),
+                    ]) ->columnSpan('full') ->columns(3),
                 
                 Section::make('التوقيت والجدولة')
                     ->description('معلومات التوقيت والجدولة')
@@ -121,15 +130,7 @@ class LessonForm
                 Section::make('المكان والموقع')
                     ->description('تفاصيل مكان إقامة الدورة')
                     ->schema([
-                        Select::make('location_type')
-                            ->label('نوع المكان')
-                            ->options([
-                                'online' => 'أونلاين',
-                                'offline' => 'حضوري',
-                            ])
-                            ->default('offline')
-                            ->required()
-                            ->live(),
+                        
                         
                     ])->columns(2),
                 
