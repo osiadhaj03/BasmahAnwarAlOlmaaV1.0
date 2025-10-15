@@ -109,6 +109,14 @@ class LessonForm
                             ->native(false)
                             ->displayFormat('H:i')
                             ->after('start_time'),
+
+                        TextInput::make('max_students')
+                            ->label('العدد الأقصى للطلاب')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(1000)
+                            
+                            ->helperText('العدد الأقصى للطلاب في الدورة'),
                         
                         Select::make('status')
                             ->label('حالة الدورة')
@@ -125,27 +133,21 @@ class LessonForm
                         //    ->label('الدورة متكررة')
                         //    ->helperText('هل هذه الدورة تتكرر بانتظام؟')
                         //    ->default(false),
-                     ])->columns(2),
+                     ])->columnSpan('full')->columns(4),
                 
 
                 Section::make('إعدادات إضافية')
                     ->description('إعدادات وملاحظات إضافية')
                     ->schema([
-                        TextInput::make('max_students')
-                            ->label('العدد الأقصى للطلاب')
-                            ->numeric()
-                            ->minValue(1)
-                            ->maxValue(1000)
-                            
-                            ->helperText('العدد الأقصى للطلاب في الدورة'),
                         
                         Textarea::make('notes')
                             ->label('ملاحظات')
                             ->maxLength(1000)
                             ->rows(3)
                             ->helperText('ملاحظات إضافية حول الدورة')
-                            ->columnSpanFull(),
-                    ])->columns(1),
+                            ->columnSpanFull()
+                            ->columnSpan('full'),
+                    ])->columnSpan('full'),
             ]);
     }
 }
