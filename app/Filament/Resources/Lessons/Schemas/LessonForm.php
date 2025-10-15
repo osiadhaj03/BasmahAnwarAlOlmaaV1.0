@@ -81,22 +81,7 @@ class LessonForm
                             ->displayFormat('Y-m-d')
                             ->minDate(now())
                             ->afterOrEqual('start_date'),
-                        
-                        CheckboxList::make('lesson_days')
-                            ->label('أيام الدورة')
-                            ->options([
-                                'sunday' => 'الأحد',
-                                'monday' => 'الاثنين',
-                                'tuesday' => 'الثلاثاء',
-                                'wednesday' => 'الأربعاء',
-                                'thursday' => 'الخميس',
-                                'friday' => 'الجمعة',
-                                'saturday' => 'السبت',
-                            ])
-                            ->columns(3)
-                            ->required()
-                            ->helperText('اختر أيام الأسبوع التي سيتم فيها الدورة'),
-                        
+
                         TimePicker::make('start_time')
                             ->label('وقت البداية')
                             ->required()
@@ -109,6 +94,24 @@ class LessonForm
                             ->native(false)
                             ->displayFormat('H:i')
                             ->after('start_time'),
+                        
+                            CheckboxList::make('lesson_days')
+                            ->label('أيام الدورة')
+                            ->options([
+                                'sunday' => 'الأحد',
+                                'monday' => 'الاثنين',
+                                'tuesday' => 'الثلاثاء',
+                                'wednesday' => 'الأربعاء',
+                                'thursday' => 'الخميس',
+                                'friday' => 'الجمعة',
+                                'saturday' => 'السبت',
+                            ])
+                            //->columns(3)
+                            ->required()
+                            ->helperText('اختر أيام الأسبوع التي سيتم فيها الدورة')
+                            ->columnSpan('full'),
+                        
+                        
 
                         TextInput::make('max_students')
                             ->label('العدد الأقصى للطلاب')
