@@ -22,15 +22,7 @@ class LessonSectionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $navigationLabel = 'أقسام الدروس';
-
-    protected static ?string $modelLabel = 'قسم دروس';
-
-    protected static ?string $pluralModelLabel = 'أقسام الدروس';
-
-    protected static ?string $recordTitleAttribute = 'name';
-
-    protected static ?int $navigationSort = 1;
+    protected static ?string $recordTitleAttribute = 'LessonSection';
 
     public static function form(Schema $schema): Schema
     {
