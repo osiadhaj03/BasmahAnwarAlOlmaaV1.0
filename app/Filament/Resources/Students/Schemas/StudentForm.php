@@ -7,6 +7,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class StudentForm
@@ -15,50 +16,51 @@ class StudentForm
     {
         return $schema
             ->components([
-                Section::make('المعلومات الشخصية')
+                // القسم الأول: المعلومات الأساسية
+                Section::make('المعلومات الأساسية')
+                    ->description('المعلومات الشخصية الأساسية للطالب')
+                    ->collapsible()
                     ->schema([
                         TextInput::make('name')
                             ->label('الاسم الكامل')
                             ->required()
                             ->maxLength(255)
-                            ->placeholder('أدخل الاسم الكامل للطالب'),
+                            ->placeholder('أدخل الاسم الكامل للطالب')
+                            ->columnSpan('full'),
                         
-                        TextInput::make('email')
-                            ->label('البريد الإلكتروني')
-                            ->email()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255)
-                            ->placeholder('student@example.com'),
-
-                        TextInput::make('password')
-                            ->label('كلمة المرور')
-                            ->password()
-                            ->required()
-                            ->minLength(8)
-                            ->placeholder('أدخل كلمة مرور قوية')
-                            ->helperText('يجب أن تكون كلمة المرور 8 أحرف على الأقل'),
-
-                        TextInput::make('password_confirmation')
-                            ->label('تأكيد كلمة المرور')
-                            ->password()
-                            ->required()
-                            ->same('password')
-                            ->placeholder('أعد إدخال كلمة المرور'),
+                        Select::make('gender')
+                            ->label('الجنس')
+                            ->options([
+                                'male' => 'ذكر',
+                                'female' => 'أنثى',
+                            ])
+                            ->nullable()
+                            ->placeholder('اختر الجنس'),
                         
-                        TextInput::make('phone')
-                            ->label('رقم الهاتف')
-                            ->tel()
-                            ->maxLength(20)
-                            ->placeholder('+966 50 123 4567'),
-                        
-                        DatePicker::make('date_of_birth')
+                        DatePicker::make('birth_date')
                             ->label('تاريخ الميلاد')
                             ->maxDate(now()->subYears(5))
-                            ->displayFormat('Y-m-d'),
-                    ])
+                            ->displayFormat('Y-m-d')
+                            ->nullable(),
+
+                        TextInput::make('nationality')
+                            ->label('الجنسية')
+                            ->maxLength(100)
+                            ->placeholder('أدخل الجنسية'),
+
+                        Textarea::make('address')
+                            ->label('العنوان')
+                            ->maxLength(500)
+                            ->rows(3)
+                            ->placeholder('أدخل العنوان الكامل')
+                            ->columnSpan('full'),
+                    ])->columnSpan('full')
                     ->columns(2),
                 
+                // القسم الثاني: المعلومات الأكاديمية
                 Section::make('المعلومات الأكاديمية')
+                    ->description('المعلومات الدراسية والأكاديمية')
+                    ->collapsible()
                     ->schema([
                         TextInput::make('student_id')
                             ->label('الرقم الجامعي')
@@ -66,18 +68,81 @@ class StudentForm
                             ->maxLength(50)
                             ->placeholder('202312345')
                             ->helperText('الرقم الجامعي الفريد للطالب'),
-                    ])
+                        
+                        Select::make('academic_level')
+                            ->label('المستوى الأكاديمي')
+                            ->options([
+                                'bachelor' => 'بكالوريس',
+                                'master' => 'ماجستير',
+                                'doctorate' => 'دكتوراه',
+                                'intermediate_diploma' => 'دبلوم متوسط',
+                                'higher_diploma' => 'دبلوم عالي',
+                                'other' => 'أخرى',
+                            ])
+                            ->nullable()
+                            ->placeholder('اختر المستوى الأكاديمي'),
+                    ])->columnSpan('full') 
                     ->columns(2),
                 
-                Section::make('معلومات الاتصال')
+                // القسم الثالث: معلومات الحساب
+                Section::make('معلومات الحساب')
+                    ->description('إعدادات الحساب وكلمة المرور')
+                    ->collapsible()
                     ->schema([
-                        Textarea::make('address')
-                            ->label('العنوان')
-                            ->maxLength(500)
-                            ->rows(3)
-                            ->placeholder('أدخل العنوان الكامل'),
-                    ])
+                        TextInput::make('email')
+                            ->label('البريد الإلكتروني')
+                            ->email()
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255)
+                            ->placeholder('student@example.com'),
+                        
+                        TextInput::make('phone')
+                            ->label('رقم الهاتف')
+                            ->tel()
+                            ->maxLength(20)
+                            ->placeholder('+966 50 123 4567'),
+
+                        TextInput::make('password')
+                            ->label('كلمة المرور')
+                            ->password()
+                            ->required(fn (string $context): bool => $context === 'create')
+                            ->minLength(8)
+                            ->placeholder('أدخل كلمة مرور قوية')
+                            ->helperText('يجب أن تكون كلمة المرور 8 أحرف على الأقل')
+                            ->same('passwordConfirmation')
+                            ->dehydrated(fn ($state): bool => filled($state)),
+
+                        TextInput::make('passwordConfirmation')
+                            ->label('تأكيد كلمة المرور')
+                            ->password()
+                            ->required(fn (string $context): bool => $context === 'create')
+                            ->placeholder('أعد إدخال كلمة المرور')
+                            ->dehydrated(false),
+                        
+                        Select::make('is_active')
+                            ->label('حالة الحساب')
+                            ->options([
+                                true => 'نشط',
+                                false => 'غير نشط',
+                            ])
+                            ->default(true)
+                            ->required(),
+                    ])->columnSpan('full')
                     ->columns(2),
+                
+                // القسم الرابع: معلومات عامة
+                Section::make('معلومات عامة')
+                    ->description('النبذة الشخصية والمعلومات الإضافية')
+                    ->collapsible()
+                    ->schema([
+                        Textarea::make('bio')
+                            ->label('نبذة شخصية')
+                            ->maxLength(500)
+                            ->rows(4)
+                            ->placeholder('أدخل نبذة شخصية عن الطالب')
+                            ->columnSpan('full'),
+                    ])->columnSpan('full'),
             ]);
     }
 }

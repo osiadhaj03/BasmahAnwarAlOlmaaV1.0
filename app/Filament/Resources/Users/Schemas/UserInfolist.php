@@ -57,13 +57,14 @@ class UserInfolist
                             ->date()
                             ->placeholder('غير محدد'),
                         
-                        IconEntry::make('is_active')
-                            ->label('الحالة')
-                            ->boolean()
-                            ->trueIcon('heroicon-o-check-circle')
-                            ->falseIcon('heroicon-o-x-circle')
-                            ->trueColor('success')
-                            ->falseColor('danger'),
+                        TextEntry::make('nationality')
+                            ->label('الجنسية')
+                            ->placeholder('غير محدد'),
+                        
+                        TextEntry::make('address')
+                            ->label('العنوان')
+                            ->placeholder('غير محدد')
+                            ->columnSpanFull(),
                     ])->columns(2),
                 
                 Section::make('معلومات إضافية')
@@ -78,19 +79,38 @@ class UserInfolist
                             ->placeholder('غير محدد')
                             ->visible(fn ($record) => in_array($record->type, ['admin', 'teacher'])),
                         
-                        TextEntry::make('department')
-                            ->label('القسم')
-                            ->placeholder('غير محدد'),
-                        
+                        TextEntry::make('academic_level')
+                            ->label('المستوى الأكاديمي')
+                            ->placeholder('غير محدد')
+                            ->formatStateUsing(fn (?string $state): string => match ($state) {
+                                'bachelor' => 'بكالوريس',
+                                'master' => 'ماجستير',
+                                'doctorate' => 'دكتوراه',
+                                'intermediate_diploma' => 'دبلوم متوسط',
+                                'higher_diploma' => 'دبلوم عالي',
+                                'other' => 'أخرى',
+                                default => 'غير محدد',
+                            })
+                            ->visible(fn ($record) => in_array($record->type, ['student', 'teacher'])),
+                    ])->columns(2),
+                
+                Section::make('معلومات عامة')
+                    ->schema([
                         TextEntry::make('bio')
                             ->label('نبذة شخصية')
                             ->placeholder('لا توجد نبذة')
                             ->columnSpanFull(),
-                        
-                        TextEntry::make('address')
-                            ->label('العنوان')
-                            ->placeholder('غير محدد')
-                            ->columnSpanFull(),
+                    ]),
+                
+                Section::make('معلومات الحساب')
+                    ->schema([
+                        IconEntry::make('is_active')
+                            ->label('الحالة')
+                            ->boolean()
+                            ->trueIcon('heroicon-o-check-circle')
+                            ->falseIcon('heroicon-o-x-circle')
+                            ->trueColor('success')
+                            ->falseColor('danger'),
                     ])->columns(2),
                 
                 Section::make('معلومات النظام')
