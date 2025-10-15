@@ -109,10 +109,10 @@ class LessonForm
                             ->default('scheduled')
                             ->required(),
                         
-                        Toggle::make('is_recurring')
-                            ->label('الدورة متكررة')
-                            ->helperText('هل هذه الدورة تتكرر بانتظام؟')
-                            ->default(false),
+                        //Toggle::make('is_recurring')
+                        //    ->label('الدورة متكررة')
+                        //    ->helperText('هل هذه الدورة تتكرر بانتظام؟')
+                        //    ->default(false),
                      ])->columns(2),
                 
                 Section::make('المكان والموقع')
