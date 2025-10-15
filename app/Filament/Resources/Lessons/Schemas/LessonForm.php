@@ -106,7 +106,7 @@ class LessonForm
                                 'friday' => 'الجمعة',
                                 'saturday' => 'السبت',
                             ])
-                            //->columns(3)
+                            ->columns(1)
                             ->required()
                             ->helperText('اختر أيام الأسبوع التي سيتم فيها الدورة')
                             ->columnSpan('full'),
