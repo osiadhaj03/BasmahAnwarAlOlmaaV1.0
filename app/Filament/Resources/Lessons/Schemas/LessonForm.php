@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Lessons\Schemas;
 
+use App\Models\LessonSection;
 use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Schemas\Components\Section;
@@ -24,6 +25,14 @@ class LessonForm
                             ->label('عنوان الدرس')
                             ->required()
                             ->maxLength(255),
+                        
+                        Select::make('lesson_section_id')
+                            ->label('قسم الدرس')
+                            ->options(LessonSection::active()->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->placeholder('اختر قسم الدرس')
+                            ->helperText('اختر القسم الذي ينتمي إليه هذا الدرس'),
                         
                         Textarea::make('description')
                             ->label('وصف الدرس')

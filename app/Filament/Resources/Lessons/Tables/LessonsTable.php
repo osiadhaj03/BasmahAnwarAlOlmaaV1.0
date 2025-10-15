@@ -28,6 +28,14 @@ class LessonsTable
                     ->searchable()
                     ->sortable(),
                 
+                TextColumn::make('lessonSection.name')
+                    ->label('القسم')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('غير محدد')
+                    ->badge()
+                    ->color(fn ($record) => $record->lessonSection?->color ?? 'gray'),
+                
                 TextColumn::make('lesson_date')
                     ->label('تاريخ الدرس')
                     ->date('Y-m-d')
@@ -97,6 +105,12 @@ class LessonsTable
                 SelectFilter::make('teacher_id')
                     ->label('المعلم')
                     ->relationship('teacher', 'name')
+                    ->searchable()
+                    ->preload(),
+                
+                SelectFilter::make('lesson_section_id')
+                    ->label('القسم')
+                    ->relationship('lessonSection', 'name')
                     ->searchable()
                     ->preload(),
             ])

@@ -28,6 +28,12 @@ class LessonInfolist
                             ->label('المعلم')
                             ->weight('bold'),
                         
+                        TextEntry::make('lessonSection.name')
+                            ->label('القسم')
+                            ->badge()
+                            ->color(fn ($record) => $record->lessonSection?->color ?? 'gray')
+                            ->placeholder('غير محدد'),
+                        
                         TextEntry::make('location')
                             ->label('مكان الدرس')
                             ->placeholder('غير محدد'),

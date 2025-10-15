@@ -14,6 +14,7 @@ class Lesson extends Model
         'title',
         'description',
         'teacher_id',
+        'lesson_section_id',
         'lesson_date',
         'start_time',
         'end_time',
@@ -34,6 +35,11 @@ class Lesson extends Model
     public function teacher()
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function lessonSection()
+    {
+        return $this->belongsTo(LessonSection::class);
     }
 
     public function students()
