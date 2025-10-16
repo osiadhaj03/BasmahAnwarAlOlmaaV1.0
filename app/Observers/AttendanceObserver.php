@@ -12,6 +12,14 @@ class AttendanceObserver
      */
     public function creating(Attendance $attendance): void
     {
+        // التحقق من أن التسجيل اليدوي يتم في الوقت الفعلي للدورة
+        if ($attendance->attendance_method === 'manual' && $attendance->lesson) {
+            if (!$attendance->lesson->isCurrentlyInLessonTime()) {
+                $errorMessage = $attendance->lesson->getOutOfTimeErrorMessage();
+                throw new \Exception($errorMessage);
+            }
+        }
+
         // تعيين وقت التسجيل إذا لم يتم تحديده
         if (!$attendance->marked_at) {
             $attendance->marked_at = now();

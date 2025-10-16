@@ -91,6 +91,7 @@ class AttendanceRequest extends FormRequest
             // التحقق من أن الطالب مسجل في الدرس
             $lessonId = $this->input('lesson_id');
             $studentId = $this->input('student_id');
+            $attendanceMethod = $this->input('attendance_method');
             
             if ($lessonId && $studentId) {
                 $lesson = Lesson::find($lessonId);
@@ -102,6 +103,14 @@ class AttendanceRequest extends FormRequest
                     
                     if (!$isEnrolled) {
                         $validator->errors()->add('student_id', 'الطالب غير مسجل في هذا الدرس.');
+                    }
+
+                    // التحقق من أن التسجيل اليدوي يتم في الوقت الفعلي للدورة
+                    if ($attendanceMethod === 'manual') {
+                        if (!$lesson->isCurrentlyInLessonTime()) {
+                            $errorMessage = $lesson->getOutOfTimeErrorMessage();
+                            $validator->errors()->add('attendance_method', $errorMessage);
+                        }
                     }
                 }
             }

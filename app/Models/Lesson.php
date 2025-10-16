@@ -298,4 +298,67 @@ class Lesson extends Model
         // وإلا نعطي موعد الدرس التالي
         return $nextLesson ?: $now;
     }
+
+    /**
+     * التحقق من أن الوقت الحالي ضمن وقت الدورة الفعلي
+     * يُستخدم لمنع التسجيل اليدوي خارج أوقات الدورة
+     */
+    public function isCurrentlyInLessonTime()
+    {
+        $now = now();
+        
+        // التحقق من أن اليوم الحالي من أيام الدرس
+        $currentDayName = strtolower($now->format('l'));
+        
+        // تحويل lesson_days من JSON إلى array إذا كان string
+        $lessonDaysArray = is_string($this->lesson_days) 
+            ? json_decode($this->lesson_days, true) 
+            : ($this->lesson_days ?? []);
+            
+        $lessonDays = array_map('strtolower', $lessonDaysArray);
+        
+        if (!in_array($currentDayName, $lessonDays)) {
+            return false;
+        }
+        
+        // التحقق من أن الوقت الحالي ضمن فترة الدرس
+        $lessonStart = Carbon::parse($this->start_time);
+        $lessonEnd = Carbon::parse($this->end_time);
+        $currentTime = $now->format('H:i');
+        
+        return $currentTime >= $lessonStart->format('H:i') && $currentTime <= $lessonEnd->format('H:i');
+    }
+
+    /**
+     * الحصول على رسالة خطأ مناسبة عند محاولة التسجيل خارج وقت الدورة
+     */
+    public function getOutOfTimeErrorMessage()
+    {
+        $now = now();
+        $currentDayName = strtolower($now->format('l'));
+        $lessonDays = array_map('strtolower', $this->lesson_days ?? []);
+        
+        $daysMap = [
+            'sunday' => 'الأحد',
+            'monday' => 'الاثنين',
+            'tuesday' => 'الثلاثاء',
+            'wednesday' => 'الأربعاء',
+            'thursday' => 'الخميس',
+            'friday' => 'الجمعة',
+            'saturday' => 'السبت',
+        ];
+        
+        $arabicDays = array_map(function($day) use ($daysMap) {
+            return $daysMap[$day] ?? $day;
+        }, $lessonDays);
+        
+        $daysText = implode(', ', $arabicDays);
+        $timeText = Carbon::parse($this->start_time)->format('H:i') . ' - ' . Carbon::parse($this->end_time)->format('H:i');
+        
+        if (!in_array($currentDayName, $lessonDays)) {
+            return "لا يمكن تسجيل الحضور اليوم. أيام الدورة هي: {$daysText}";
+        } else {
+            return "لا يمكن تسجيل الحضور في هذا الوقت. وقت الدورة: {$timeText}";
+        }
+    }
 }

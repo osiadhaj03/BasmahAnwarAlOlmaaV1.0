@@ -9,6 +9,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Schema;
 
 class AttendanceForm
@@ -92,35 +93,38 @@ class AttendanceForm
                 Section::make('تفاصيل طريقة التسجيل')
                     ->description('معلومات حول كيفية تسجيل الحضور')
                     ->schema([
-                        TextInput::make('used_code')
-                            ->label('الكود المستخدم')
-                            ->placeholder('الكود المستخدم في التسجيل')
-                            ->maxLength(10),
-                        
-                        Select::make('attendance_method')
+
+                        TextInput::make('attendance_method')
                             ->label('طريقة التسجيل')
-                            ->options([
-                                'code' => 'بالكود',
-                                'manual' => 'يدوي',
-                                'auto' => 'تلقائي',
-                            ])
-                            ->default('code')
-                            ->required(),
+                            ->default('manual')
+                            ->disabled()
+                            ->dehydrated()
+                            ->helperText('التسجيل اليدوي فقط في هذه الصفحة'),
                         
                         DateTimePicker::make('marked_at')
                             ->label('وقت تسجيل الحضور')
                             ->native(false)
                             ->displayFormat('Y-m-d H:i')
                             ->default(now())
-                            ->required()
-                            ->helperText('يجب أن يكون وقت التسجيل ضمن أيام وأوقات الدرس المحددة'),
+                            ->disabled()
+                            ->dehydrated()
+                            ->helperText('يتم تسجيل الوقت الحالي تلقائياً عند الحفظ'),
                         
-                        Select::make('marked_by')
+                        TextInput::make('marked_by_name')
                             ->label('سجل بواسطة')
-                            ->options(User::whereIn('type', ['teacher', 'admin'])->pluck('name', 'id'))
-                            ->searchable()
-                            ->preload(),
-                    ])->columnSpan('full')->columns(2),
+                            ->default(function () {
+                                $user = auth()->user();
+                                return $user ? $user->name : 'غير محدد';
+                            })
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('يتم تعيين المستخدم الحالي تلقائياً'),
+                        
+                        Hidden::make('marked_by')
+                            ->default(function () {
+                                return auth()->id();
+                            }),
+                    ])->columnSpan('full')->columns(3),
                 
                 Section::make('ملاحظات إضافية')
                     ->description('ملاحظات حول الحضور')
