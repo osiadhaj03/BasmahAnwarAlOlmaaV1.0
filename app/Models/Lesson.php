@@ -96,6 +96,12 @@ class Lesson extends Model
         return implode(', ', $arabicDays);
     }
 
+    public function getTitleWithTeacherAttribute()
+    {
+        $teacherName = $this->teacher ? $this->teacher->name : 'غير محدد';
+        return $this->title . ' - ' . $teacherName;
+    }
+
     public function getFullDateTimeAttribute()
     {
         $dateRange = $this->start_date->format('Y-m-d');
