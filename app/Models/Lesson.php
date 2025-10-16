@@ -391,9 +391,9 @@ class Lesson extends Model
         $lessonEnd = Carbon::parse($this->end_time);
         $currentTime = Carbon::parse($now->format('H:i:s'));
         
-        // هامش 60 دقيقة قبل الدرس و 30 دقيقة بعد انتهاء الدرس
-        $allowedStart = $lessonStart->copy()->subMinutes(60);
-        $allowedEnd = $lessonEnd->copy()->addMinutes(30);
+        // هامش دقيقة واحدة قبل الدرس ودقيقة واحدة بعد انتهاء الدرس
+        $allowedStart = $lessonStart->copy()->subMinutes(1);
+        $allowedEnd = $lessonEnd->copy()->addMinutes(1);
         
         if ($currentTime->between($allowedStart, $allowedEnd)) {
             // الدرس نشط الآن أو قريب من وقته، إرجاع تاريخ ووقت اليوم
@@ -443,8 +443,8 @@ class Lesson extends Model
         $lessonEnd = Carbon::parse($this->end_time);
         $currentTime = Carbon::parse($now->format('H:i:s'));
         
-        $allowedStart = $lessonStart->copy()->subMinutes(60);
-        $allowedEnd = $lessonEnd->copy()->addMinutes(30);
+        $allowedStart = $lessonStart->copy()->subMinutes(1);
+        $allowedEnd = $lessonEnd->copy()->addMinutes(1);
         
         return [
             'status' => $currentTime->between($allowedStart, $allowedEnd) ? 'active' : 'inactive',
