@@ -80,3 +80,17 @@ Route::post('/create-test-data', function (\Illuminate\Http\Request $request) {
 
 // Student attendance input route
 Route::get('/student-attendance', \App\Livewire\StudentAttendanceInput::class)->name('student.attendance');
+
+// Timezone test route
+Route::get('/test-timezone', function () {
+    $now = now();
+    $utcTime = now('UTC');
+    
+    return response()->json([
+        'current_timezone' => config('app.timezone'),
+        'local_time' => $now->format('Y-m-d H:i:s T'),
+        'utc_time' => $utcTime->format('Y-m-d H:i:s T'),
+        'timezone_offset' => $now->format('P'),
+        'formatted_arabic' => $now->locale('ar')->translatedFormat('l، j F Y - H:i:s'),
+    ]);
+})->name('test.timezone');
