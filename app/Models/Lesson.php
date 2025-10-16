@@ -336,7 +336,13 @@ class Lesson extends Model
     {
         $now = now();
         $currentDayName = strtolower($now->format('l'));
-        $lessonDays = array_map('strtolower', $this->lesson_days ?? []);
+        
+        // تحويل lesson_days من JSON إلى array إذا كان string
+        $lessonDaysArray = is_string($this->lesson_days) 
+            ? json_decode($this->lesson_days, true) 
+            : ($this->lesson_days ?? []);
+            
+        $lessonDays = array_map('strtolower', $lessonDaysArray);
         
         $daysMap = [
             'sunday' => 'الأحد',
