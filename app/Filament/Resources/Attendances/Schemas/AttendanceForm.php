@@ -25,7 +25,19 @@ class AttendanceForm
                             ->options(Lesson::with('teacher')->get()->pluck('title_with_teacher', 'id'))
                             ->required()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, $set) {
+                                if ($state) {
+                                    $lesson = \App\Models\Lesson::find($state);
+                                    if ($lesson) {
+                                        $nextDateTime = $lesson->getNextLessonDateTime();
+                                        if ($nextDateTime) {
+                                            $set('attendance_date', $nextDateTime);
+                                        }
+                                    }
+                                }
+                            }),
                         
                         Select::make('student_id')
                             ->label('الطالب')
@@ -50,9 +62,32 @@ class AttendanceForm
                             ->required()
                             ->native(false)
                             ->displayFormat('Y-m-d H:i')
-                            ->default(now())
-                            ->helperText('يجب أن يكون التاريخ والوقت ضمن أيام وأوقات الدرس المحددة'),
-                    ])->columns(2),
+                            ->default(function ($get) {
+                                $lessonId = $get('lesson_id');
+                                if ($lessonId) {
+                                    $lesson = \App\Models\Lesson::find($lessonId);
+                                    if ($lesson) {
+                                        $nextDateTime = $lesson->getNextLessonDateTime();
+                                        return $nextDateTime ?: now();
+                                    }
+                                }
+                                return now();
+                            })
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                $lessonId = $get('lesson_id');
+                                if ($lessonId && !$state) {
+                                    $lesson = \App\Models\Lesson::find($lessonId);
+                                    if ($lesson) {
+                                        $nextDateTime = $lesson->getNextLessonDateTime();
+                                        if ($nextDateTime) {
+                                            $set('attendance_date', $nextDateTime);
+                                        }
+                                    }
+                                }
+                            })
+                            ->helperText('سيتم تعيين تاريخ ووقت الدرس القادم تلقائياً بناءً على جدول الدورة'),
+                    ])->columnSpan('full') ->columns(2),
                 
                 Section::make('تفاصيل طريقة التسجيل')
                     ->description('معلومات حول كيفية تسجيل الحضور')
@@ -85,7 +120,7 @@ class AttendanceForm
                             ->options(User::whereIn('type', ['teacher', 'admin'])->pluck('name', 'id'))
                             ->searchable()
                             ->preload(),
-                    ])->columns(2),
+                    ])->columnSpan('full')->columns(2),
                 
                 Section::make('ملاحظات إضافية')
                     ->description('ملاحظات حول الحضور')
@@ -93,9 +128,9 @@ class AttendanceForm
                         Textarea::make('notes')
                             ->label('ملاحظات')
                             ->maxLength(500)
-                            ->rows(3)
+                            ->rows(2)
                             ->columnSpanFull(),
-                    ])->columns(1),
+                    ])->columnSpan('full')->columns(1),
             ]);
     }
 }
