@@ -68,8 +68,8 @@ class AttendanceForm
                                 if ($lessonId) {
                                     $lesson = \App\Models\Lesson::find($lessonId);
                                     if ($lesson) {
-                                        $nextDateTime = $lesson->getNextLessonDateTime();
-                                        return $nextDateTime ?: now();
+                                        $bestDateTime = $lesson->getBestLessonDateTime();
+                                        return $bestDateTime ?: now();
                                     }
                                 }
                                 return now();
@@ -80,14 +80,14 @@ class AttendanceForm
                                 if ($lessonId && !$state) {
                                     $lesson = \App\Models\Lesson::find($lessonId);
                                     if ($lesson) {
-                                        $nextDateTime = $lesson->getNextLessonDateTime();
-                                        if ($nextDateTime) {
-                                            $set('attendance_date', $nextDateTime);
+                                        $bestDateTime = $lesson->getBestLessonDateTime();
+                                        if ($bestDateTime) {
+                                            $set('attendance_date', $bestDateTime);
                                         }
                                     }
                                 }
                             })
-                            ->helperText('سيتم تعيين تاريخ ووقت الدرس القادم تلقائياً بناءً على جدول الدورة'),
+                            ->helperText('سيتم تعيين تاريخ ووقت الدرس الحالي إذا كان نشطاً، وإلا فالدرس القادم تلقائياً'),
                     ])->columnSpan('full') ->columns(4),
                 
                 Section::make('تفاصيل طريقة التسجيل')

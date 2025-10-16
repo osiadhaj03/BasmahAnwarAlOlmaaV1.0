@@ -367,4 +367,56 @@ class Lesson extends Model
             return "لا يمكن تسجيل الحضور في هذا الوقت. وقت الدورة: {$timeText}";
         }
     }
+
+    /**
+     * حساب التاريخ والوقت للدرس الحالي إذا كان نشطاً الآن
+     */
+    public function getCurrentLessonDateTime()
+    {
+        if (!$this->lesson_days || !is_array($this->lesson_days)) {
+            return null;
+        }
+
+        $now = now();
+        $currentDayName = strtolower($now->format('l')); // sunday, monday, etc.
+        
+        // التحقق من أن اليوم الحالي هو يوم درس
+        $lessonDays = array_map('strtolower', $this->lesson_days);
+        if (!in_array($currentDayName, $lessonDays)) {
+            return null; // ليس يوم درس
+        }
+
+        // التحقق من أن الوقت الحالي ضمن وقت الدرس أو قريب منه (مع هامش 30 دقيقة قبل وبعد)
+        $lessonStart = Carbon::parse($this->start_time);
+        $lessonEnd = Carbon::parse($this->end_time);
+        $currentTime = $now->format('H:i:s');
+        
+        // إضافة هامش 30 دقيقة قبل وبعد الدرس
+        $allowedStart = $lessonStart->copy()->subMinutes(30);
+        $allowedEnd = $lessonEnd->copy()->addMinutes(30);
+        
+        $currentTimeCarbon = Carbon::parse($currentTime);
+        
+        if ($currentTimeCarbon->between($allowedStart, $allowedEnd)) {
+            // الدرس نشط الآن، إرجاع تاريخ ووقت اليوم
+            return $now->setTime($lessonStart->hour, $lessonStart->minute, 0);
+        }
+        
+        return null; // الدرس غير نشط الآن
+    }
+
+    /**
+     * الحصول على أفضل تاريخ ووقت للدرس (الحالي أولاً، ثم القادم)
+     */
+    public function getBestLessonDateTime()
+    {
+        // محاولة الحصول على الدرس الحالي أولاً
+        $currentDateTime = $this->getCurrentLessonDateTime();
+        if ($currentDateTime) {
+            return $currentDateTime;
+        }
+        
+        // إذا لم يكن هناك درس حالي، الحصول على الدرس القادم
+        return $this->getNextLessonDateTime();
+    }
 }
