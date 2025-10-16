@@ -18,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Resma\FilamentAwinTheme\FilamentAwinTheme;
 
 class AdminPanelProvider extends PanelProvider
@@ -32,7 +33,23 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->plugin(FilamentAwinTheme::make())
+            ->plugins([
+                FilamentAwinTheme::make(),
+                BreezyCore::make()
+                    ->myProfile(
+                        shouldRegisterUserMenu: true,
+                        shouldRegisterNavigation: false,
+                        hasAvatars: true,
+                        slug: 'my-profile'
+                    )
+                    ->enableTwoFactorAuthentication(
+                        force: false,
+                    )
+                    ->enableSanctumTokens(
+                        permissions: ['create', 'view', 'update', 'delete']
+                    )
+                    ->enableBrowserSessions(),
+            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

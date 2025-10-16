@@ -6,11 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens, TwoFactorAuthenticatable;
 
     protected $fillable = [
         'name',
@@ -30,11 +34,17 @@ class User extends Authenticatable implements FilamentUser
         'nationality',
         'is_active',
         'last_login_at',
+        'avatar_url',
+        'two_factor_confirmed_at',
+        'two_factor_recovery_codes',
+        'two_factor_secret',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_recovery_codes',
+        'two_factor_secret',
     ];
 
     protected $casts = [
@@ -44,6 +54,7 @@ class User extends Authenticatable implements FilamentUser
         'hire_date' => 'date',
         'last_login_at' => 'datetime',
         'is_active' => 'boolean',
+        'two_factor_confirmed_at' => 'datetime',
     ];
 
     // Filament Access Control
@@ -104,6 +115,12 @@ class User extends Authenticatable implements FilamentUser
     public function getFullNameAttribute()
     {
         return $this->name;
+    }
+
+    // Filament Avatar Support
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url ? Storage::url($this->avatar_url) : null;
     }
 
     // Scopes
