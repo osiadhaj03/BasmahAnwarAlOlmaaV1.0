@@ -46,11 +46,12 @@ class AttendanceForm
                             ->required(),
                         
                         DateTimePicker::make('attendance_date')
-                            ->label('تاريخ ووقت الحضور')
+                            ->label('تاريخ الحضور')
                             ->required()
                             ->native(false)
                             ->displayFormat('Y-m-d H:i')
-                            ->default(now()),
+                            ->default(now())
+                            ->helperText('يجب أن يكون التاريخ والوقت ضمن أيام وأوقات الدرس المحددة'),
                     ])->columns(2),
                 
                 Section::make('تفاصيل طريقة التسجيل')
@@ -72,10 +73,12 @@ class AttendanceForm
                             ->required(),
                         
                         DateTimePicker::make('marked_at')
-                            ->label('وقت التسجيل')
+                            ->label('وقت تسجيل الحضور')
                             ->native(false)
                             ->displayFormat('Y-m-d H:i')
-                            ->default(now()),
+                            ->default(now())
+                            ->required()
+                            ->helperText('يجب أن يكون وقت التسجيل ضمن أيام وأوقات الدرس المحددة'),
                         
                         Select::make('marked_by')
                             ->label('سجل بواسطة')

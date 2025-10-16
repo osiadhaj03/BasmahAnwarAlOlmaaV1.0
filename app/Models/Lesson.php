@@ -157,4 +157,145 @@ class Lesson extends Model
     {
         return $query->where('lesson_date', now()->toDateString());
     }
+
+    /**
+     * حساب التاريخ والوقت للدرس التالي بناءً على أيام الدرس المحددة
+     */
+    public function getNextLessonDateTime()
+    {
+        if (!$this->lesson_days || !is_array($this->lesson_days)) {
+            return null;
+        }
+
+        $today = now();
+        $currentDayName = strtolower($today->format('l')); // sunday, monday, etc.
+        
+        // تحويل أيام الأسبوع إلى أرقام (0 = Sunday, 6 = Saturday)
+        $dayNumbers = [];
+        $dayMap = [
+            'sunday' => 0,
+            'monday' => 1,
+            'tuesday' => 2,
+            'wednesday' => 3,
+            'thursday' => 4,
+            'friday' => 5,
+            'saturday' => 6,
+        ];
+
+        foreach ($this->lesson_days as $day) {
+            if (isset($dayMap[strtolower($day)])) {
+                $dayNumbers[] = $dayMap[strtolower($day)];
+            }
+        }
+
+        if (empty($dayNumbers)) {
+            return null;
+        }
+
+        sort($dayNumbers); // ترتيب الأيام
+
+        $currentDayNumber = $today->dayOfWeek;
+        $nextLessonDay = null;
+
+        // البحث عن اليوم التالي للدرس
+        foreach ($dayNumbers as $dayNumber) {
+            if ($dayNumber > $currentDayNumber) {
+                $nextLessonDay = $dayNumber;
+                break;
+            }
+        }
+
+        // إذا لم نجد يوم في نفس الأسبوع، نأخذ أول يوم من الأسبوع التالي
+        if ($nextLessonDay === null) {
+            $nextLessonDay = $dayNumbers[0];
+        }
+
+        // حساب التاريخ
+        $daysToAdd = $nextLessonDay - $currentDayNumber;
+        if ($daysToAdd <= 0) {
+            $daysToAdd += 7; // الأسبوع التالي
+        }
+
+        $nextLessonDate = $today->copy()->addDays($daysToAdd);
+
+        // دمج التاريخ مع وقت بداية الدرس
+        $startTime = Carbon::parse($this->start_time);
+        $nextLessonDateTime = $nextLessonDate->copy()
+            ->setHour($startTime->hour)
+            ->setMinute($startTime->minute)
+            ->setSecond(0);
+
+        return $nextLessonDateTime;
+    }
+
+    /**
+     * التحقق من أن التاريخ والوقت المحدد يقع في أوقات الدرس
+     */
+    public function isValidLessonDateTime($dateTime)
+    {
+        if (!$this->lesson_days || !is_array($this->lesson_days)) {
+            return false;
+        }
+
+        $checkDate = Carbon::parse($dateTime);
+        $dayName = strtolower($checkDate->format('l'));
+
+        // التحقق من أن اليوم من أيام الدرس
+        $lessonDays = array_map('strtolower', $this->lesson_days);
+        if (!in_array($dayName, $lessonDays)) {
+            return false;
+        }
+
+        // التحقق من أن الوقت ضمن فترة الدرس
+        $lessonStart = Carbon::parse($this->start_time);
+        $lessonEnd = Carbon::parse($this->end_time);
+        $checkTime = $checkDate->format('H:i');
+
+        return $checkTime >= $lessonStart->format('H:i') && $checkTime <= $lessonEnd->format('H:i');
+    }
+
+    /**
+     * تحديد حالة الحضور بناءً على وقت التسجيل
+     */
+    public function getAttendanceStatus($registrationTime)
+    {
+        if (!$this->isValidLessonDateTime($registrationTime)) {
+            return 'absent'; // خارج أوقات الدرس
+        }
+
+        $regTime = Carbon::parse($registrationTime);
+        $lessonStart = Carbon::parse($this->start_time);
+        
+        // إنشاء تاريخ كامل لبداية الدرس في نفس يوم التسجيل
+        $lessonStartDateTime = $regTime->copy()
+            ->setHour($lessonStart->hour)
+            ->setMinute($lessonStart->minute)
+            ->setSecond(0);
+
+        // إذا سجل قبل أو في وقت بداية الدرس + 15 دقيقة = حاضر
+        $lateThreshold = $lessonStartDateTime->copy()->addMinutes(15);
+        
+        if ($regTime <= $lateThreshold) {
+            return 'present';
+        } else {
+            return 'late';
+        }
+    }
+
+    /**
+     * الحصول على التاريخ والوقت الافتراضي لتسجيل الحضور
+     */
+    public function getDefaultAttendanceDateTime()
+    {
+        $nextLesson = $this->getNextLessonDateTime();
+        
+        // إذا كان اليوم الحالي من أيام الدرس والوقت الحالي ضمن فترة الدرس
+        $now = now();
+        if ($this->isValidLessonDateTime($now)) {
+            return $now;
+        }
+        
+        // وإلا نعطي موعد الدرس التالي
+        return $nextLesson ?: $now;
+    }
 }

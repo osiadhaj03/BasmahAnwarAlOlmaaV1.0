@@ -84,4 +84,67 @@ class Attendance extends Model
     {
         return $query->where('student_id', $studentId);
     }
+
+    // وظائف مساعدة إضافية
+    public function isLate()
+    {
+        return $this->status === 'late';
+    }
+
+    public function isPresent()
+    {
+        return $this->status === 'present';
+    }
+
+    public function isAbsent()
+    {
+        return $this->status === 'absent';
+    }
+
+    public function isExcused()
+    {
+        return $this->status === 'excused';
+    }
+
+    public function wasMarkedByCode()
+    {
+        return $this->attendance_method === 'code' && !empty($this->used_code);
+    }
+
+    public function getTimeDifferenceFromLessonStart()
+    {
+        if (!$this->lesson || !$this->attendance_date) {
+            return null;
+        }
+
+        $lessonDateTime = $this->lesson->getNextLessonDateTime();
+        if (!$lessonDateTime) {
+            return null;
+        }
+
+        return $this->attendance_date->diffInMinutes($lessonDateTime, false);
+    }
+
+    // التحقق من صحة وقت التسجيل
+    public function isValidAttendanceTime()
+    {
+        if (!$this->lesson || !$this->attendance_date) {
+            return false;
+        }
+
+        return $this->lesson->isValidLessonDateTime($this->attendance_date);
+    }
+
+    // تحديد الحالة تلقائياً بناءً على وقت التسجيل
+    public function autoSetStatus()
+    {
+        if (!$this->lesson || !$this->attendance_date) {
+            return;
+        }
+
+        $suggestedStatus = $this->lesson->getAttendanceStatus($this->attendance_date);
+        if ($suggestedStatus && $this->status !== $suggestedStatus) {
+            $this->status = $suggestedStatus;
+        }
+    }
 }
