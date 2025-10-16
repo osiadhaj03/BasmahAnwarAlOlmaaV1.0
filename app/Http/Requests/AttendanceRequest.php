@@ -93,12 +93,13 @@ class AttendanceRequest extends FormRequest
             $studentId = $this->input('student_id');
             $attendanceMethod = $this->input('attendance_method');
             
+
             if ($lessonId && $studentId) {
                 $lesson = Lesson::find($lessonId);
                 if ($lesson) {
                     $isEnrolled = $lesson->students()
-                        ->where('user_id', $studentId)
-                        ->wherePivot('enrollment_status', 'enrolled')
+                        ->where('lesson_student.student_id', $studentId)
+                        ->wherePivot('enrollment_status', 'active')
                         ->exists();
                     
                     if (!$isEnrolled) {
