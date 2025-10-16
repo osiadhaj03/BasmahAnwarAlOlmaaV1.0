@@ -386,20 +386,18 @@ class Lesson extends Model
             return null; // ليس يوم درس
         }
 
-        // التحقق من أن الوقت الحالي ضمن وقت الدرس أو قريب منه (مع هامش 30 دقيقة قبل وبعد)
+        // التحقق من أن الوقت الحالي ضمن وقت الدرس أو قريب منه
         $lessonStart = Carbon::parse($this->start_time);
         $lessonEnd = Carbon::parse($this->end_time);
-        $currentTime = $now->format('H:i:s');
+        $currentTime = Carbon::parse($now->format('H:i:s'));
         
-        // إضافة هامش 30 دقيقة قبل وبعد الدرس
-        $allowedStart = $lessonStart->copy()->subMinutes(30);
+        // هامش 60 دقيقة قبل الدرس و 30 دقيقة بعد انتهاء الدرس
+        $allowedStart = $lessonStart->copy()->subMinutes(60);
         $allowedEnd = $lessonEnd->copy()->addMinutes(30);
         
-        $currentTimeCarbon = Carbon::parse($currentTime);
-        
-        if ($currentTimeCarbon->between($allowedStart, $allowedEnd)) {
-            // الدرس نشط الآن، إرجاع تاريخ ووقت اليوم
-            return $now->setTime($lessonStart->hour, $lessonStart->minute, 0);
+        if ($currentTime->between($allowedStart, $allowedEnd)) {
+            // الدرس نشط الآن أو قريب من وقته، إرجاع تاريخ ووقت اليوم
+            return $now->copy()->setTime($lessonStart->hour, $lessonStart->minute, 0);
         }
         
         return null; // الدرس غير نشط الآن
@@ -418,5 +416,46 @@ class Lesson extends Model
         
         // إذا لم يكن هناك درس حالي، الحصول على الدرس القادم
         return $this->getNextLessonDateTime();
+    }
+
+    /**
+     * دالة مساعدة لتوضيح حالة الدرس الحالي (للاختبار والتطوير)
+     */
+    public function getCurrentLessonStatus()
+    {
+        if (!$this->lesson_days || !is_array($this->lesson_days)) {
+            return ['status' => 'no_days', 'message' => 'لا توجد أيام محددة للدرس'];
+        }
+
+        $now = now();
+        $currentDayName = strtolower($now->format('l'));
+        $lessonDays = array_map('strtolower', $this->lesson_days);
+        
+        if (!in_array($currentDayName, $lessonDays)) {
+            return [
+                'status' => 'wrong_day', 
+                'message' => "اليوم الحالي ({$currentDayName}) ليس من أيام الدرس",
+                'lesson_days' => $lessonDays
+            ];
+        }
+
+        $lessonStart = Carbon::parse($this->start_time);
+        $lessonEnd = Carbon::parse($this->end_time);
+        $currentTime = Carbon::parse($now->format('H:i:s'));
+        
+        $allowedStart = $lessonStart->copy()->subMinutes(60);
+        $allowedEnd = $lessonEnd->copy()->addMinutes(30);
+        
+        return [
+            'status' => $currentTime->between($allowedStart, $allowedEnd) ? 'active' : 'inactive',
+            'current_time' => $currentTime->format('H:i:s'),
+            'lesson_start' => $lessonStart->format('H:i:s'),
+            'lesson_end' => $lessonEnd->format('H:i:s'),
+            'allowed_start' => $allowedStart->format('H:i:s'),
+            'allowed_end' => $allowedEnd->format('H:i:s'),
+            'is_in_range' => $currentTime->between($allowedStart, $allowedEnd),
+            'current_day' => $currentDayName,
+            'lesson_days' => $lessonDays
+        ];
     }
 }

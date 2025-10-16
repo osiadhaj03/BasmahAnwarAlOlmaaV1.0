@@ -94,3 +94,24 @@ Route::get('/test-timezone', function () {
         'formatted_arabic' => $now->locale('ar')->translatedFormat('l، j F Y - H:i:s'),
     ]);
 })->name('test.timezone');
+
+Route::get('/test-lesson-status/{lessonId?}', function ($lessonId = null) {
+    if (!$lessonId) {
+        $lesson = \App\Models\Lesson::first();
+    } else {
+        $lesson = \App\Models\Lesson::find($lessonId);
+    }
+    
+    if (!$lesson) {
+        return response()->json(['error' => 'لا يوجد درس']);
+    }
+    
+    return response()->json([
+        'lesson_id' => $lesson->id,
+        'lesson_title' => $lesson->title,
+        'current_status' => $lesson->getCurrentLessonStatus(),
+        'current_lesson_datetime' => $lesson->getCurrentLessonDateTime()?->format('Y-m-d H:i:s'),
+        'next_lesson_datetime' => $lesson->getNextLessonDateTime()?->format('Y-m-d H:i:s'),
+        'best_lesson_datetime' => $lesson->getBestLessonDateTime()?->format('Y-m-d H:i:s'),
+    ]);
+});
