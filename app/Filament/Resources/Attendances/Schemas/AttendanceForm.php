@@ -87,7 +87,7 @@ class AttendanceForm
                                 }
                             })
                             ->helperText('سيتم تعيين تاريخ ووقت الدرس القادم تلقائياً بناءً على جدول الدورة'),
-                    ])->columnSpan('full') ->columns(2),
+                    ])->columnSpan('full') ->columns(4),
                 
                 Section::make('تفاصيل طريقة التسجيل')
                     ->description('معلومات حول كيفية تسجيل الحضور')
