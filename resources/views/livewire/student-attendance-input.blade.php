@@ -138,7 +138,7 @@
                             <div>
                                 <h4 class="font-semibold text-gray-800">{{ $attendance->lesson->title ?? 'درس غير محدد' }}</h4>
                                 <p class="text-sm text-gray-600">
-                                    تاريخ الحضور: {{ $attendance->attended_at ? $attendance->attended_at->format('Y-m-d H:i') : 'غير محدد' }}
+                                    تاريخ الحضور: {{ $attendance->attendance_date ? $attendance->attendance_date->format('Y-m-d H:i') : 'غير محدد' }}
                                 </p>
                                 <p class="text-xs text-gray-500">
                                     الكود المستخدم: {{ $attendance->attendanceCode->code ?? 'غير محدد' }}

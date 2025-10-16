@@ -98,7 +98,7 @@ class StudentAttendanceInput extends Component
                 'student_id' => $student->id,
                 'attendance_code_id' => $code->id,
                 'status' => 'present',
-                'attended_at' => now(),
+                'attendance_date' => now(),
                 'notes' => 'تم التسجيل عبر الكود: ' . $this->attendanceCode
             ]);
             

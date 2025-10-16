@@ -41,15 +41,15 @@ class AttendanceController extends Controller
         }
 
         // Filter by date range
-        if ($request->has('from_date')) {
-            $query->whereDate('attended_at', '>=', $request->from_date);
+        if ($request->from_date) {
+            $query->whereDate('attendance_date', '>=', $request->from_date);
         }
-
-        if ($request->has('to_date')) {
-            $query->whereDate('attended_at', '<=', $request->to_date);
+        
+        if ($request->to_date) {
+            $query->whereDate('attendance_date', '<=', $request->to_date);
         }
-
-        $attendances = $query->orderBy('attended_at', 'desc')->paginate(20);
+        
+        $attendances = $query->orderBy('attendance_date', 'desc')->paginate(20);
 
         return response()->json([
             'success' => true,
@@ -139,7 +139,7 @@ class AttendanceController extends Controller
                 'lesson_id' => $attendanceCode->lesson_id,
                 'attendance_code_id' => $attendanceCode->id,
                 'status' => $status,
-                'attended_at' => now(),
+                'attendance_date' => now(),
             ]);
 
             // Increment usage count
@@ -203,7 +203,7 @@ class AttendanceController extends Controller
 
             $validated = $request->validate([
                 'status' => 'required|in:present,absent,late',
-                'attended_at' => 'nullable|date',
+                'attendance_date' => 'nullable|date',
             ]);
 
             $attendance->update($validated);
@@ -282,7 +282,7 @@ class AttendanceController extends Controller
                 'attendance_percentage' => $attendancePercentage,
                 'recent_attendances' => Attendance::where('lesson_id', $lessonId)
                     ->with(['student', 'attendanceCode'])
-                    ->orderBy('attended_at', 'desc')
+                    ->orderBy('attendance_date', 'desc')
                     ->limit(10)
                     ->get()
             ];
@@ -326,7 +326,7 @@ class AttendanceController extends Controller
                 'attendance_percentage' => $attendancePercentage,
                 'recent_attendances' => Attendance::where('student_id', $studentId)
                     ->with(['lesson', 'attendanceCode'])
-                    ->orderBy('attended_at', 'desc')
+                    ->orderBy('attendance_date', 'desc')
                     ->limit(10)
                     ->get()
             ];
