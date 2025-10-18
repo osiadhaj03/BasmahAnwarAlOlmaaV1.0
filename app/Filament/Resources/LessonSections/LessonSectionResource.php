@@ -24,6 +24,13 @@ class LessonSectionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'أقسام الدورات';
 
+    
+    protected static ?string $navigationLabel = 'أقسام الدورات';
+    
+    protected static ?string $modelLabel = 'قسم دورة';
+    
+    protected static ?string $pluralModelLabel = 'أقسام الدورات';
+
     public static function form(Schema $schema): Schema
     {
         return LessonSectionForm::configure($schema);
