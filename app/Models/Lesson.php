@@ -72,6 +72,11 @@ class Lesson extends Model
         return $this->hasMany(AttendanceCode::class)->where('is_active', true);
     }
 
+    public function lectures()
+    {
+        return $this->hasMany(Lecture::class)->orderBy('lecture_number');
+    }
+
     // Helper methods
     public function getLessonDaysArabicAttribute()
     {
