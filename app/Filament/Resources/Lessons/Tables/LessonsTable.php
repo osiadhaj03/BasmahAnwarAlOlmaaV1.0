@@ -18,7 +18,7 @@ class LessonsTable
         return $table
             ->columns([
                 TextColumn::make('title')
-                    ->label('عنوان الدرس')
+                    ->label('عنوان الدورة')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
@@ -48,7 +48,7 @@ class LessonsTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 
                 TextColumn::make('lesson_days_arabic')
-                    ->label('أيام الدرس')
+                    ->label('أيام الدورة')
                     ->placeholder('غير محدد')
                     ->toggleable(isToggledHiddenByDefault: true),
                 
@@ -128,7 +128,7 @@ class LessonsTable
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label('حالة الدرس')
+                    ->label('حالة الدورة')
                     ->options([
                         'active' => 'نشط',
                         'cancelled' => 'ملغي',
@@ -155,7 +155,7 @@ class LessonsTable
                     ]),
                 
                 SelectFilter::make('is_recurring')
-                    ->label('الدروس المتكررة')
+                    ->label('الدورات المتكررة')
                     ->options([
                         1 => 'متكرر',
                         0 => 'غير متكرر',

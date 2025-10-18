@@ -22,7 +22,7 @@ class LessonSectionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'LessonSection';
+    protected static ?string $recordTitleAttribute = 'أقسام الدورات';
 
     public static function form(Schema $schema): Schema
     {

@@ -12,15 +12,15 @@ class LessonInfolist
     {
         return $schema
             ->components([
-                Section::make('معلومات الدرس الأساسية')
-                    ->description('المعلومات الأساسية للدرس')
+                Section::make('معلومات الدورة الأساسية')
+                    ->description('المعلومات الأساسية للدورة')
                     ->schema([
                         TextEntry::make('title')
-                            ->label('عنوان الدرس')
+                            ->label('عنوان الدورة')
                             ->weight('bold'),
                         
                         TextEntry::make('description')
-                            ->label('وصف الدرس')
+                            ->label('وصف الدورة')
                             ->placeholder('لا يوجد وصف')
                             ->columnSpanFull(),
                         
@@ -35,7 +35,7 @@ class LessonInfolist
                             ->placeholder('غير محدد'),
                         
                         TextEntry::make('location')
-                            ->label('مكان الدرس')
+                            ->label('مكان الدورة')
                             ->placeholder('غير محدد'),
                     ])->columns(2),
                 
@@ -43,7 +43,7 @@ class LessonInfolist
                     ->description('معلومات التوقيت والحالة')
                     ->schema([
                         TextEntry::make('lesson_date')
-                            ->label('تاريخ الدرس')
+                            ->label('تاريخ الدورة')
                             ->date('Y-m-d'),
                         
                         TextEntry::make('start_time')
@@ -55,7 +55,7 @@ class LessonInfolist
                             ->time('H:i'),
                         
                         TextEntry::make('status')
-                            ->label('حالة الدرس')
+                            ->label('حالة الدورة')
                             ->badge()
                             ->formatStateUsing(fn (string $state): string => match ($state) {
                                 'active' => 'نشط',
@@ -85,7 +85,7 @@ class LessonInfolist
                     ])->columns(1),
                 
                 Section::make('الإحصائيات')
-                    ->description('إحصائيات الدرس')
+                    ->description('إحصائيات الدورة')
                     ->schema([
                         TextEntry::make('attendances_count')
                             ->label('عدد الحضور')

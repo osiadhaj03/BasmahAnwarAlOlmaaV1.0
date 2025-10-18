@@ -24,11 +24,11 @@ class LessonResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-academic-cap';
     
-    protected static ?string $navigationLabel = 'الدروس';
+    protected static ?string $navigationLabel = 'الدورات';
     
-    protected static ?string $modelLabel = 'درس';
+    protected static ?string $modelLabel = 'دورة';
     
-    protected static ?string $pluralModelLabel = 'الدروس';
+    protected static ?string $pluralModelLabel = 'الدورات';
     
     protected static ?int $navigationSort = 2;
 
@@ -58,12 +58,12 @@ class LessonResource extends Resource
     {
         $query = parent::getEloquentQuery();
         
-        // إذا كان المستخدم معلم، عرض دروسه فقط
+        // إذا كان المستخدم معلم، عرض دوراته فقط
         if (Auth::check() && Auth::user()->type === 'teacher') {
             $query->where('teacher_id', Auth::id());
         }
         
-        // إذا كان المستخدم طالب، عرض الدروس المسجل فيها فقط
+        // إذا كان المستخدم طالب، عرض الدورات المسجل فيها فقط
         if (Auth::check() && Auth::user()->type === 'student') {
             $query->whereHas('students', function ($studentQuery) {
                 $studentQuery->where('student_id', Auth::id());
