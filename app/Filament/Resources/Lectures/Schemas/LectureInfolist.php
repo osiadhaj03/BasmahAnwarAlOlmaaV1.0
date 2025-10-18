@@ -77,11 +77,7 @@ class LectureInfolist
                             ->label('ملاحظات')
                             ->columnSpanFull(),
 
-                        TextEntry::make('recording_url')
-                            ->label('رابط تسجيل المحاضرة')
-                            ->url()
-                            ->openUrlInNewTab()
-                            ->columnSpanFull(),
+                        
                     ])
                     ->columns(2),
 

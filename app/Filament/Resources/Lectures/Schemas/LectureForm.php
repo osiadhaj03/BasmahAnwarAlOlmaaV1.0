@@ -26,12 +26,6 @@ class LectureForm
                             ->label('عنوان المحاضرة')
                             ->required()
                             ->maxLength(255),
-
-                        Textarea::make('description')
-                            ->label('وصف المحاضرة')
-                            ->rows(3)
-                            ->columnSpanFull(),
-
                         Select::make('lesson_id')
                             ->label('الدورة')
                             ->options(Lesson::all()->pluck('title', 'id'))
@@ -45,8 +39,15 @@ class LectureForm
                             ->default(1)
                             ->required()
                             ->minValue(1),
-                    ])
-                    ->columns(2),
+
+                        Textarea::make('description')
+                            ->label('وصف المحاضرة')
+                            ->rows(3)
+                            ->columnSpanFull()
+                            ->columnSpanFull(),
+
+                        
+                    ])->columnSpan('full')->columns(3),
 
                 Section::make('التوقيت والمكان')
                     ->description('معلومات التوقيت والمكان')
@@ -62,41 +63,58 @@ class LectureForm
                             ->required()
                             ->minValue(1),
 
-                        TextInput::make('location')
+                        Select::make('location')
                             ->label('مكان المحاضرة')
-                            ->maxLength(255),
-
-                        Select::make('status')
-                            ->label('حالة المحاضرة')
                             ->options([
-                                'scheduled' => 'مجدولة',
-                                'ongoing' => 'جارية',
-                                'completed' => 'مكتملة',
-                                'cancelled' => 'ملغية',
+                                'وجاهي' => 'وجاهي',
+                                'اونلاين' => 'اونلاين',
                             ])
-                            ->default('scheduled')
+                            ->default('وجاهي')
                             ->required(),
-                    ])
+
+                        TextInput::make('status')
+                            ->label('حالة المحاضرة')
+                            ->disabled()
+                            ->dehydrateStateUsing(function ($state, $get) {
+                                $lectureDate = $get('lecture_date');
+                                $duration = (int) $get('duration_minutes');
+                                if (!$lectureDate) {
+                                    return 'scheduled';
+                                }
+                                $start = \Carbon\Carbon::parse($lectureDate);
+                                $end = $start->copy()->addMinutes($duration);
+                                $now = now();
+
+                                if ($now->lt($start)) {
+                                    return 'scheduled';
+                                } elseif ($now->gte($start) && $now->lte($end)) {
+                                    return 'ongoing';
+                                } else {
+                                    return 'completed';
+                                }
+                            })
+                            ->required(),
+                    ])->columnSpan('full')
                     ->columns(2),
 
                 Section::make('إعدادات إضافية')
                     ->description('الإعدادات والملاحظات')
                     ->schema([
-                        Toggle::make('is_mandatory')
-                            ->label('محاضرة إجبارية')
-                            ->default(true),
+                        //Toggle::make('is_mandatory')
+                        //    ->label('محاضرة إجبارية')
+                        //    ->default(true),
 
                         Textarea::make('notes')
                             ->label('ملاحظات')
                             ->rows(3)
                             ->columnSpanFull(),
 
-                        TextInput::make('recording_url')
-                            ->label('رابط تسجيل المحاضرة')
-                            ->url()
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                    ])
+                        //TextInput::make('recording_url')
+                        //    ->label('رابط تسجيل المحاضرة')
+                        //    ->url()
+                        //    ->maxLength(255)
+                        //    ->columnSpanFull(),
+                    ])->columnSpan('full')
                     ->columns(2),
             ]);
     }
