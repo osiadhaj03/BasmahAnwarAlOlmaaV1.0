@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Lectures\Schemas;
 
 use App\Models\Lesson;
+ use App\Models\Lecture;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -36,7 +37,9 @@ class LectureForm
                         TextInput::make('lecture_number')
                             ->label('رقم المحاضرة')
                             ->numeric()
-                            ->default(1)
+                            ->default(function () {
+                                return Lecture::max('lecture_number') + 1 ?? 1;
+                            })
                             ->required()
                             ->minValue(1),
 
