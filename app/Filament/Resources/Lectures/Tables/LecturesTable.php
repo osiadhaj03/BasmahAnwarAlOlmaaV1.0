@@ -48,30 +48,7 @@ class LecturesTable
                     ->searchable()
                     ->limit(30),
 
-                BadgeColumn::make('status')
-                    ->label('الحالة')
-                    ->formatStateUsing(fn ($state) => match($state) {
-                        'scheduled' => 'مجدولة',
-                        'ongoing' => 'جارية',
-                        'completed' => 'مكتملة',
-                        'cancelled' => 'ملغية',
-                        default => 'غير محدد',
-                    })
-                    ->colors([
-                        'warning' => 'scheduled',
-                        'primary' => 'ongoing',
-                        'success' => 'completed',
-                        'danger' => 'cancelled',
-                    ]),
-
-                BadgeColumn::make('is_mandatory')
-                    ->label('إجبارية')
-                    ->formatStateUsing(fn ($state) => $state ? 'نعم' : 'لا')
-                    ->colors([
-                        'success' => true,
-                        'secondary' => false,
-                    ]),
-
+                
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime('Y-m-d H:i')
