@@ -75,33 +75,7 @@ class LectureForm
                             ->default('وجاهي')
                             ->required(),
 
-                        Select::make('status')
-                            ->label('حالة المحاضرة')
-                            ->options([
-                                'scheduled' => 'مجدولة',
-                                'ongoing'   => 'جارية',
-                                'completed' => 'منتهية',
-                            ])
-                            ->default('scheduled')
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set, $get) {
-                                $lectureDate = $get('lecture_date');
-                                $duration    = (int) $get('duration_minutes');
-                                if (!$lectureDate) {
-                                    return;
-                                }
-                                $start = \Carbon\Carbon::parse($lectureDate);
-                                $end   = $start->copy()->addMinutes($duration);
-                                $now   = now();
 
-                                if ($now->lt($start)) {
-                                    $set('status', 'scheduled');
-                                } elseif ($now->gte($start) && $now->lte($end)) {
-                                    $set('status', 'ongoing');
-                                } else {
-                                    $set('status', 'completed');
-                                }
-                            }),
                     ])->columnSpan('full')
                     ->columns(2),
 
