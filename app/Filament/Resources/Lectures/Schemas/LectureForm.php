@@ -75,28 +75,33 @@ class LectureForm
                             ->default('وجاهي')
                             ->required(),
 
-                        TextInput::make('status')
+                        Select::make('status')
                             ->label('حالة المحاضرة')
-                            ->disabled()
-                            ->dehydrateStateUsing(function ($state, $get) {
+                            ->options([
+                                'scheduled' => 'مجدولة',
+                                'ongoing'   => 'جارية',
+                                'completed' => 'منتهية',
+                            ])
+                            ->default('scheduled')
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, $get) {
                                 $lectureDate = $get('lecture_date');
-                                $duration = (int) $get('duration_minutes');
+                                $duration    = (int) $get('duration_minutes');
                                 if (!$lectureDate) {
-                                    return 'scheduled';
+                                    return;
                                 }
                                 $start = \Carbon\Carbon::parse($lectureDate);
-                                $end = $start->copy()->addMinutes($duration);
-                                $now = now();
+                                $end   = $start->copy()->addMinutes($duration);
+                                $now   = now();
 
                                 if ($now->lt($start)) {
-                                    return 'scheduled';
+                                    $set('status', 'scheduled');
                                 } elseif ($now->gte($start) && $now->lte($end)) {
-                                    return 'ongoing';
+                                    $set('status', 'ongoing');
                                 } else {
-                                    return 'completed';
+                                    $set('status', 'completed');
                                 }
-                            })
-                            ->required(),
+                            }),
                     ])->columnSpan('full')
                     ->columns(2),
 
