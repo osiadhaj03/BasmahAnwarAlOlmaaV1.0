@@ -10,7 +10,7 @@ class Attendance extends Model
     use HasFactory;
 
     protected $fillable = [
-        'lesson_id',
+        'lecture_id',
         'student_id',
         'status',
         'attendance_date',
@@ -27,9 +27,15 @@ class Attendance extends Model
     ];
 
     // العلاقات
+    public function lecture()
+    {
+        return $this->belongsTo(Lecture::class);
+    }
+    
+    // للوصول للدورة من خلال المحاضرة
     public function lesson()
     {
-        return $this->belongsTo(Lesson::class);
+        return $this->lecture->lesson();
     }
 
     public function student()

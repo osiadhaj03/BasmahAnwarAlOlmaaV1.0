@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Attendances\Schemas;
 
 use App\Models\Lesson;
+use App\Models\Lecture;
 use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Components\Section;
@@ -22,23 +23,45 @@ class AttendanceForm
                     ->description('المعلومات الأساسية لتسجيل الحضور')
                     ->schema([
                         Select::make('lesson_id')
-                            ->label('الدرس')
+                            ->label('الدورة')
                             ->options(Lesson::with('teacher')->get()->pluck('title_with_teacher', 'id'))
                             ->required()
                             ->searchable()
                             ->preload()
                             ->reactive()
                             ->afterStateUpdated(function ($state, $set) {
+                                // إعادة تعيين المحاضرة عند تغيير الدورة
+                                $set('lecture_id', null);
+                                $set('attendance_date', null);
+                            }),
+                        
+                        Select::make('lecture_id')
+                            ->label('المحاضرة')
+                            ->options(function ($get) {
+                                $lessonId = $get('lesson_id');
+                                if (!$lessonId) {
+                                    return [];
+                                }
+                                return Lecture::where('lesson_id', $lessonId)
+                                    ->orderBy('lecture_number')
+                                    ->get()
+                                    ->mapWithKeys(function ($lecture) {
+                                        return [$lecture->id => "محاضرة {$lecture->lecture_number}: {$lecture->title}"];
+                                    });
+                            })
+                            ->required()
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, $set) {
                                 if ($state) {
-                                    $lesson = \App\Models\Lesson::find($state);
-                                    if ($lesson) {
-                                        $nextDateTime = $lesson->getNextLessonDateTime();
-                                        if ($nextDateTime) {
-                                            $set('attendance_date', $nextDateTime);
-                                        }
+                                    $lecture = Lecture::find($state);
+                                    if ($lecture && $lecture->lecture_date) {
+                                        $set('attendance_date', $lecture->lecture_date);
                                     }
                                 }
-                            }),
+                            })
+                            ->disabled(fn ($get) => !$get('lesson_id'))
+                            ->helperText('اختر الدورة أولاً لعرض المحاضرات المتاحة'),
                         
                         Select::make('student_id')
                             ->label('الطالب')
@@ -64,30 +87,26 @@ class AttendanceForm
                             ->native(false)
                             ->displayFormat('Y-m-d H:i')
                             ->default(function ($get) {
-                                $lessonId = $get('lesson_id');
-                                if ($lessonId) {
-                                    $lesson = \App\Models\Lesson::find($lessonId);
-                                    if ($lesson) {
-                                        $bestDateTime = $lesson->getBestLessonDateTime();
-                                        return $bestDateTime ?: now();
+                                $lectureId = $get('lecture_id');
+                                if ($lectureId) {
+                                    $lecture = Lecture::find($lectureId);
+                                    if ($lecture && $lecture->lecture_date) {
+                                        return $lecture->lecture_date;
                                     }
                                 }
                                 return now();
                             })
                             ->reactive()
                             ->afterStateUpdated(function ($state, $set, $get) {
-                                $lessonId = $get('lesson_id');
-                                if ($lessonId && !$state) {
-                                    $lesson = \App\Models\Lesson::find($lessonId);
-                                    if ($lesson) {
-                                        $bestDateTime = $lesson->getBestLessonDateTime();
-                                        if ($bestDateTime) {
-                                            $set('attendance_date', $bestDateTime);
-                                        }
+                                $lectureId = $get('lecture_id');
+                                if ($lectureId && !$state) {
+                                    $lecture = Lecture::find($lectureId);
+                                    if ($lecture && $lecture->lecture_date) {
+                                        $set('attendance_date', $lecture->lecture_date);
                                     }
                                 }
                             })
-                            ->helperText('سيتم تعيين تاريخ ووقت الدرس الحالي إذا كان نشطاً، وإلا فالدرس القادم تلقائياً'),
+                            ->helperText('سيتم تعيين تاريخ ووقت المحاضرة المختارة تلقائياً'),
                     ])->columnSpan('full') ->columns(4),
                 
                 Section::make('تفاصيل طريقة التسجيل')

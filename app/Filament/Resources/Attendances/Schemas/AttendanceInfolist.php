@@ -14,10 +14,15 @@ class AttendanceInfolist
             ->components([
                 Section::make('معلومات الحضور الأساسية')
                     ->schema([
-                        TextEntry::make('lesson.title')
-                            ->label('الدرس')
+                        TextEntry::make('lecture.lesson.title')
+                            ->label('الدورة')
                             ->weight('bold')
                             ->color('primary'),
+                        
+                        TextEntry::make('lecture.title')
+                            ->label('المحاضرة')
+                            ->weight('bold')
+                            ->formatStateUsing(fn ($record) => "محاضرة {$record->lecture->lecture_number}: {$record->lecture->title}"),
                         
                         TextEntry::make('student.name')
                             ->label('الطالب')

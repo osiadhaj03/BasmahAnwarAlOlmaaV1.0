@@ -17,11 +17,17 @@ class AttendancesTable
     {
         return $table
             ->columns([
-                TextColumn::make('lesson.title')
-                    ->label('الدرس')
+                TextColumn::make('lecture.lesson.title')
+                    ->label('الدورة')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
+                
+                TextColumn::make('lecture.title')
+                    ->label('المحاضرة')
+                    ->searchable()
+                    ->sortable()
+                    ->formatStateUsing(fn ($record) => "محاضرة {$record->lecture->lecture_number}: {$record->lecture->title}"),
                 
                 TextColumn::make('student.name')
                     ->label('الطالب')
@@ -109,9 +115,15 @@ class AttendancesTable
                         'auto' => 'تلقائي',
                     ]),
                 
-                SelectFilter::make('lesson_id')
-                    ->label('الدرس')
-                    ->relationship('lesson', 'title')
+                SelectFilter::make('lecture.lesson_id')
+                    ->label('الدورة')
+                    ->relationship('lecture.lesson', 'title')
+                    ->searchable()
+                    ->preload(),
+                
+                SelectFilter::make('lecture_id')
+                    ->label('المحاضرة')
+                    ->relationship('lecture', 'title')
                     ->searchable()
                     ->preload(),
                 
