@@ -44,23 +44,7 @@ class LectureInfolist
                         TextEntry::make('location')
                             ->label('مكان المحاضرة'),
 
-                        TextEntry::make('status')
-                            ->label('حالة المحاضرة')
-                            ->formatStateUsing(fn ($state) => match($state) {
-                                'scheduled' => 'مجدولة',
-                                'ongoing' => 'جارية',
-                                'completed' => 'مكتملة',
-                                'cancelled' => 'ملغية',
-                                default => 'غير محدد',
-                            })
-                            ->badge()
-                            ->color(fn ($state) => match($state) {
-                                'scheduled' => 'warning',
-                                'ongoing' => 'primary',
-                                'completed' => 'success',
-                                'cancelled' => 'danger',
-                                default => 'secondary',
-                            }),
+
                     ])
                     ->columns(2),
 
