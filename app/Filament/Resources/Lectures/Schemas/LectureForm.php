@@ -77,7 +77,7 @@ class LectureForm
 
 
                     ])->columnSpan('full')
-                    ->columns(2),
+                    ->columns(3),
 
                 Section::make('إعدادات إضافية')
                     ->description('الإعدادات والملاحظات')
