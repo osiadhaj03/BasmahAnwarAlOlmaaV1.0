@@ -3,14 +3,14 @@
 namespace App\Filament\Resources\Lectures\Schemas;
 
 use App\Models\Lesson;
-use Filament\Schemas\Components\DateTimePicker;
-use Filament\Schemas\Components\FileUpload;
-use Filament\Schemas\Components\Repeater;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Select;
-use Filament\Schemas\Components\Textarea;
-use Filament\Schemas\Components\TextInput;
-use Filament\Schemas\Components\Toggle;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class LectureForm
