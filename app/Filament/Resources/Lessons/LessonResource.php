@@ -29,6 +29,8 @@ class LessonResource extends Resource
     protected static ?string $modelLabel = 'دورة';
     
     protected static ?string $pluralModelLabel = 'الدورات';
+    protected static ?string $navigationGroup = 'الدورات والمحاضرات';
+
     
     protected static ?int $navigationSort = 2;
 

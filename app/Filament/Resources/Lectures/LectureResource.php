@@ -28,6 +28,7 @@ class LectureResource extends Resource
 
     protected static ?string $pluralModelLabel = 'المحاضرات';
 
+    protected static ?string $navigationGroup = 'الدورات والمحاضرات';
     protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
