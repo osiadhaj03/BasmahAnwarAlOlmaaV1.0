@@ -28,7 +28,7 @@ class LessonSectionResource extends Resource
     protected static ?string $navigationLabel = 'أقسام الدورات';
     
     protected static ?string $modelLabel = 'قسم دورة';
-    protected static ?string $navigationGroup = 'الدورات والمحاضرات';
+    //protected static ?string $navigationGroup = 'الدورات والمحاضرات';
 
     
     protected static ?string $pluralModelLabel = 'أقسام الدورات';
