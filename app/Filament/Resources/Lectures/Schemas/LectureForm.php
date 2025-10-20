@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Lectures\Schemas;
 
 use App\Models\Lesson;
- use App\Models\Lecture;
+use App\Models\Lecture;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -13,6 +13,9 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Carbon\Carbon;
 
 class LectureForm
 {
@@ -32,7 +35,29 @@ class LectureForm
                             ->options(Lesson::all()->pluck('title', 'id'))
                             ->required()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                                if (!$state) {
+                                    return;
+                                }
+                                
+                                $lesson = Lesson::find($state);
+                                if (!$lesson) {
+                                    return;
+                                }
+                                
+                                // حساب تاريخ ووقت المحاضرة التالية
+                                $nextLectureDateTime = self::calculateNextLectureDateTime($lesson);
+                                
+                                if ($nextLectureDateTime) {
+                                    $set('lecture_date', $nextLectureDateTime->format('Y-m-d H:i:s'));
+                                }
+                                
+                                // تحديث رقم المحاضرة التالي
+                                $nextLectureNumber = $lesson->lectures()->max('lecture_number') + 1 ?? 1;
+                                $set('lecture_number', $nextLectureNumber);
+                            }),
 
                         TextInput::make('lecture_number')
                             ->label('رقم المحاضرة')
@@ -99,5 +124,105 @@ class LectureForm
                     ])->columnSpan('full')
                     ->columns(2),
             ]);
+    }
+
+    /**
+     * حساب تاريخ ووقت المحاضرة التالية بناءً على جدول الدرس
+     */
+    private static function calculateNextLectureDateTime(Lesson $lesson): ?Carbon
+    {
+        // إذا لم تكن هناك أيام محددة للدرس، استخدم التاريخ الحالي
+        if (!$lesson->lesson_days || !is_array($lesson->lesson_days) || empty($lesson->lesson_days)) {
+            $nextDate = Carbon::now();
+            
+            // إذا كان هناك وقت بداية محدد، استخدمه
+            if ($lesson->start_time) {
+                $startTime = Carbon::parse($lesson->start_time);
+                $nextDate->setTime($startTime->hour, $startTime->minute);
+            } else {
+                // وقت افتراضي 9:00 صباحاً
+                $nextDate->setTime(9, 0);
+            }
+            
+            return $nextDate;
+        }
+
+        // تحويل أيام الأسبوع إلى أرقام (0 = الأحد، 6 = السبت)
+        $dayMap = [
+            'sunday' => 0,
+            'monday' => 1,
+            'tuesday' => 2,
+            'wednesday' => 3,
+            'thursday' => 4,
+            'friday' => 5,
+            'saturday' => 6,
+        ];
+
+        $lessonDayNumbers = [];
+        foreach ($lesson->lesson_days as $day) {
+            if (isset($dayMap[strtolower($day)])) {
+                $lessonDayNumbers[] = $dayMap[strtolower($day)];
+            }
+        }
+
+        if (empty($lessonDayNumbers)) {
+            return null;
+        }
+
+        // البحث عن أقرب يوم من أيام الدرس
+        $today = Carbon::now();
+        $currentDayOfWeek = $today->dayOfWeek;
+        
+        // البحث عن اليوم التالي من أيام الدرس
+        $nextDay = null;
+        $daysToAdd = 0;
+
+        // البحث في الأيام المتبقية من الأسبوع الحالي
+        for ($i = 0; $i < 7; $i++) {
+            $checkDay = ($currentDayOfWeek + $i) % 7;
+            if (in_array($checkDay, $lessonDayNumbers)) {
+                // إذا كان اليوم الحالي، تحقق من الوقت
+                if ($i == 0 && $lesson->start_time) {
+                    $startTime = Carbon::parse($lesson->start_time);
+                    $todayWithLessonTime = $today->copy()->setTime($startTime->hour, $startTime->minute);
+                    
+                    // إذا لم يفت الوقت بعد، استخدم اليوم الحالي
+                    if ($todayWithLessonTime->isFuture()) {
+                        $daysToAdd = 0;
+                        break;
+                    }
+                } elseif ($i > 0) {
+                    $daysToAdd = $i;
+                    break;
+                }
+            }
+        }
+
+        // حساب التاريخ التالي
+        $nextDate = $today->copy()->addDays($daysToAdd);
+        
+        // تطبيق وقت بداية الدرس
+        if ($lesson->start_time) {
+            $startTime = Carbon::parse($lesson->start_time);
+            $nextDate->setTime($startTime->hour, $startTime->minute);
+        } else {
+            // وقت افتراضي 9:00 صباحاً
+            $nextDate->setTime(9, 0);
+        }
+
+        // التأكد من أن التاريخ ضمن فترة الدرس
+        if ($lesson->start_date && $nextDate->lt(Carbon::parse($lesson->start_date))) {
+            $nextDate = Carbon::parse($lesson->start_date);
+            if ($lesson->start_time) {
+                $startTime = Carbon::parse($lesson->start_time);
+                $nextDate->setTime($startTime->hour, $startTime->minute);
+            }
+        }
+
+        if ($lesson->end_date && $nextDate->gt(Carbon::parse($lesson->end_date))) {
+            return null; // الدرس انتهى
+        }
+
+        return $nextDate;
     }
 }
