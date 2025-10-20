@@ -22,7 +22,9 @@ class AttendanceController extends Controller
 
         // Filter by lesson if provided
         if ($request->has('lesson_id')) {
-            $query->where('lesson_id', $request->lesson_id);
+            $query->whereHas('lecture', function($q) use ($request) {
+                $q->where('lesson_id', $request->lesson_id);
+            });
         }
 
         // Filter by student if provided
@@ -106,7 +108,9 @@ class AttendanceController extends Controller
 
             // Check if student already attended this lesson
             $existingAttendance = Attendance::where('student_id', $student->id)
-                ->where('lesson_id', $attendanceCode->lesson_id)
+                ->whereHas('lecture', function($q) use ($attendanceCode) {
+                    $q->where('lesson_id', $attendanceCode->lesson_id);
+                })
                 ->first();
 
             if ($existingAttendance) {
@@ -266,10 +270,18 @@ class AttendanceController extends Controller
         try {
             $lesson = Lesson::findOrFail($lessonId);
             
-            $totalAttendances = Attendance::where('lesson_id', $lessonId)->count();
-            $presentCount = Attendance::where('lesson_id', $lessonId)->where('status', 'present')->count();
-            $absentCount = Attendance::where('lesson_id', $lessonId)->where('status', 'absent')->count();
-            $lateCount = Attendance::where('lesson_id', $lessonId)->where('status', 'late')->count();
+            $totalAttendances = Attendance::whereHas('lecture', function($q) use ($lessonId) {
+                $q->where('lesson_id', $lessonId);
+            })->count();
+            $presentCount = Attendance::whereHas('lecture', function($q) use ($lessonId) {
+                $q->where('lesson_id', $lessonId);
+            })->where('status', 'present')->count();
+            $absentCount = Attendance::whereHas('lecture', function($q) use ($lessonId) {
+                $q->where('lesson_id', $lessonId);
+            })->where('status', 'absent')->count();
+            $lateCount = Attendance::whereHas('lecture', function($q) use ($lessonId) {
+                $q->where('lesson_id', $lessonId);
+            })->where('status', 'late')->count();
             
             $attendancePercentage = $totalAttendances > 0 ? round(($presentCount + $lateCount) / $totalAttendances * 100, 2) : 0;
 
@@ -280,8 +292,10 @@ class AttendanceController extends Controller
                 'absent_count' => $absentCount,
                 'late_count' => $lateCount,
                 'attendance_percentage' => $attendancePercentage,
-                'recent_attendances' => Attendance::where('lesson_id', $lessonId)
-                    ->with(['student', 'attendanceCode'])
+                'recent_attendances' => Attendance::whereHas('lecture', function($q) use ($lessonId) {
+                        $q->where('lesson_id', $lessonId);
+                    })
+                    ->with(['student', 'lecture'])
                     ->orderBy('attendance_date', 'desc')
                     ->limit(10)
                     ->get()

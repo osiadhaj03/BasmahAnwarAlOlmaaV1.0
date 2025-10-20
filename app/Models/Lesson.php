@@ -59,7 +59,7 @@ class Lesson extends Model
 
     public function attendances()
     {
-        return $this->hasMany(Attendance::class);
+        return $this->hasManyThrough(Attendance::class, Lecture::class);
     }
 
     public function attendanceCodes()

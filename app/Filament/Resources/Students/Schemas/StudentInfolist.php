@@ -145,7 +145,10 @@ class StudentInfolist
                         TextEntry::make('total_lessons')
                             ->label('إجمالي الدروس المسجلة')
                             ->getStateUsing(function ($record) {
-                                return $record->attendances()->distinct('lesson_id')->count();
+                                return $record->attendances()
+                                    ->join('lectures', 'attendances.lecture_id', '=', 'lectures.id')
+                                    ->distinct('lectures.lesson_id')
+                                    ->count();
                             })
                             ->icon('heroicon-o-academic-cap'),
                         

@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lessons', function (Blueprint $table) {
-            // Drop the existing enum column and recreate it with new values
+            // Drop the index first, then the column
+            $table->dropIndex(['status']);
             $table->dropColumn('status');
         });
         
@@ -25,6 +26,9 @@ return new class extends Migration
                 'completed',     // مكتمل
                 'cancelled'      // ملغي
             ])->default('scheduled')->after('max_students');
+            
+            // Recreate the index
+            $table->index('status');
         });
     }
 
@@ -34,7 +38,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('lessons', function (Blueprint $table) {
-            // Drop the updated column
+            // Drop the index first, then the updated column
+            $table->dropIndex(['status']);
             $table->dropColumn('status');
         });
         
@@ -45,6 +50,9 @@ return new class extends Migration
                 'cancelled', 
                 'completed'
             ])->default('active')->after('max_students');
+            
+            // Recreate the index
+            $table->index('status');
         });
     }
 };

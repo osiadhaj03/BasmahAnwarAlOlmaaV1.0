@@ -18,6 +18,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 
 class LessonResource extends Resource
 {
@@ -74,6 +75,50 @@ class LessonResource extends Resource
         }
         
         return $query;
+    }
+
+    public static function canCreate(): bool
+    {
+        // فقط المدراء يمكنهم إنشاء دروس جديدة
+        return Auth::check() && Auth::user()->type === 'admin';
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        // فقط المدراء يمكنهم تعديل الدروس
+        return Auth::check() && Auth::user()->type === 'admin';
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        // فقط المدراء يمكنهم حذف الدروس
+        return Auth::check() && Auth::user()->type === 'admin';
+    }
+
+    public static function canView(Model $record): bool
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return false;
+        }
+
+        // المدراء يمكنهم رؤية جميع الدروس
+        if ($user->type === 'admin') {
+            return true;
+        }
+
+        // المعلمون يمكنهم رؤية دروسهم فقط
+        if ($user->type === 'teacher') {
+            return $record->teacher_id === $user->id;
+        }
+
+        // الطلاب يمكنهم رؤية الدروس المسجلين فيها فقط
+        if ($user->type === 'student') {
+            return $record->students()->where('student_id', $user->id)->exists();
+        }
+
+        return false;
     }
 
     public static function getPages(): array

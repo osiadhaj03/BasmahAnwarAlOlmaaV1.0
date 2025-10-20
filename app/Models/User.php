@@ -60,7 +60,21 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     // Filament Access Control
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_active && in_array($this->type, ['admin', 'teacher', 'student']);
+        if (!$this->is_active) {
+            return false;
+        }
+
+        // Admin panel - للمدراء والمعلمين فقط
+        if ($panel->getId() === 'admin') {
+            return in_array($this->type, ['admin', 'teacher']);
+        }
+
+        // Student panel - للطلاب فقط
+        if ($panel->getId() === 'student') {
+            return $this->type === 'student';
+        }
+
+        return false;
     }
 
     // العلاقات

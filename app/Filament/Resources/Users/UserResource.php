@@ -15,6 +15,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
@@ -50,6 +52,84 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return UsersTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        // إذا كان المستخدم معلم، عرض الطلاب المسجلين في دوراته فقط
+        if (Auth::check() && Auth::user()->type === 'teacher') {
+            $query->where(function ($userQuery) {
+                $userQuery->where('type', 'student')
+                    ->whereHas('studentLessons', function ($lessonQuery) {
+                        $lessonQuery->where('teacher_id', Auth::id());
+                    })
+                    ->orWhere('id', Auth::id()); // يمكن للمعلم رؤية بياناته الشخصية
+            });
+        }
+        
+        return $query;
+    }
+
+    public static function canCreate(): bool
+    {
+        // فقط المدراء يمكنهم إنشاء مستخدمين جدد
+        return Auth::check() && Auth::user()->type === 'admin';
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return false;
+        }
+
+        // المدراء يمكنهم تعديل جميع المستخدمين
+        if ($user->type === 'admin') {
+            return true;
+        }
+
+        // المعلمون يمكنهم تعديل بياناتهم الشخصية فقط
+        if ($user->type === 'teacher') {
+            return $record->id === $user->id;
+        }
+
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        // فقط المدراء يمكنهم حذف المستخدمين
+        return Auth::check() && Auth::user()->type === 'admin';
+    }
+
+    public static function canView(Model $record): bool
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return false;
+        }
+
+        // المدراء يمكنهم رؤية جميع المستخدمين
+        if ($user->type === 'admin') {
+            return true;
+        }
+
+        // المعلمون يمكنهم رؤية الطلاب المسجلين في دوراتهم وبياناتهم الشخصية
+        if ($user->type === 'teacher') {
+            if ($record->id === $user->id) {
+                return true; // بياناته الشخصية
+            }
+            
+            if ($record->type === 'student') {
+                return $record->studentLessons()->where('teacher_id', $user->id)->exists();
+            }
+        }
+
+        return false;
     }
 
     public static function getRelations(): array

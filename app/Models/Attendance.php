@@ -83,7 +83,9 @@ class Attendance extends Model
 
     public function scopeByLesson($query, $lessonId)
     {
-        return $query->where('lesson_id', $lessonId);
+        return $query->whereHas('lecture', function($q) use ($lessonId) {
+            $q->where('lesson_id', $lessonId);
+        });
     }
 
     public function scopeByStudent($query, $studentId)
