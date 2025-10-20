@@ -11,6 +11,7 @@ use App\Filament\Resources\AttendanceCodes\Schemas\AttendanceCodeInfolist;
 use App\Filament\Resources\AttendanceCodes\Tables\AttendanceCodesTable;
 use App\Models\AttendanceCode;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -28,6 +29,9 @@ class AttendanceCodeResource extends Resource
     protected static ?string $pluralModelLabel = 'أكواد الحضور';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-qr-code';
+    
+        protected static UnitEnum|string|null $navigationGroup = 'إدارة الحضور';
+
     
     protected static ?int $navigationSort = 4;
 

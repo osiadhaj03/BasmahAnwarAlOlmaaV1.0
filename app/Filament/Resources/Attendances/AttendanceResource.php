@@ -11,6 +11,7 @@ use App\Filament\Resources\Attendances\Schemas\AttendanceInfolist;
 use App\Filament\Resources\Attendances\Tables\AttendancesTable;
 use App\Models\Attendance;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -28,6 +29,9 @@ class AttendanceResource extends Resource
     protected static ?string $modelLabel = 'حضور';
 
     protected static ?string $pluralModelLabel = 'الحضور';
+    
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الحضور';
+
 
     protected static ?int $navigationSort = 3;
 

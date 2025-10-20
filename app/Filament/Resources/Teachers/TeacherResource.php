@@ -11,6 +11,7 @@ use App\Filament\Resources\Teachers\Schemas\TeacherInfolist;
 use App\Filament\Resources\Teachers\Tables\TeachersTable;
 use App\Models\User;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -29,6 +30,10 @@ class TeacherResource extends Resource
     protected static ?string $pluralModelLabel = 'المعلمين';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
+    
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة المعلمين والطلاب';
+
+
 
     protected static ?int $navigationSort = 6;
 

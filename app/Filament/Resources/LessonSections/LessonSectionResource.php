@@ -11,6 +11,7 @@ use App\Filament\Resources\LessonSections\Schemas\LessonSectionInfolist;
 use App\Filament\Resources\LessonSections\Tables\LessonSectionsTable;
 use App\Models\LessonSection;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -28,8 +29,12 @@ class LessonSectionResource extends Resource
     protected static ?string $navigationLabel = 'أقسام الدورات';
     
     protected static ?string $modelLabel = 'قسم دورة';
-    //protected static ?string $navigationGroup = 'الدورات والمحاضرات';
+    
+    protected static ?string $modelLabelPlural = 'أقسام الدورات';
+    
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الدورات';
 
+    protected static ?int $navigationSort = 0;
     
     protected static ?string $pluralModelLabel = 'أقسام الدورات';
 

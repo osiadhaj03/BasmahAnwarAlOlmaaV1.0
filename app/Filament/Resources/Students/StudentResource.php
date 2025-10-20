@@ -11,6 +11,7 @@ use App\Filament\Resources\Students\Schemas\StudentInfolist;
 use App\Filament\Resources\Students\Tables\StudentsTable;
 use App\Models\User;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -29,6 +30,9 @@ class StudentResource extends Resource
     protected static ?string $pluralModelLabel = 'الطلاب';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-academic-cap';
+
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة المعلمين والطلاب';
+
 
     protected static ?int $navigationSort = 5;
 

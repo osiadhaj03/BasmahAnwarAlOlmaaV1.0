@@ -11,6 +11,7 @@ use App\Filament\Resources\Lectures\Schemas\LectureInfolist;
 use App\Filament\Resources\Lectures\Tables\LecturesTable;
 use App\Models\Lecture;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -28,7 +29,7 @@ class LectureResource extends Resource
 
     protected static ?string $pluralModelLabel = 'المحاضرات';
 
-    //protected static ?string $navigationGroup = 'الدورات والمحاضرات';
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الدورات';
     
     protected static ?int $navigationSort = 3;
 

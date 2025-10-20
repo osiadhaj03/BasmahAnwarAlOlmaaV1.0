@@ -11,6 +11,7 @@ use App\Filament\Resources\Lessons\Schemas\LessonInfolist;
 use App\Filament\Resources\Lessons\Tables\LessonsTable;
 use App\Models\Lesson;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -29,7 +30,7 @@ class LessonResource extends Resource
     protected static ?string $modelLabel = 'دورة';
     
     protected static ?string $pluralModelLabel = 'الدورات';
-    //protected static ?string $navigationGroup = 'الدورات والمحاضرات';
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الدورات';
 
     
     protected static ?int $navigationSort = 2;
