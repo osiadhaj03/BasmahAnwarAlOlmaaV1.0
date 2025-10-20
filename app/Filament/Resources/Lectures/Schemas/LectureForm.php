@@ -13,8 +13,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Carbon\Carbon;
 
 class LectureForm
@@ -37,7 +35,7 @@ class LectureForm
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                            ->afterStateUpdated(function ($set, $get, $state) {
                                 if (!$state) {
                                     return;
                                 }
