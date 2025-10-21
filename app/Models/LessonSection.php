@@ -46,6 +46,16 @@ class LessonSection extends Model
     }
 
     /**
+     * Get the students enrolled in this section.
+     */
+    public function enrolledStudents()
+    {
+        return $this->belongsToMany(User::class, 'lesson_section_student', 'lesson_section_id', 'student_id')
+                    ->withPivot('enrolled_at', 'enrollment_status', 'notes')
+                    ->withTimestamps();
+    }
+
+    /**
      * Scope a query to only include active sections.
      */
     public function scopeActive($query)

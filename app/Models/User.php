@@ -90,6 +90,13 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
                     ->withTimestamps();
     }
 
+    public function enrolledSections()
+    {
+        return $this->belongsToMany(LessonSection::class, 'lesson_section_student', 'student_id', 'lesson_section_id')
+                    ->withPivot('enrolled_at', 'enrollment_status', 'notes')
+                    ->withTimestamps();
+    }
+
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'student_id');

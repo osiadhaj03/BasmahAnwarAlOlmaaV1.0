@@ -89,10 +89,10 @@ class ActiveLecturesWidget extends BaseWidget
         $now = Carbon::now();
         
         return Lecture::query()
-            ->with(['lesson', 'attendances'])
-            ->whereHas('lesson.students', function (Builder $query) use ($studentId) {
+            ->with(['lesson.lessonSection', 'attendances'])
+            ->whereHas('lesson.lessonSection.enrolledStudents', function (Builder $query) use ($studentId) {
                 $query->where('users.id', $studentId)
-                      ->where('lesson_student.enrollment_status', 'active');
+                      ->where('lesson_section_student.enrollment_status', 'active');
             })
             ->where(function (Builder $query) use ($now) {
                 // المحاضرات التي بدأت أو ستبدأ قريباً (خلال ساعة)
