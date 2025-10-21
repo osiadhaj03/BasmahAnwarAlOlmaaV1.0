@@ -54,7 +54,8 @@ class LessonResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\LecturesRelationManager::class,
+            RelationManagers\StudentsRelationManager::class,
         ];
     }
 
