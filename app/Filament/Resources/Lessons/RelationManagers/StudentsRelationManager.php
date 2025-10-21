@@ -9,6 +9,12 @@ use Filament\Forms\Components\Textarea;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DetachAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DetachBulkAction;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -161,11 +167,11 @@ class StudentsRelationManager extends RelationManager
                     ]),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label('إضافة طالب جديد'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->label('تعديل')
                     ->form([
                         Forms\Components\Select::make('enrollment_status')
@@ -189,12 +195,12 @@ class StudentsRelationManager extends RelationManager
                             ->rows(3),
                     ]),
                 
-                Tables\Actions\DetachAction::make()
+                DetachAction::make()
                     ->label('إلغاء التسجيل'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DetachBulkAction::make()
+                BulkActionGroup::make([
+                    DetachBulkAction::make()
                         ->label('إلغاء تسجيل المحدد'),
                 ]),
             ])
