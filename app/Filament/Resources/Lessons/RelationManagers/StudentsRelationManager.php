@@ -9,12 +9,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DetachAction;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DetachBulkAction;
+
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -165,44 +160,6 @@ class StudentsRelationManager extends RelationManager
                         'advanced' => 'متقدم',
                         'expert' => 'خبير',
                     ]),
-            ])
-            ->headerActions([
-                CreateAction::make()
-                    ->label('إضافة طالب جديد'),
-            ])
-            ->actions([
-                EditAction::make()
-                    ->label('تعديل')
-                    ->form([
-                        Forms\Components\Select::make('enrollment_status')
-                            ->label('حالة التسجيل')
-                            ->options([
-                                'active' => 'نشط',
-                                'pending' => 'في الانتظار',
-                                'suspended' => 'معلق',
-                                'completed' => 'مكتمل',
-                                'dropped' => 'منسحب',
-                            ])
-                            ->required(),
-                        
-                        Forms\Components\DateTimePicker::make('enrolled_at')
-                            ->label('تاريخ التسجيل')
-                            ->required()
-                            ->native(false),
-                        
-                        Forms\Components\Textarea::make('notes')
-                            ->label('ملاحظات')
-                            ->rows(3),
-                    ]),
-                
-                DetachAction::make()
-                    ->label('إلغاء التسجيل'),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DetachBulkAction::make()
-                        ->label('إلغاء تسجيل المحدد'),
-                ]),
             ])
             ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'student'));
     }
