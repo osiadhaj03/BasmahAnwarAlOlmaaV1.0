@@ -161,38 +161,8 @@ class StudentsRelationManager extends RelationManager
                     ]),
             ])
             ->headerActions([
-                Tables\Actions\AttachAction::make()
-                    ->label('إضافة طالب')
-                    ->recordSelectSearchColumns(['name', 'email'])
-                    ->form(fn (Tables\Actions\AttachAction $action): array => [
-                        $action->getRecordSelect()
-                            ->label('اختر الطالب')
-                            ->searchable()
-                            ->getOptionLabelFromRecordUsing(fn (User $record): string => "{$record->name} - {$record->email}"),
-                        
-                        Forms\Components\Select::make('enrollment_status')
-                            ->label('حالة التسجيل')
-                            ->options([
-                                'active' => 'نشط',
-                                'pending' => 'في الانتظار',
-                                'suspended' => 'معلق',
-                                'completed' => 'مكتمل',
-                                'dropped' => 'منسحب',
-                            ])
-                            ->default('active')
-                            ->required(),
-                        
-                        Forms\Components\DateTimePicker::make('enrolled_at')
-                            ->label('تاريخ التسجيل')
-                            ->default(now())
-                            ->required()
-                            ->native(false),
-                        
-                        Forms\Components\Textarea::make('notes')
-                            ->label('ملاحظات')
-                            ->rows(3),
-                    ])
-                    ->preloadRecordSelect(),
+                Tables\Actions\CreateAction::make()
+                    ->label('إضافة طالب جديد'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
