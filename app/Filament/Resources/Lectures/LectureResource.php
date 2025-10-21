@@ -155,7 +155,7 @@ class LectureResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\AttendancesRelationManager::class,
+            //
         ];
     }
 
