@@ -12,9 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // تطبيق تقييد الشبكة على جميع المسارات
-        $middleware->web(append: [
-            \App\Http\Middleware\RestrictNetworkAccess::class,
-        ]);
+        //$middleware->web(append: [
+        //    \App\Http\Middleware\RestrictNetworkAccess::class,
+        //]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
