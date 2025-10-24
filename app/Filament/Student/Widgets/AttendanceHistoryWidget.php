@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AttendanceHistoryWidget extends BaseWidget
 {
-    protected static ?string $heading = 'سجل الحضور';
+    protected static ?string $heading = 'سجل الحضور للطلاب في جميع الدورات المسجل فيها ';
     
     protected int | string | array $columnSpan = 'full';
     
@@ -28,7 +28,7 @@ class AttendanceHistoryWidget extends BaseWidget
             )
             ->columns([
                 TextColumn::make('lecture.lesson.title')
-                    ->label('الدورة')
+                    ->label('اسم الدورة')
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
@@ -40,11 +40,7 @@ class AttendanceHistoryWidget extends BaseWidget
                     ->sortable()
                     ->icon('heroicon-o-user'),
                 
-                TextColumn::make('lecture.lesson.start_date')
-                    ->label('تاريخ بداية الدرس')
-                    ->date('Y-m-d')
-                    ->sortable()
-                    ->icon('heroicon-o-calendar'),
+
                 
                 TextColumn::make('attendance_date')
                     ->label('وقت تسجيل الحضور')
