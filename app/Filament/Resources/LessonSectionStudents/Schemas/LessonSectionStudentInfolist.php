@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\LessonSectionStudents\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 
 class LessonSectionStudentInfolist
