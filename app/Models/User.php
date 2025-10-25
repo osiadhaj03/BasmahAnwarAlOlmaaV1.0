@@ -57,6 +57,16 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'two_factor_confirmed_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            // Force new registered users to be students unless explicitly set
+            if (empty($user->type)) {
+                $user->type = 'student';
+            }
+        });
+    }
+
     // Filament Access Control
     public function canAccessPanel(Panel $panel): bool
     {

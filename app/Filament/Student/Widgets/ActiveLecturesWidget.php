@@ -29,12 +29,12 @@ class ActiveLecturesWidget extends BaseWidget
             ->columns([
                 TextColumn::make('title')
                     ->label('عنوان المحاضرة')
-                    ->searchable()
+                    
                     ->sortable(),
                     
                 TextColumn::make('lesson.title')
-                    ->label('اسم الدرس')
-                    ->searchable()
+                    ->label('اسم الدورة')
+                    
                     ->sortable(),
                     
                 TextColumn::make('lecture_date')
@@ -48,8 +48,7 @@ class ActiveLecturesWidget extends BaseWidget
                     ->sortable(),
                     
                 TextColumn::make('location')
-                    ->label('الموقع')
-                    ->searchable(),
+                    ->label('الموقع'),
                     
                 TextColumn::make('status_arabic')
                     ->label('الحالة')

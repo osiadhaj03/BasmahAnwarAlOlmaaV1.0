@@ -31,7 +31,8 @@ class StudentPanelProvider extends PanelProvider
             ->pages([
                 StudentDashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Student/Widgets'), for: 'App\Filament\Student\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Student/Widgets'), for: 'App\\Filament\\Student\\Widgets')
+            ->registration(\App\Filament\Student\Pages\Auth\Register::class)
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

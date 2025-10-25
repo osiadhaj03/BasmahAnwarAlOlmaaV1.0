@@ -66,8 +66,8 @@ class StudentForm
                             ->label('الرقم الجامعي')
                             ->unique(ignoreRecord: true)
                             ->maxLength(50)
-                            ->placeholder('202312345')
-                            ->helperText('الرقم الجامعي الفريد للطالب'),
+                            ->placeholder('الرقم الجامعي لطلبة كلية الفقه الحنفي')
+                            ->helperText('الرقم الجامعي لطلبة كلية الفقه الحنفي'),
                         
                         Select::make('academic_level')
                             ->label('المستوى الأكاديمي')
@@ -82,7 +82,7 @@ class StudentForm
                             ->nullable()
                             ->placeholder('اختر المستوى الأكاديمي'),
                     ])->columnSpan('full') 
-                    ->columns(2),
+                   ,
                 
                 // القسم الثالث: معلومات الحساب
                 Section::make('معلومات الحساب')

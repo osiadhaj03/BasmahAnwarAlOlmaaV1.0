@@ -37,16 +37,11 @@ class EnrolledLessonsWidget extends BaseWidget
             ->query($query)
             ->columns([
                 TextColumn::make('name')
-                    ->label('اسم القسم')
-                    ->searchable()
+                    ->label('اسم الدبلوم')
+                    //->searchable()
                     ->sortable()
                     ->weight('bold')
                     ->icon('heroicon-o-rectangle-stack'),
-
-                TextColumn::make('description')
-                    ->label('الوصف')
-                    ->limit(50)
-                    ->placeholder('لا يوجد وصف'),
 
                 TextColumn::make('lessons_count')
                     ->label('عدد الدورات')

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SectionsLessonsWidget extends BaseWidget
 {
-    protected static ?string $heading = 'دورات الأقسام المسجل بها';
+    protected static ?string $heading = 'الدورات  المسجل بها';
     
     protected int | string | array $columnSpan = 'full';
     
@@ -39,8 +39,8 @@ class SectionsLessonsWidget extends BaseWidget
             ->columns([
                 TextColumn::make('title')
                     ->label('اسم الدورة')
-                    ->searchable()
-                    ->sortable()
+                    //->searchable()
+                    //->sortable()
                     ->weight('bold')
                     ->icon('heroicon-o-academic-cap'),
 
@@ -54,35 +54,8 @@ class SectionsLessonsWidget extends BaseWidget
                     ->sortable()
                     ->icon('heroicon-o-user'),
 
-                BadgeColumn::make('status')
-                    ->label('حالة الدورة')
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'active' => 'نشطة',
-                        'inactive' => 'متوقفة',
-                        'completed' => 'مكتملة',
-                        default => 'غير محدد',
-                    })
-                    ->colors([
-                        'success' => 'active',
-                        'gray' => 'inactive',
-                        'warning' => 'completed',
-                    ]),
-
-                TextColumn::make('start_date')
-                    ->label('تاريخ البداية')
-                    ->date('Y-m-d')
-                    ->sortable()
-                    ->icon('heroicon-o-calendar'),
-
-                TextColumn::make('end_date')
-                    ->label('تاريخ النهاية')
-                    ->date('Y-m-d')
-                    ->sortable()
-                    ->icon('heroicon-o-calendar'),
-
                 TextColumn::make('lesson_days_arabic')
-                    ->label('أيام الدرس')
-                    ->toggleable(),
+                    ->label('أيام الدرس'),
             ])
             ->defaultSort('start_date', 'desc')
             ->striped()
