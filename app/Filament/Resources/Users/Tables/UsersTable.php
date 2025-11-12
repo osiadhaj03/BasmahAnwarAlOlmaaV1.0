@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -117,6 +118,12 @@ class UsersTable
                     ->label('عرض'),
                 EditAction::make()
                     ->label('تعديل'),
+                Action::make('updatePassword')
+                    ->label('تحديث كلمة السر')
+                    ->icon('heroicon-m-lock-closed')
+                    ->color('warning')
+                    ->url(fn ($record) => route('filament.admin.resources.users.updatePassword', ['record' => $record]))
+                    ->openUrlInNewTab(false),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

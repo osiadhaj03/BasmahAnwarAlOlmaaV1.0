@@ -11,7 +11,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Auth\Pages\Register as BaseRegister;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
 
 class Register extends BaseRegister
@@ -137,7 +136,7 @@ class Register extends BaseRegister
             'bio' => $data['bio'] ?? null,
             'type' => 'student',
             'is_active' => true,
-            'password' => Hash::make($data['password']),
+            'password' => $data['password'],  // اترك الـ cast يشفرها (بدون Hash::make!)
         ]);
 
         // ربط الأقسام المختارة بالطالب في Pivot مع حالة نشطة
