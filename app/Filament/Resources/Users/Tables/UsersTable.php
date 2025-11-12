@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Resources\Users\Actions\UpdatePasswordBulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -120,6 +121,7 @@ class UsersTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    UpdatePasswordBulkAction::make(),
                     DeleteBulkAction::make()
                         ->label('حذف المحدد'),
                 ]),
