@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Lesson;
 use App\Models\Lecture;
 use App\Models\Attendance;
-use Illuminate\Support\Facades\Hash;
 
 class DemoDataSeeder extends Seeder
 {
@@ -20,7 +19,7 @@ class DemoDataSeeder extends Seeder
         $admin = User::create([
             'name' => 'مدير النظام',
             'email' => 'admin@demo.com',
-            'password' => Hash::make('password'),
+            'password' => 'password',
             'type' => 'admin',
             'phone' => '0501234567',
             'birth_date' => '1980-01-01',
@@ -32,7 +31,7 @@ class DemoDataSeeder extends Seeder
         $teacher1 = User::create([
             'name' => 'أحمد محمد',
             'email' => 'teacher1@demo.com',
-            'password' => Hash::make('password'),
+            'password' => 'password',
             'type' => 'teacher',
             'phone' => '0501234568',
             'birth_date' => '1985-05-15',
@@ -44,7 +43,7 @@ class DemoDataSeeder extends Seeder
         $teacher2 = User::create([
             'name' => 'فاطمة علي',
             'email' => 'teacher2@demo.com',
-            'password' => Hash::make('password'),
+            'password' => 'password',
             'type' => 'teacher',
             'phone' => '0501234569',
             'birth_date' => '1987-08-20',
@@ -56,7 +55,7 @@ class DemoDataSeeder extends Seeder
         $student1 = User::create([
             'name' => 'سارة أحمد',
             'email' => 'student1@demo.com',
-            'password' => Hash::make('password'),
+            'password' => 'password',
             'type' => 'student',
             'phone' => '0501234570',
             'birth_date' => '2000-03-10',
@@ -68,7 +67,7 @@ class DemoDataSeeder extends Seeder
         $student2 = User::create([
             'name' => 'محمد سالم',
             'email' => 'student2@demo.com',
-            'password' => Hash::make('password'),
+            'password' => 'password',
             'type' => 'student',
             'phone' => '0501234571',
             'birth_date' => '1999-12-05',
@@ -80,7 +79,7 @@ class DemoDataSeeder extends Seeder
         $student3 = User::create([
             'name' => 'نورا خالد',
             'email' => 'student3@demo.com',
-            'password' => Hash::make('password'),
+            'password' => 'password',
             'type' => 'student',
             'phone' => '0501234572',
             'birth_date' => '2001-07-18',
