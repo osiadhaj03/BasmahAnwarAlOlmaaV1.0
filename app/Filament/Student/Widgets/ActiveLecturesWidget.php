@@ -94,9 +94,15 @@ class ActiveLecturesWidget extends BaseWidget
                       ->where('lesson_section_student.enrollment_status', 'active');
             })
             ->where(function (Builder $query) use ($now) {
-                // المحاضرات التي بدأت أو ستبدأ قريباً (خلال ساعة)
-                $query->where('lecture_date', '<=', $now->copy()->addHour())
+                // المحاضرات التي بدأت أو ستبدأ قريباً (خلال ساعة) أو ما زالت نشطة
+                $query->where(function($q) use ($now) {
+                    $q->where('lecture_date', '<=', $now->copy()->addHour())
                       ->where('lecture_date', '>=', $now->copy()->subMinutes(30));
+                })->orWhere(function($q) use ($now) {
+                    // أو المحاضرات التي بدأت ولم تنته بعد
+                    $q->where('lecture_date', '<=', $now)
+                      ->whereRaw('DATE_ADD(lecture_date, INTERVAL duration_minutes MINUTE) > ?', [$now]);
+                });
             })
             ->whereIn('status', ['scheduled', 'ongoing'])
             ->whereDoesntHave('attendances', function (Builder $query) use ($studentId) {
