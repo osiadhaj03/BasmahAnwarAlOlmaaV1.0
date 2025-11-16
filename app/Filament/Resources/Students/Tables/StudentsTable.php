@@ -64,7 +64,7 @@ class StudentsTable
                     ])
                     ->placeholder('غير محدد'),
                 
-                TextColumn::make('major')
+                TextColumn::make('specialization')
                     ->label('التخصص')
                     ->searchable()
                     ->placeholder('غير محدد')
