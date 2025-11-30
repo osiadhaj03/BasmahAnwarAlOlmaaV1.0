@@ -50,25 +50,7 @@ class StudentsTable
                 
                 
                 
-                TextColumn::make('status')
-                    ->label('الحالة')
-                    ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'active' => 'نشط',
-                        'inactive' => 'غير نشط',
-                        'graduated' => 'متخرج',
-                        'suspended' => 'موقوف',
-                        'transferred' => 'محول',
-                        default => $state,
-                    })
-                    ->colors([
-                        'success' => 'active',
-                        'gray' => 'inactive',
-                        'info' => 'graduated',
-                        'danger' => 'suspended',
-                        'warning' => 'transferred',
-                    ]),
-                
+                                
                 TextColumn::make('monthly_attendances_count')
                     ->label('الحضور هذا الشهر')
                     ->counts([
@@ -104,25 +86,7 @@ class StudentsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('status')
-                    ->label('حالة الطالب')
-                    ->options([
-                        'active' => 'نشط',
-                        'inactive' => 'غير نشط',
-                        'graduated' => 'متخرج',
-                        'suspended' => 'موقوف',
-                        'transferred' => 'محول',
-                    ]),
-                
-                SelectFilter::make('level')
-                    ->label('المستوى الدراسي')
-                    ->options([
-                        'freshman' => 'السنة الأولى',
-                        'sophomore' => 'السنة الثانية',
-                        'junior' => 'السنة الثالثة',
-                        'senior' => 'السنة الرابعة',
-                        'graduate' => 'دراسات عليا',
-                    ]),
+
             ])
             ->recordActions([
                 ViewAction::make()
