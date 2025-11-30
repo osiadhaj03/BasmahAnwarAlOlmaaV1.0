@@ -11,8 +11,8 @@ class StudentDashboard extends Dashboard
     public function getWidgets(): array
     {
         return [
-            \App\Filament\Student\Widgets\StudentStatsWidget::class, // إحصائياتي - في الأعلى
             \App\Filament\Student\Widgets\ActiveLecturesWidget::class,
+            \App\Filament\Student\Widgets\StudentStatsWidget::class, // إحصائياتي - في الأعلى
             \App\Filament\Student\Widgets\SectionsLessonsWidget::class,
             \App\Filament\Student\Widgets\EnrolledLessonsWidget::class,
             \App\Filament\Student\Widgets\AttendanceHistoryWidget::class,
