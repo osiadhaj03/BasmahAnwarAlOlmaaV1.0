@@ -13,6 +13,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
+use App\Models\Lesson;
+use App\Models\Lecture;
 
 class StudentsTable
 {
@@ -51,7 +53,12 @@ class StudentsTable
                 TextColumn::make('enrolled_lessons_count')
                     ->label('عدد الدورات المسجل فيها')
                     ->getStateUsing(function ($record) {
-                        return $record->studentLessons()->count();
+                        // عدد الدورات في الدبلومات المسجل فيها الطالب
+                        $sectionIds = $record->enrolledSections()->pluck('lesson_sections_id')->toArray();
+                        if (empty($sectionIds)) {
+                            return 0;
+                        }
+                        return Lesson::whereIn('lesson_section_id', $sectionIds)->count();
                     })
                     ->badge()
                     ->color('info')
@@ -60,9 +67,18 @@ class StudentsTable
                 TextColumn::make('monthly_lectures_count')
                     ->label('عدد المحاضرات هذا الشهر')
                     ->getStateUsing(function ($record) {
-                        return $record->attendances()
-                            ->whereMonth('attendance_date', Carbon::now()->month)
-                            ->whereYear('attendance_date', Carbon::now()->year)
+                        // عدد المحاضرات المفتوحة هذا الشهر في الدورات المسجل فيها
+                        $sectionIds = $record->enrolledSections()->pluck('lesson_sections_id')->toArray();
+                        if (empty($sectionIds)) {
+                            return 0;
+                        }
+                        $lessonIds = Lesson::whereIn('lesson_section_id', $sectionIds)->pluck('id')->toArray();
+                        if (empty($lessonIds)) {
+                            return 0;
+                        }
+                        return Lecture::whereIn('lesson_id', $lessonIds)
+                            ->whereMonth('lecture_date', Carbon::now()->month)
+                            ->whereYear('lecture_date', Carbon::now()->year)
                             ->count();
                     })
                     ->badge()
