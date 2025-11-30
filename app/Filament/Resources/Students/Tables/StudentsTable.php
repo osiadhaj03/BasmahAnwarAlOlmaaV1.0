@@ -59,19 +59,7 @@ class StudentsTable
                     ->color('primary')
                     ->icon('heroicon-o-bookmark'),
                 
-                TextColumn::make('enrolled_lessons_count')
-                    ->label('عدد الدورات المسجل فيها')
-                    ->getStateUsing(function ($record) {
-                        // عدد الدورات في الدبلومات المسجل فيها الطالب
-                        $sectionIds = $record->enrolledSections()->pluck('lesson_sections_id')->toArray();
-                        if (empty($sectionIds)) {
-                            return 0;
-                        }
-                        return Lesson::whereIn('lesson_section_id', $sectionIds)->count();
-                    })
-                    ->badge()
-                    ->color('info')
-                    ->icon('heroicon-o-academic-cap'),
+                
                 
                 TextColumn::make('monthly_lectures_count')
                     ->label('عدد المحاضرات هذا الشهر')
