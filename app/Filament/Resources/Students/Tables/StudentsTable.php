@@ -48,7 +48,26 @@ class StudentsTable
                     ->placeholder('غير محدد')
                     ->icon('heroicon-o-phone'),
                 
+                TextColumn::make('enrolled_lessons_count')
+                    ->label('عدد الدورات المسجل فيها')
+                    ->getStateUsing(function ($record) {
+                        return $record->studentLessons()->count();
+                    })
+                    ->badge()
+                    ->color('info')
+                    ->icon('heroicon-o-academic-cap'),
                 
+                TextColumn::make('monthly_lectures_count')
+                    ->label('عدد المحاضرات هذا الشهر')
+                    ->getStateUsing(function ($record) {
+                        return $record->attendances()
+                            ->whereMonth('attendance_date', Carbon::now()->month)
+                            ->whereYear('attendance_date', Carbon::now()->year)
+                            ->count();
+                    })
+                    ->badge()
+                    ->color('warning')
+                    ->icon('heroicon-o-calendar-days'),
                 
                                 
                 TextColumn::make('monthly_attendances_count')
