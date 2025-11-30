@@ -20,7 +20,7 @@ class UpdatePassword extends Page implements HasForms
 
     protected static string $resource = UserResource::class;
 
-    protected static string $view = 'filament.resources.users.pages.update-password';
+    protected string $view = 'filament.resources.users.pages.update-password';
 
     public ?array $data = [];
 
