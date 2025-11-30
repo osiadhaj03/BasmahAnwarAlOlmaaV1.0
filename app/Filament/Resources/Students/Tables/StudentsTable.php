@@ -12,15 +12,11 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
-<<<<<<< HEAD
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Attendance;
-=======
-use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
+use App\Models\Attendance;
 use App\Models\Lesson;
->>>>>>> 411e7fc17ca1948c27b4259167bd9def952946ad
 use App\Models\Lecture;
 
 class StudentsTable
