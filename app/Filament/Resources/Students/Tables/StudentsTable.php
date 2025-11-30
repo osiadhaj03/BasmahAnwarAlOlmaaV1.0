@@ -261,7 +261,6 @@ class StudentsTable
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
-<<<<<<< HEAD
                 Filter::make('date_range')
                     ->form([
                         DatePicker::make('from')
@@ -281,8 +280,8 @@ class StudentsTable
                             return null;
                         }
                         
-                        $from = $data['from'] ? \Carbon\Carbon::parse($data['from'])->format('Y-m-d') : 'البداية';
-                        $to = $data['to'] ? \Carbon\Carbon::parse($data['to'])->format('Y-m-d') : 'الآن';
+                        $from = $data['from'] ? Carbon::parse($data['from'])->format('Y-m-d') : 'البداية';
+                        $to = $data['to'] ? Carbon::parse($data['to'])->format('Y-m-d') : 'الآن';
                         
                         return "الفترة: {$from} - {$to}";
                     }),
@@ -306,9 +305,6 @@ class StudentsTable
                         'senior' => 'السنة الرابعة',
                         'graduate' => 'دراسات عليا',
                     ]),
-=======
-
->>>>>>> 411e7fc17ca1948c27b4259167bd9def952946ad
             ])
             ->recordActions([
                 ViewAction::make()
