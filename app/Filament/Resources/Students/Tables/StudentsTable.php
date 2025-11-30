@@ -133,7 +133,7 @@ class StudentsTable
             ->headerActions([
                 FilamentExportHeaderAction::make('export')
                     ->label('تصدير')
-                    ->fileName('الطلاب')
+                    ->fileName('Students')
                     ->defaultFormat('xlsx')
                     ->defaultPageOrientation('landscape'),
             ])
@@ -143,7 +143,7 @@ class StudentsTable
                         ->label('حذف المحدد'),
                     FilamentExportBulkAction::make('export')
                         ->label('تصدير المحدد')
-                        ->fileName('الطلاب_المحددين')
+                        ->fileName('Selected_Students')
                         ->defaultFormat('xlsx')
                         ->defaultPageOrientation('landscape'),
                 ]),
