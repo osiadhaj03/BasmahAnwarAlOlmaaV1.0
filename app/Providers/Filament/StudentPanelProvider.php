@@ -16,6 +16,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Student\Pages\StudentDashboard;
+use Jeffgreco13\FilamentBreezy\BreezyCore;
 
 class StudentPanelProvider extends PanelProvider
 {
@@ -33,6 +34,7 @@ class StudentPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Student/Widgets'), for: 'App\\Filament\\Student\\Widgets')
             ->registration(\App\Filament\Student\Pages\Auth\Register::class)
+            ->plugin(BreezyCore::make())
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
