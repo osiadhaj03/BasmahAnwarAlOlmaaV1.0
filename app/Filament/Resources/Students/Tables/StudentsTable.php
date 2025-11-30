@@ -83,7 +83,8 @@ class StudentsTable
                     })
                     ->badge()
                     ->color('warning')
-                    ->icon('heroicon-o-calendar-days'),
+                    ->icon('heroicon-o-calendar-days')
+                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
                                 
                 TextColumn::make('monthly_attendances_count')
@@ -104,7 +105,8 @@ class StudentsTable
                     ->badge()
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
-                    ->sortable(),
+                    ->sortable()
+                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
                 
                 
@@ -122,7 +124,7 @@ class StudentsTable
 
                 // أعمدة إحصائيات الحضور (تظهر عند تفعيل فلتر التاريخ)
                 TextColumn::make('total_lectures')
-                    ->label('عدد المحاضرات')
+                    ->label('عدد المحاضرات (الفترة)')
                     ->getStateUsing(function ($record, $livewire) {
                         $filters = $livewire->tableFilters;
                         $from = $filters['date_range']['from'] ?? null;
@@ -145,10 +147,10 @@ class StudentsTable
                     })
                     ->badge()
                     ->color('info')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->hidden(fn ($livewire) => empty($livewire->tableFilters['date_range']['from']) && empty($livewire->tableFilters['date_range']['to'])),
 
                 TextColumn::make('attendance_count')
-                    ->label('عدد الحضور')
+                    ->label('عدد الحضور (الفترة)')
                     ->getStateUsing(function ($record, $livewire) {
                         $filters = $livewire->tableFilters;
                         $from = $filters['date_range']['from'] ?? null;
@@ -176,10 +178,10 @@ class StudentsTable
                     })
                     ->badge()
                     ->color('success')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->hidden(fn ($livewire) => empty($livewire->tableFilters['date_range']['from']) && empty($livewire->tableFilters['date_range']['to'])),
 
                 TextColumn::make('absence_count')
-                    ->label('عدد الغياب')
+                    ->label('عدد الغياب (الفترة)')
                     ->getStateUsing(function ($record, $livewire) {
                         $filters = $livewire->tableFilters;
                         $from = $filters['date_range']['from'] ?? null;
@@ -207,10 +209,10 @@ class StudentsTable
                     })
                     ->badge()
                     ->color('danger')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->hidden(fn ($livewire) => empty($livewire->tableFilters['date_range']['from']) && empty($livewire->tableFilters['date_range']['to'])),
 
                 TextColumn::make('attendance_percentage')
-                    ->label('نسبة الحضور')
+                    ->label('نسبة الحضور (الفترة)')
                     ->getStateUsing(function ($record, $livewire) {
                         $filters = $livewire->tableFilters;
                         $from = $filters['date_range']['from'] ?? null;
@@ -258,7 +260,7 @@ class StudentsTable
                         (float) rtrim($state, '%') >= 50 => 'warning',
                         default => 'danger',
                     })
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->hidden(fn ($livewire) => empty($livewire->tableFilters['date_range']['from']) && empty($livewire->tableFilters['date_range']['to'])),
             ])
             ->filters([
                 Filter::make('date_range')
