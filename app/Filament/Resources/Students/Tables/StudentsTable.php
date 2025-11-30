@@ -50,6 +50,15 @@ class StudentsTable
                     ->placeholder('غير محدد')
                     ->icon('heroicon-o-phone'),
                 
+                TextColumn::make('enrolled_sections_count')
+                    ->label('عدد الدبلومات المسجل فيها')
+                    ->getStateUsing(function ($record) {
+                        return $record->enrolledSections()->count();
+                    })
+                    ->badge()
+                    ->color('primary')
+                    ->icon('heroicon-o-bookmark'),
+                
                 TextColumn::make('enrolled_lessons_count')
                     ->label('عدد الدورات المسجل فيها')
                     ->getStateUsing(function ($record) {
