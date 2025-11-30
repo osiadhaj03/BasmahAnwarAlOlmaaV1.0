@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Students\Tables;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -128,10 +130,22 @@ class StudentsTable
                 EditAction::make()
                     ->label('تعديل'),
             ])
-            ->toolbarActions([
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->label('تصدير')
+                    ->fileName('الطلاب')
+                    ->defaultFormat('xlsx')
+                    ->defaultPageOrientation('landscape'),
+            ])
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->label('حذف المحدد'),
+                    FilamentExportBulkAction::make('export')
+                        ->label('تصدير المحدد')
+                        ->fileName('الطلاب_المحددين')
+                        ->defaultFormat('xlsx')
+                        ->defaultPageOrientation('landscape'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')
