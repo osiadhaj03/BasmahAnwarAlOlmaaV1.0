@@ -65,7 +65,7 @@ class StudentsTable
                     ->label('عدد المحاضرات هذا الشهر')
                     ->getStateUsing(function ($record) {
                         // عدد المحاضرات المفتوحة هذا الشهر في الدورات المسجل فيها
-                        $sectionIds = $record->enrolledSections()->pluck('lesson_sections_id')->toArray();
+                        $sectionIds = $record->enrolledSections()->pluck('lessons_sections.id')->toArray();
                         if (empty($sectionIds)) {
                             return 0;
                         }
