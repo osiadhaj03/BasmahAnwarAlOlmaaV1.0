@@ -32,16 +32,36 @@ class ViewLecture extends ViewRecord
                     // جلب جميع طلاب الدورة
                     $allStudentIds = $lesson->students()->pluck('users.id')->toArray();
                     
-                    // جلب الطلاب الذين سجلوا حضورهم
-                    $attendedStudentIds = $lecture->attendances()->pluck('student_id')->toArray();
+                    if (empty($allStudentIds)) {
+                        Notification::make()
+                            ->title('لا يوجد طلاب مسجلين')
+                            ->body('لا يوجد طلاب مسجلين في هذه الدورة')
+                            ->warning()
+                            ->send();
+                        return;
+                    }
                     
-                    // الطلاب الغائبين = الكل - الحاضرين
-                    $absentStudentIds = array_diff($allStudentIds, $attendedStudentIds);
+                    // جلب الطلاب الذين سجلوا حضورهم فقط (present أو late)
+                    $attendedStudentIds = $lecture->attendances()
+                        ->whereIn('status', ['present', 'late'])
+                        ->pluck('student_id')
+                        ->toArray();
+                    
+                    // جلب الطلاب الذين لديهم سجل غياب مسبق
+                    $alreadyAbsentIds = $lecture->attendances()
+                        ->where('status', 'absent')
+                        ->pluck('student_id')
+                        ->toArray();
+                    
+                    // الطلاب الغائبين = الكل - الحاضرين - المسجل غيابهم مسبقاً
+                    $absentStudentIds = array_diff($allStudentIds, $attendedStudentIds, $alreadyAbsentIds);
                     
                     if (empty($absentStudentIds)) {
+                        $presentCount = count($attendedStudentIds);
+                        $absentCount = count($alreadyAbsentIds);
                         Notification::make()
-                            ->title('لا يوجد طلاب غائبين')
-                            ->body('جميع طلاب الدورة قد سجلوا حضورهم أو تم تسجيل غيابهم مسبقاً')
+                            ->title('لا يوجد طلاب غائبين جدد')
+                            ->body("الحاضرين: {$presentCount} | الغائبين المسجلين مسبقاً: {$absentCount}")
                             ->info()
                             ->send();
                         return;

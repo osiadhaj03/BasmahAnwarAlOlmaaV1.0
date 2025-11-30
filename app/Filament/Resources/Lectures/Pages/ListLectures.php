@@ -39,7 +39,7 @@ class ListLectures extends ListRecords
                         });
                     }
                     
-                    $lectures = $lecturesQuery->get();
+                    $lectures = $lecturesQuery->with(['lesson.students', 'attendances'])->get();
                     
                     if ($lectures->isEmpty()) {
                         Notification::make()
@@ -51,6 +51,8 @@ class ListLectures extends ListRecords
                     
                     $totalAbsences = 0;
                     $processedLectures = 0;
+                    $totalStudents = 0;
+                    $totalLectures = $lectures->count();
                     
                     foreach ($lectures as $lecture) {
                         $lesson = $lecture->lesson;
@@ -61,12 +63,22 @@ class ListLectures extends ListRecords
                         
                         // جلب جميع طلاب الدورة
                         $allStudentIds = $lesson->students()->pluck('users.id')->toArray();
+                        $totalStudents += count($allStudentIds);
                         
-                        // جلب الطلاب الذين سجلوا حضورهم أو غيابهم
-                        $recordedStudentIds = $lecture->attendances()->pluck('student_id')->toArray();
+                        // جلب الطلاب الذين سجلوا حضورهم فقط (present أو late)
+                        $attendedStudentIds = $lecture->attendances()
+                            ->whereIn('status', ['present', 'late'])
+                            ->pluck('student_id')
+                            ->toArray();
                         
-                        // الطلاب الغائبين = الكل - المسجلين
-                        $absentStudentIds = array_diff($allStudentIds, $recordedStudentIds);
+                        // الطلاب الذين لديهم سجل غياب مسبق
+                        $alreadyAbsentIds = $lecture->attendances()
+                            ->where('status', 'absent')
+                            ->pluck('student_id')
+                            ->toArray();
+                        
+                        // الطلاب الغائبين = الكل - الحاضرين - المسجل غيابهم مسبقاً
+                        $absentStudentIds = array_diff($allStudentIds, $attendedStudentIds, $alreadyAbsentIds);
                         
                         if (empty($absentStudentIds)) {
                             continue;
@@ -90,8 +102,8 @@ class ListLectures extends ListRecords
                     
                     if ($totalAbsences === 0) {
                         Notification::make()
-                            ->title('لا يوجد طلاب غائبين')
-                            ->body('جميع الطلاب قد سجلوا حضورهم أو تم تسجيل غيابهم مسبقاً')
+                            ->title('لا يوجد طلاب غائبين جدد')
+                            ->body("تم فحص {$totalLectures} محاضرة. جميع الطلاب إما حاضرين أو مسجل غيابهم مسبقاً.")
                             ->info()
                             ->send();
                     } else {
