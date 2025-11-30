@@ -277,8 +277,8 @@ class Lesson extends Model
             ->setMinute($lessonStart->minute)
             ->setSecond(0);
 
-        // إذا سجل قبل أو في وقت بداية الدرس + 15 دقيقة = حاضر
-        $lateThreshold = $lessonStartDateTime->copy()->addMinutes(15);
+        // إذا سجل قبل أو في وقت بداية الدرس + 30 دقيقة = حاضر
+        $lateThreshold = $lessonStartDateTime->copy()->addMinutes(30);
         
         if ($regTime <= $lateThreshold) {
             return 'present';

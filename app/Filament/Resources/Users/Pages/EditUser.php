@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Users\Pages;
 
 use App\Filament\Resources\Users\UserResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
 
 class EditUser extends EditRecord
 {
@@ -13,9 +15,20 @@ class EditUser extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
+        $actions = [
             ViewAction::make(),
             DeleteAction::make(),
         ];
+
+        // إضافة زر تحديث كلمة المرور للمدراء والمستخدم الخاص به
+        if (Auth::check() && (Auth::user()->type === 'admin' || Auth::user()->id === $this->record->id)) {
+            $actions[] = Action::make('updatePassword')
+                ->label('تحديث كلمة المرور')
+                ->icon('heroicon-m-lock-closed')
+                ->color('primary')
+                ->url(route('filament.admin.resources.users.updatePassword', ['record' => $this->record]));
+        }
+
+        return $actions;
     }
 }

@@ -136,7 +136,7 @@ class Register extends BaseRegister
             'bio' => $data['bio'] ?? null,
             'type' => 'student',
             'is_active' => true,
-            'password' => $data['password'],
+            'password' => $data['password'],  // اترك الـ cast يشفرها (بدون Hash::make!)
         ]);
 
         // ربط الأقسام المختارة بالطالب في Pivot مع حالة نشطة

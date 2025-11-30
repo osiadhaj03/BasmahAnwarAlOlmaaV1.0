@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Students\Tables;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -10,9 +12,15 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+<<<<<<< HEAD
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Attendance;
+=======
+use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use App\Models\Lesson;
+>>>>>>> 411e7fc17ca1948c27b4259167bd9def952946ad
 use App\Models\Lecture;
 
 class StudentsTable
@@ -49,61 +57,60 @@ class StudentsTable
                     ->placeholder('غير محدد')
                     ->icon('heroicon-o-phone'),
                 
-                TextColumn::make('level')
-                    ->label('المستوى الدراسي')
-                    ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'freshman' => 'السنة الأولى',
-                        'sophomore' => 'السنة الثانية',
-                        'junior' => 'السنة الثالثة',
-                        'senior' => 'السنة الرابعة',
-                        'graduate' => 'دراسات عليا',
-                        default => $state,
+                TextColumn::make('enrolled_sections_count')
+                    ->label('عدد الدبلومات المسجل فيها')
+                    ->getStateUsing(function ($record) {
+                        return $record->enrolledSections()->count();
                     })
-                    ->colors([
-                        'primary' => 'freshman',
-                        'success' => 'sophomore',
-                        'warning' => 'junior',
-                        'danger' => 'senior',
-                        'info' => 'graduate',
+                    ->badge()
+                    ->color('primary')
+                    ->icon('heroicon-o-bookmark'),
+                
+                
+                
+                TextColumn::make('monthly_lectures_count')
+                    ->label('عدد المحاضرات هذا الشهر')
+                    ->getStateUsing(function ($record) {
+                        // عدد المحاضرات المفتوحة هذا الشهر في الدورات المسجل فيها
+                        $sectionIds = $record->enrolledSections()->pluck('lessons_sections.id')->toArray();
+                        if (empty($sectionIds)) {
+                            return 0;
+                        }
+                        $lessonIds = Lesson::whereIn('lesson_section_id', $sectionIds)->pluck('id')->toArray();
+                        if (empty($lessonIds)) {
+                            return 0;
+                        }
+                        return Lecture::whereIn('lesson_id', $lessonIds)
+                            ->whereMonth('lecture_date', Carbon::now()->month)
+                            ->whereYear('lecture_date', Carbon::now()->year)
+                            ->count();
+                    })
+                    ->badge()
+                    ->color('warning')
+                    ->icon('heroicon-o-calendar-days'),
+                
+                                
+                TextColumn::make('monthly_attendances_count')
+                    ->label('الحضور هذا الشهر')
+                    ->counts([
+                        'attendances' => fn (Builder $query) => $query
+                            ->where('status', 'present')
+                            ->whereMonth('attendance_date', Carbon::now()->month)
+                            ->whereYear('attendance_date', Carbon::now()->year),
                     ])
-                    ->placeholder('غير محدد'),
-                
-                TextColumn::make('specialization')
-                    ->label('التخصص')
-                    ->searchable()
-                    ->placeholder('غير محدد')
-                    ->icon('heroicon-o-academic-cap'),
-                
-                TextColumn::make('status')
-                    ->label('الحالة')
-                    ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'active' => 'نشط',
-                        'inactive' => 'غير نشط',
-                        'graduated' => 'متخرج',
-                        'suspended' => 'موقوف',
-                        'transferred' => 'محول',
-                        default => $state,
+                    ->getStateUsing(function ($record) {
+                        return $record->attendances()
+                            ->where('status', 'present')
+                            ->whereMonth('attendance_date', Carbon::now()->month)
+                            ->whereYear('attendance_date', Carbon::now()->year)
+                            ->count();
                     })
-                    ->colors([
-                        'success' => 'active',
-                        'gray' => 'inactive',
-                        'info' => 'graduated',
-                        'danger' => 'suspended',
-                        'warning' => 'transferred',
-                    ]),
+                    ->badge()
+                    ->color('success')
+                    ->icon('heroicon-o-check-circle')
+                    ->sortable(),
                 
-                TextColumn::make('date_of_birth')
-                    ->label('تاريخ الميلاد')
-                    ->date('Y-m-d')
-                    ->placeholder('غير محدد')
-                    ->toggleable(isToggledHiddenByDefault: true),
                 
-                TextColumn::make('emergency_contact_name')
-                    ->label('جهة الاتصال في الطوارئ')
-                    ->placeholder('غير محدد')
-                    ->toggleable(isToggledHiddenByDefault: true),
                 
                 TextColumn::make('created_at')
                     ->label('تاريخ التسجيل')
@@ -258,6 +265,7 @@ class StudentsTable
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
+<<<<<<< HEAD
                 Filter::make('date_range')
                     ->form([
                         DatePicker::make('from')
@@ -302,6 +310,9 @@ class StudentsTable
                         'senior' => 'السنة الرابعة',
                         'graduate' => 'دراسات عليا',
                     ]),
+=======
+
+>>>>>>> 411e7fc17ca1948c27b4259167bd9def952946ad
             ])
             ->recordActions([
                 ViewAction::make()
@@ -309,10 +320,22 @@ class StudentsTable
                 EditAction::make()
                     ->label('تعديل'),
             ])
-            ->toolbarActions([
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->label('تصدير')
+                    ->fileName('Students')
+                    ->defaultFormat('xlsx')
+                    ->defaultPageOrientation('landscape'),
+            ])
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->label('حذف المحدد'),
+                    FilamentExportBulkAction::make('export')
+                        ->label('تصدير المحدد')
+                        ->fileName('Selected_Students')
+                        ->defaultFormat('xlsx')
+                        ->defaultPageOrientation('landscape'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')
