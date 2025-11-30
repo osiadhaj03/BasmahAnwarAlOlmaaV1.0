@@ -13,7 +13,8 @@ class AttendanceObserver
     public function creating(Attendance $attendance): void
     {
        // التحقق من أن التسجيل اليدوي يتم في الوقت الفعلي للدورة
-        if ($attendance->attendance_method === 'manual' && $attendance->lesson) {
+       // السماح بتسجيل الغياب في أي وقت
+        if ($attendance->attendance_method === 'manual' && $attendance->status !== 'absent' && $attendance->lesson) {
             if (!$attendance->lesson->isCurrentlyInLessonTime()) {
                 $errorMessage = $attendance->lesson->getOutOfTimeErrorMessage();
                 throw new \Exception($errorMessage);
