@@ -29,39 +29,37 @@ class ViewLecture extends ViewRecord
                     $lecture = $this->record;
                     $lesson = $lecture->lesson;
                     
-                    // جلب جميع طلاب الدورة
+                    // جلب الطلاب: أولاً من الدورة مباشرة، ثم من الدبلوم
                     $allStudentIds = $lesson->students()->pluck('users.id')->toArray();
+                    
+                    // إذا لم يكن هناك طلاب مسجلين في الدورة، جلبهم من الدبلوم
+                    if (empty($allStudentIds) && $lesson->lessonSection) {
+                        $allStudentIds = $lesson->lessonSection->enrolledStudents()->pluck('users.id')->toArray();
+                    }
                     
                     if (empty($allStudentIds)) {
                         Notification::make()
                             ->title('لا يوجد طلاب مسجلين')
-                            ->body('لا يوجد طلاب مسجلين في هذه الدورة')
+                            ->body('لا يوجد طلاب مسجلين في هذه الدورة أو الدبلوم')
                             ->warning()
                             ->send();
                         return;
                     }
                     
-                    // جلب الطلاب الذين سجلوا حضورهم فقط (present أو late)
-                    $attendedStudentIds = $lecture->attendances()
-                        ->whereIn('status', ['present', 'late'])
+                    // جلب الطلاب الذين لديهم أي سجل حضور
+                    $recordedStudentIds = $lecture->attendances()
                         ->pluck('student_id')
                         ->toArray();
                     
-                    // جلب الطلاب الذين لديهم سجل غياب مسبق
-                    $alreadyAbsentIds = $lecture->attendances()
-                        ->where('status', 'absent')
-                        ->pluck('student_id')
-                        ->toArray();
-                    
-                    // الطلاب الغائبين = الكل - الحاضرين - المسجل غيابهم مسبقاً
-                    $absentStudentIds = array_diff($allStudentIds, $attendedStudentIds, $alreadyAbsentIds);
+                    // الطلاب الغائبين = الكل - المسجلين
+                    $absentStudentIds = array_diff($allStudentIds, $recordedStudentIds);
                     
                     if (empty($absentStudentIds)) {
-                        $presentCount = count($attendedStudentIds);
-                        $absentCount = count($alreadyAbsentIds);
+                        $totalStudents = count($allStudentIds);
+                        $recordedCount = count($recordedStudentIds);
                         Notification::make()
                             ->title('لا يوجد طلاب غائبين جدد')
-                            ->body("الحاضرين: {$presentCount} | الغائبين المسجلين مسبقاً: {$absentCount}")
+                            ->body("إجمالي الطلاب: {$totalStudents} | لديهم سجلات: {$recordedCount}")
                             ->info()
                             ->send();
                         return;

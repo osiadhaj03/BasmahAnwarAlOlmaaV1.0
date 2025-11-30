@@ -29,8 +29,9 @@ class ListLectures extends ListRecords
                 ->action(function () {
                     $user = Auth::user();
                     
-                    // جلب المحاضرات المنتهية
-                    $lecturesQuery = Lecture::where('lecture_date', '<', now());
+                    // جلب المحاضرات المنتهية مع العلاقات
+                    $lecturesQuery = Lecture::where('lecture_date', '<', now())
+                        ->with(['lesson.lessonSection.enrolledStudents', 'lesson.students', 'attendances']);
                     
                     // إذا كان المستخدم معلم، فقط محاضرات دوراته
                     if ($user->type === 'teacher') {
@@ -39,7 +40,7 @@ class ListLectures extends ListRecords
                         });
                     }
                     
-                    $lectures = $lecturesQuery->with(['lesson.students', 'attendances'])->get();
+                    $lectures = $lecturesQuery->get();
                     
                     if ($lectures->isEmpty()) {
                         Notification::make()
@@ -51,7 +52,6 @@ class ListLectures extends ListRecords
                     
                     $totalAbsences = 0;
                     $processedLectures = 0;
-                    $totalStudents = 0;
                     $totalLectures = $lectures->count();
                     
                     foreach ($lectures as $lecture) {
@@ -61,24 +61,25 @@ class ListLectures extends ListRecords
                             continue;
                         }
                         
-                        // جلب جميع طلاب الدورة
+                        // جلب الطلاب: أولاً من الدورة مباشرة، ثم من الدبلوم
                         $allStudentIds = $lesson->students()->pluck('users.id')->toArray();
-                        $totalStudents += count($allStudentIds);
                         
-                        // جلب الطلاب الذين سجلوا حضورهم فقط (present أو late)
-                        $attendedStudentIds = $lecture->attendances()
-                            ->whereIn('status', ['present', 'late'])
+                        // إذا لم يكن هناك طلاب مسجلين في الدورة، جلبهم من الدبلوم
+                        if (empty($allStudentIds) && $lesson->lessonSection) {
+                            $allStudentIds = $lesson->lessonSection->enrolledStudents()->pluck('users.id')->toArray();
+                        }
+                        
+                        if (empty($allStudentIds)) {
+                            continue;
+                        }
+                        
+                        // جلب الطلاب الذين لديهم أي سجل حضور (حاضر، متأخر، أو غائب)
+                        $recordedStudentIds = $lecture->attendances()
                             ->pluck('student_id')
                             ->toArray();
                         
-                        // الطلاب الذين لديهم سجل غياب مسبق
-                        $alreadyAbsentIds = $lecture->attendances()
-                            ->where('status', 'absent')
-                            ->pluck('student_id')
-                            ->toArray();
-                        
-                        // الطلاب الغائبين = الكل - الحاضرين - المسجل غيابهم مسبقاً
-                        $absentStudentIds = array_diff($allStudentIds, $attendedStudentIds, $alreadyAbsentIds);
+                        // الطلاب الغائبين = الكل - المسجلين
+                        $absentStudentIds = array_diff($allStudentIds, $recordedStudentIds);
                         
                         if (empty($absentStudentIds)) {
                             continue;
@@ -103,7 +104,7 @@ class ListLectures extends ListRecords
                     if ($totalAbsences === 0) {
                         Notification::make()
                             ->title('لا يوجد طلاب غائبين جدد')
-                            ->body("تم فحص {$totalLectures} محاضرة. جميع الطلاب إما حاضرين أو مسجل غيابهم مسبقاً.")
+                            ->body("تم فحص {$totalLectures} محاضرة. جميع الطلاب لديهم سجلات حضور.")
                             ->info()
                             ->send();
                     } else {
