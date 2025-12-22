@@ -27,10 +27,10 @@ class ActiveLecturesWidget extends BaseWidget
         return $table
             ->query($this->getTableQuery())
             ->columns([
-                TextColumn::make('title')
-                    ->label('عنوان المحاضرة')
-                    
-                    ->sortable(),
+                ///TextColumn::make('title')
+                ///    ->label('عنوان المحاضرة')
+                ///    
+                ///    ->sortable(),
                     
                 TextColumn::make('lesson.title')
                     ->label('اسم الدورة')
@@ -42,24 +42,24 @@ class ActiveLecturesWidget extends BaseWidget
                     ->dateTime('Y-m-d H:i')
                     ->sortable(),
                     
-                TextColumn::make('duration_minutes')
-                    ->label('المدة')
-                    ->formatStateUsing(fn ($state) => $state . ' دقيقة')
-                    ->sortable(),
+                //TextColumn::make('duration_minutes')
+                //    ->label('المدة')
+                //    ->formatStateUsing(fn ($state) => $state . ' دقيقة')
+                //    ->sortable(),
                     
-                TextColumn::make('location')
-                    ->label('الموقع'),
-                    
-                TextColumn::make('status_arabic')
-                    ->label('الحالة')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'scheduled' => 'warning',
-                        'ongoing' => 'success',
-                        'completed' => 'gray',
-                        'cancelled' => 'danger',
-                        default => 'gray',
-                    }),
+                //TextColumn::make('location')
+                //    ->label('الموقع'),
+                //    
+                //TextColumn::make('status_arabic')
+                //    ->label('الحالة')
+                //    ->badge()
+                //    ->color(fn (string $state): string => match ($state) {
+                //        'scheduled' => 'warning',
+                //        'ongoing' => 'success',
+                //        'completed' => 'gray',
+                //        'cancelled' => 'danger',
+                //        default => 'gray',
+                //    }),
             ])
             ->actions([
                 Action::make('register_attendance')

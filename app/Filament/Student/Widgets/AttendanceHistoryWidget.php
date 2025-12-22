@@ -64,16 +64,16 @@ class AttendanceHistoryWidget extends BaseWidget
                         'info' => 'excused',
                     ]),
                 
-                TextColumn::make('attendance_method')
-                    ->label('طريقة التسجيل')
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'code' => 'كود الحضور',
-                        'manual' => 'يدوي',
-                        'auto' => 'تلقائي',
-                        default => $state,
-                    })
-                    ->badge()
-                    ->color('gray'),
+                //TextColumn::make('attendance_method')
+                //    ->label('طريقة التسجيل')
+                //    ->formatStateUsing(fn (string $state): string => match ($state) {
+                //        'code' => 'كود الحضور',
+                //        'manual' => 'يدوي',
+                //        'auto' => 'تلقائي',
+                //        default => $state,
+                //    })
+                //    ->badge()
+                //    ->color('gray'),
                 
                 TextColumn::make('notes')
                     ->label('ملاحظات')
