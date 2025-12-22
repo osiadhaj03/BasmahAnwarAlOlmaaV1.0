@@ -78,7 +78,7 @@ class ActiveLecturesWidget extends BaseWidget
             ])
             ->defaultSort('lecture_date', 'asc')
             ->striped()
-            ->paginated([10, 25, 50])
+            //->paginated([10, 25, 50])
             ->poll('30s'); // تحديث كل 30 ثانية
     }
 
