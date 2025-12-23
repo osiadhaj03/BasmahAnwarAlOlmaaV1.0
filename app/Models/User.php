@@ -79,9 +79,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
             return in_array($this->type, ['admin', 'teacher']);
         }
 
-        // Student panel - للطلاب فقط
+        // Student panel - للطلاب والزبائن
         if ($panel->getId() === 'student') {
-            return $this->type === 'student';
+            return in_array($this->type, ['student', 'customer']);
+        }
+
+        // Cook panel - للطباخين فقط
+        if ($panel->getId() === 'cook') {
+            return $this->type === 'cook';
         }
 
         return false;
@@ -127,6 +132,83 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->hasMany(Attendance::class, 'marked_by');
     }
 
+    // علاقات نظام المطبخ
+
+    /**
+     * المطابخ التي يعمل بها كطباخ
+     */
+    public function kitchens()
+    {
+        return $this->belongsToMany(Kitchen::class, 'kitchen_cooks', 'user_id', 'kitchen_id')
+            ->withPivot('specialty', 'is_active')
+            ->withTimestamps();
+    }
+
+    /**
+     * سجلات العمل في المطابخ
+     */
+    public function kitchenCookRecords()
+    {
+        return $this->hasMany(KitchenCook::class);
+    }
+
+    /**
+     * اشتراكات الطعام (كزبون)
+     */
+    public function kitchenSubscriptions()
+    {
+        return $this->hasMany(KitchenSubscription::class);
+    }
+
+    /**
+     * الوجبات المستلمة (كزبون)
+     */
+    public function mealDeliveries()
+    {
+        return $this->hasMany(MealDelivery::class);
+    }
+
+    /**
+     * الوجبات التي سلّمها (كطباخ)
+     */
+    public function deliveredMeals()
+    {
+        return $this->hasMany(MealDelivery::class, 'delivered_by');
+    }
+
+    /**
+     * الفواتير (كزبون)
+     */
+    public function kitchenInvoices()
+    {
+        return $this->hasMany(KitchenInvoice::class);
+    }
+
+    /**
+     * الفواتير المستلمة (كطباخ أو مدير)
+     */
+    public function collectedInvoices()
+    {
+        return $this->hasMany(KitchenInvoice::class, 'collected_by');
+    }
+
+    /**
+     * مجموعات الزبائن
+     */
+    public function customerGroups()
+    {
+        return $this->belongsToMany(CustomerGroup::class, 'customer_group_members', 'user_id', 'group_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * المصروفات التي أنشأها
+     */
+    public function createdExpenses()
+    {
+        return $this->hasMany(KitchenExpense::class, 'created_by');
+    }
+
     // Helper methods
     public function isAdmin()
     {
@@ -141,6 +223,24 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     public function isStudent()
     {
         return $this->type === 'student';
+    }
+
+    public function isCustomer()
+    {
+        return $this->type === 'customer';
+    }
+
+    public function isCook()
+    {
+        return $this->type === 'cook';
+    }
+
+    /**
+     * هل لديه اشتراك طعام نشط؟
+     */
+    public function hasActiveKitchenSubscription(): bool
+    {
+        return $this->kitchenSubscriptions()->where('status', 'active')->exists();
     }
 
     public function getFullNameAttribute()
