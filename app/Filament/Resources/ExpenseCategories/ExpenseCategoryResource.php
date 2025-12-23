@@ -9,6 +9,7 @@ use App\Filament\Resources\ExpenseCategories\Schemas\ExpenseCategoryForm;
 use App\Filament\Resources\ExpenseCategories\Tables\ExpenseCategoriesTable;
 use App\Models\ExpenseCategory;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -21,6 +22,14 @@ class ExpenseCategoryResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'ExpenseCategory';
+
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة المطبخ';
+
+    protected static ?string $navigationLabel = 'أقسام المصاريف';
+
+    protected static ?string $modelLabel = 'أقسام المصاريف';
+
+    protected static ?string $pluralModelLabel = 'أقسام المصاريف';
 
     public static function form(Schema $schema): Schema
     {

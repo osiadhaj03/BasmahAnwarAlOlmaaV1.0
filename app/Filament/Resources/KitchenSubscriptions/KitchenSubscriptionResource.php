@@ -9,6 +9,7 @@ use App\Filament\Resources\KitchenSubscriptions\Schemas\KitchenSubscriptionForm;
 use App\Filament\Resources\KitchenSubscriptions\Tables\KitchenSubscriptionsTable;
 use App\Models\KitchenSubscription;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -18,9 +19,17 @@ class KitchenSubscriptionResource extends Resource
 {
     protected static ?string $model = KitchenSubscription::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-check';
 
     protected static ?string $recordTitleAttribute = 'KitchenSubscription';
+
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الاشتراكات و الدفعات';
+
+    protected static ?string $navigationLabel = 'الاشتراكات';
+
+    protected static ?string $modelLabel = 'الاشتراكات';
+
+    protected static ?string $pluralModelLabel = 'الاشتراكات';
 
     public static function form(Schema $schema): Schema
     {

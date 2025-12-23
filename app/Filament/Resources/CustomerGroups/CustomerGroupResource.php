@@ -9,6 +9,7 @@ use App\Filament\Resources\CustomerGroups\Schemas\CustomerGroupForm;
 use App\Filament\Resources\CustomerGroups\Tables\CustomerGroupsTable;
 use App\Models\CustomerGroup;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -21,6 +22,16 @@ class CustomerGroupResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'CustomerGroup';
+
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة المشتركين';
+
+    protected static ?string $navigationLabel = 'مجموعات المشتركين';
+
+    protected static ?string $modelLabel = 'مجموعات المشتركين';
+
+    protected static ?string $pluralModelLabel = 'مجموعات المشتركين';
+
+
 
     public static function form(Schema $schema): Schema
     {

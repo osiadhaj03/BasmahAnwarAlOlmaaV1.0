@@ -9,6 +9,7 @@ use App\Filament\Resources\KitchenExpenses\Schemas\KitchenExpenseForm;
 use App\Filament\Resources\KitchenExpenses\Tables\KitchenExpensesTable;
 use App\Models\KitchenExpense;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -18,9 +19,17 @@ class KitchenExpenseResource extends Resource
 {
     protected static ?string $model = KitchenExpense::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-arrow-up';
 
     protected static ?string $recordTitleAttribute = 'KitchenExpense';
+
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة المطبخ';
+
+    protected static ?string $navigationLabel = 'المصاريف';
+
+    protected static ?string $modelLabel = 'المصاريف';
+
+    protected static ?string $pluralModelLabel = 'المصاريف';
 
     public static function form(Schema $schema): Schema
     {

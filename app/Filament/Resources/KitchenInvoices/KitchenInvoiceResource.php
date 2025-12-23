@@ -9,6 +9,7 @@ use App\Filament\Resources\KitchenInvoices\Schemas\KitchenInvoiceForm;
 use App\Filament\Resources\KitchenInvoices\Tables\KitchenInvoicesTable;
 use App\Models\KitchenInvoice;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -18,9 +19,18 @@ class KitchenInvoiceResource extends Resource
 {
     protected static ?string $model = KitchenInvoice::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $recordTitleAttribute = 'KitchenInvoice';
+
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الاشتراكات و الدفعات';
+
+    protected static ?string $navigationLabel = 'الفواتير';
+
+    protected static ?string $modelLabel = 'الفواتير';
+
+    protected static ?string $pluralModelLabel = 'الفواتير';
+
 
     public static function form(Schema $schema): Schema
     {

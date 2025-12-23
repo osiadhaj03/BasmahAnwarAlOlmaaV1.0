@@ -27,7 +27,7 @@ class SupplierResource extends Resource
 
     protected static ?string $pluralModelLabel = 'الموردين';
 
-    protected static UnitEnum|string|null $navigationGroup = 'إدارة الموردين';        
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة المطبخ';        
 
     public static function form(Schema $schema): Schema
     {
