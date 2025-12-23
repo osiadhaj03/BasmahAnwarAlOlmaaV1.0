@@ -9,18 +9,27 @@ use App\Filament\Resources\Meals\Schemas\MealForm;
 use App\Filament\Resources\Meals\Tables\MealsTable;
 use App\Models\Meal;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Filament\Support\Icons\Heroicon;
 
 class MealResource extends Resource
 {
     protected static ?string $model = Meal::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
     protected static ?string $recordTitleAttribute = 'Meal';
+
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الوجبات والتسليم';
+
+    protected static ?string $navigationLabel = 'الوجبات';
+
+    protected static ?string $modelLabel = 'الوجبة';
+
+    protected static ?string $pluralModelLabel = 'الوجبات';
 
     public static function form(Schema $schema): Schema
     {

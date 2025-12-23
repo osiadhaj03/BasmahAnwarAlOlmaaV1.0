@@ -9,6 +9,7 @@ use App\Filament\Resources\MealDeliveries\Schemas\MealDeliveryForm;
 use App\Filament\Resources\MealDeliveries\Tables\MealDeliveriesTable;
 use App\Models\MealDelivery;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -18,9 +19,18 @@ class MealDeliveryResource extends Resource
 {
     protected static ?string $model = MealDelivery::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-arrow-down';
 
     protected static ?string $recordTitleAttribute = 'MealDelivery';
+
+     protected static UnitEnum|string|null $navigationGroup = 'إدارة الوجبات والتسليم';
+
+    protected static ?string $navigationLabel = 'تسليم الوجبات';
+
+    protected static ?string $modelLabel = 'تسليم الوجبات';
+
+    protected static ?string $pluralModelLabel = 'تسليم الوجبات';   
+
 
     public static function form(Schema $schema): Schema
     {
