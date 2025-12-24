@@ -21,6 +21,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'email',
         'password',
         'type',
+        'kitchen_id',
         'phone',
         'student_id',
         'academic_level',
@@ -76,17 +77,18 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
         // Admin panel - للمدراء والمعلمين فقط
         if ($panel->getId() === 'admin') {
-            return in_array($this->type, ['admin', 'teacher']);
+            // دعم مزدوج: الأدوار الجديدة أو type القديم
+            return $this->hasRole(['admin', 'teacher']) || in_array($this->type, ['admin', 'teacher']);
         }
 
         // Student panel - للطلاب والزبائن
         if ($panel->getId() === 'student') {
-            return in_array($this->type, ['student', 'customer']);
+            return $this->hasRole(['student', 'customer']) || in_array($this->type, ['student', 'customer']);
         }
 
         // Cook panel - للطباخين فقط
         if ($panel->getId() === 'cook') {
-            return $this->type === 'cook';
+            return $this->hasRole('cook') || $this->type === 'cook';
         }
 
         return false;
@@ -133,6 +135,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     }
 
     // علاقات نظام المطبخ
+
+    /**
+     * المطبخ الذي يعمل به الطباخ
+     */
+    public function kitchen()
+    {
+        return $this->belongsTo(Kitchen::class);
+    }
 
     /**
      * المطابخ التي يعمل بها كطباخ
@@ -209,30 +219,51 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->hasMany(KitchenExpense::class, 'created_by');
     }
 
+    /**
+     * أدوار المستخدم
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user')
+            ->withTimestamps();
+    }
+
+    /**
+     * التحقق من وجود دور معين
+     */
+    public function hasRole(string|array $roles): bool
+    {
+        if (is_string($roles)) {
+            return $this->roles()->where('slug', $roles)->exists();
+        }
+        
+        return $this->roles()->whereIn('slug', $roles)->exists();
+    }
+
     // Helper methods
     public function isAdmin()
     {
-        return $this->type === 'admin';
+        return $this->hasRole('admin');
     }
 
     public function isTeacher()
     {
-        return $this->type === 'teacher';
+        return $this->hasRole('teacher');
     }
 
     public function isStudent()
     {
-        return $this->type === 'student';
+        return $this->hasRole('student');
     }
 
     public function isCustomer()
     {
-        return $this->type === 'customer';
+        return $this->hasRole('customer');
     }
 
     public function isCook()
     {
-        return $this->type === 'cook';
+        return $this->hasRole('cook');
     }
 
     /**

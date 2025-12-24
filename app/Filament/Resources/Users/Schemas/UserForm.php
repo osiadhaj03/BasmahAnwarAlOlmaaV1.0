@@ -10,6 +10,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use App\Models\Kitchen;
+use App\Models\Role;
 
 class UserForm
 {
@@ -28,17 +30,50 @@ class UserForm
                             ->maxLength(255)
                             ->columnSpan('full'),
 
-                        Select::make('type')
-                            ->label('نوع المستخدم')
-                            ->options([
-                                'admin' => 'مدير',
-                                'teacher' => 'معلم',
-                                'student' => 'طالب',
-                            ])
+                        Select::make('roles')
+                            ->label('الأدوار')
+                            ->relationship('roles', 'name')
+                            ->multiple()
+                            ->preload()
                             ->required()
-                            ->default('student')
                             ->reactive()
                             ->live(),
+                        
+                        Select::make('kitchen_id')
+                            ->label('المطبخ')
+                            ->options(Kitchen::where('is_active', true)->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label('اسم المطبخ')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('location')
+                                    ->label('الموقع')
+                                    ->maxLength(255),
+                                TextInput::make('phone')
+                                    ->label('رقم الهاتف')
+                                    ->tel()
+                                    ->maxLength(20),
+                                Textarea::make('description')
+                                    ->label('الوصف')
+                                    ->maxLength(500),
+                                Toggle::make('is_active')
+                                    ->label('نشط')
+                                    ->default(true),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                return Kitchen::create($data)->id;
+                            })
+                            ->visible(fn ($get) => in_array(
+                                Role::where('slug', 'cook')->first()?->id, 
+                                $get('roles') ?? []
+                            ))
+                            ->required(fn ($get) => in_array(
+                                Role::where('slug', 'cook')->first()?->id, 
+                                $get('roles') ?? []
+                            )),
                         
                         Select::make('gender')
                             ->label('الجنس')
@@ -58,7 +93,8 @@ class UserForm
 
                         Textarea::make('address')
                             ->label('العنوان')
-                            ->maxLength(500),
+                            ->maxLength(500)
+                            ->columnSpan('full'),
                             
                         
                         
@@ -75,8 +111,10 @@ class UserForm
                             ->label(' رقم الطالب الجامعي')
                             ->unique(ignoreRecord: true)
                             ->maxLength(50)
-                            //->required(fn ($get) => $get('type') === 'student')
-                            ->visible(fn ($get) => $get('type') === 'student')
+                            ->visible(fn ($get) => in_array(
+                                Role::where('slug', 'student')->first()?->id, 
+                                $get('roles') ?? []
+                            ))
                             ->placeholder('ادخل رقمك الجامعي إن كنت من طلاب كلية الفقه الحنفي '),
                         
                         Select::make('academic_level')
@@ -89,7 +127,13 @@ class UserForm
                                 'higher_diploma' => 'دبلوم عالي',
                                 'other' => 'أخرى',
                             ])
-                            ->visible(fn ($get) => in_array($get('type'), ['student', 'teacher'])),
+                            ->visible(fn ($get) => !empty(array_intersect(
+                                [
+                                    Role::where('slug', 'student')->first()?->id,
+                                    Role::where('slug', 'teacher')->first()?->id,
+                                ],
+                                $get('roles') ?? []
+                            ))),
                         
                         
                     ]) ->columnSpan('full') ->columns(2),

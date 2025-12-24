@@ -29,21 +29,17 @@ class UsersTable
                     ->searchable()
                     ->sortable(),
                 
-                TextColumn::make('type')
-                    ->label('النوع')
+                TextColumn::make('roles.name')
+                    ->label('الأدوار')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'admin' => 'danger',
-                        'teacher' => 'warning',
-                        'student' => 'success',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'admin' => 'مدير',
-                        'teacher' => 'معلم',
-                        'student' => 'طالب',
-                        default => $state,
-                    })
+                    ->separator(', ')
+                    ->sortable(),
+                
+                TextColumn::make('kitchen.name')
+                    ->label('المطبخ')
+                    ->badge()
+                    ->color('primary')
+                    ->placeholder('-')
                     ->sortable(),
                 
                 TextColumn::make('phone')
@@ -92,13 +88,11 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('type')
-                    ->label('نوع المستخدم')
-                    ->options([
-                        'admin' => 'مدير',
-                        'teacher' => 'معلم',
-                        'student' => 'طالب',
-                    ]),
+                SelectFilter::make('roles')
+                    ->label('الدور')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload(),
                 
                 TernaryFilter::make('is_active')
                     ->label('الحالة')
