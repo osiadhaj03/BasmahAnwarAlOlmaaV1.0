@@ -23,7 +23,7 @@ class KitchenExpenseResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'KitchenExpense';
 
-    protected static UnitEnum|string|null $navigationGroup = 'إدارة المطبخ';
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الاشتراكات و الدفعات';
 
     protected static ?string $navigationLabel = 'المصاريف';
 
