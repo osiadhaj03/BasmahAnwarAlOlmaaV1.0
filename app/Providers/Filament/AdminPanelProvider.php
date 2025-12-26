@@ -19,7 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
-use Resma\FilamentAwinTheme\FilamentAwinTheme;
+use Caresome\FilamentNeobrutalism\NeobrutalismeTheme;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->plugins([
-                FilamentAwinTheme::make(),
+                NeobrutalismeTheme::make(),
                 BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true,
