@@ -19,6 +19,7 @@ class KitchenExpense extends Model
         'description',
         'amount',
         'expense_date',
+        'image',
     ];
 
     protected $casts = [

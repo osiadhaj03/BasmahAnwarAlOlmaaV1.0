@@ -23,7 +23,7 @@ class CustomerGroupResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'CustomerGroup';
 
-    protected static UnitEnum|string|null $navigationGroup = 'إدارة المشتركين';
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الاشتراكات و الدفعات';
 
     protected static ?string $navigationLabel = 'مجموعات المشتركين';
 

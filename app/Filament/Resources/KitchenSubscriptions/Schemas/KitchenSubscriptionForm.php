@@ -2,10 +2,14 @@
 
 namespace App\Filament\Resources\KitchenSubscriptions\Schemas;
 
+use App\Models\Kitchen;
+use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class KitchenSubscriptionForm
@@ -13,26 +17,89 @@ class KitchenSubscriptionForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->components([
-                Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->required(),
-                Select::make('kitchen_id')
-                    ->relationship('kitchen', 'name')
-                    ->required(),
-                DatePicker::make('start_date')
-                    ->required(),
-                DatePicker::make('end_date'),
-                Select::make('status')
-                    ->options(['active' => 'Active', 'paused' => 'Paused', 'cancelled' => 'Cancelled'])
-                    ->default('active')
-                    ->required(),
-                TextInput::make('monthly_price')
-                    ->required()
-                    ->numeric(),
-                Textarea::make('notes')
-                    ->default(null)
-                    ->columnSpanFull(),
+            ->components([ 
+                // قسم معلومات الاشتراك
+                Section::make('معلومات الاشتراك')
+                    ->description('الربط بين المشترك والمطبخ')
+                    ->schema([
+                        Select::make('user_id')
+                            ->label('المشترك')
+                            ->relationship('user', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                        Select::make('kitchen_id')
+                            ->label('المطبخ')
+                            ->relationship('kitchen', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label('اسم المطبخ')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('location')
+                                    ->label('الموقع')
+                                    ->maxLength(255),
+                                TextInput::make('phone')
+                                    ->label('رقم الهاتف')
+                                    ->tel()
+                                    ->maxLength(20),
+                                Textarea::make('description')
+                                    ->label('الوصف')
+                                    ->maxLength(500),
+                                Toggle::make('is_active')
+                                    ->label('نشط')
+                                    ->default(true),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                return Kitchen::create($data)->id;
+                            }),
+                    ])
+                    ->columns(2)
+                    ->columnSpan('full'),
+
+                // قسم مدة الاشتراك
+                Section::make('مدة الاشتراك')
+                    ->description('تاريخ البدء والانتهاء وحالة الاشتراك')
+                    ->schema([
+                        DatePicker::make('start_date')
+                            ->label('تاريخ البدء')
+                            ->required()
+                            ->default(now()),
+                        DatePicker::make('end_date')
+                            ->label('تاريخ الانتهاء')
+                            ->after('start_date'),
+                        Select::make('status')
+                            ->label('الحالة')
+                            ->options([
+                                'active' => 'نشط',
+                                'paused' => 'متوقف مؤقتاً',
+                                'cancelled' => 'ملغى',
+                            ])
+                            ->default('active')
+                            ->required(),
+                    ])
+                    ->columns(3)
+                    ->columnSpan('full'),
+
+                // قسم المعلومات المالية
+                Section::make('المعلومات المالية')
+                    ->description('السعر الشهري والملاحظات')
+                    ->schema([
+                        TextInput::make('monthly_price')
+                            ->label('السعر الشهري')
+                            ->required()
+                            ->numeric()
+                            ->prefix('د.أ'),
+                        Textarea::make('notes')
+                            ->label('ملاحظات')
+                            ->default(null)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2)
+                    ->columnSpan('full'),
             ]);
     }
 }

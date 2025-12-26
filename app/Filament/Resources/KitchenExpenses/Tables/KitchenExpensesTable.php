@@ -14,33 +14,59 @@ class KitchenExpensesTable
     {
         return $table
             ->columns([
-                TextColumn::make('kitchen.name')
-                    ->searchable(),
-                TextColumn::make('supplier.name')
-                    ->searchable(),
-                TextColumn::make('category.name')
-                    ->searchable(),
-                TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('amount')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('expense_date')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('creator_name')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('kitchen.name')
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('supplier.name')
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('category.name')
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->filters([
+                Filter::make('created_at')
+                    ->date()
+                    ->defaultRange(now()->subMonth(1), now()),
+                Filter::make('updated_at')
+                    ->date()
+                    ->defaultRange(now()->subMonth(1), now()),
+                Filter::make('creator_name')
+                    ->numeric()
+                    ->defaultRange(now()->subMonth(1), now()),
+                Filter::make('kitchen.name')
+                    ->numeric()
+                    ->defaultRange(now()->subMonth(1), now()),
+                Filter::make('supplier.name')
+                    ->numeric()
+                    ->defaultRange(now()->subMonth(1), now()),
+                Filter::make('category.name')
+                    ->numeric()
+                    ->defaultRange(now()->subMonth(1), now()),
+                    
                 //
             ])
             ->recordActions([
