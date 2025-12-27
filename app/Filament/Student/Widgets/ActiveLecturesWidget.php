@@ -4,85 +4,27 @@ namespace App\Filament\Student\Widgets;
 
 use App\Models\Lecture;
 use App\Models\Attendance;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Widgets\TableWidget as BaseWidget;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\Action;
+use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
-class ActiveLecturesWidget extends BaseWidget
+class ActiveLecturesWidget extends Widget
 {
+    protected string $view = 'filament.student.widgets.active-lectures-widget';
+    
     protected static ?string $heading = 'المحاضرات النشطة';
     
     protected int | string | array $columnSpan = 'full';
     
     protected static ?int $sort = 3;
 
-    public function table(Table $table): Table
-    {
-        return $table
-            ->query($this->getTableQuery())
-            ->columns([
-                ///TextColumn::make('title')
-                ///    ->label('عنوان المحاضرة')
-                ///    
-                ///    ->sortable(),
-                    
-                TextColumn::make('lesson.title')
-                    ->label('اسم الدورة')
-                    
-                    ->sortable(),
-                    
-                TextColumn::make('lecture_date')
-                    ->label('تاريخ ووقت المحاضرة')
-                    ->dateTime('Y-m-d H:i')
-                    ->sortable(),
-                    
-                //TextColumn::make('duration_minutes')
-                //    ->label('المدة')
-                //    ->formatStateUsing(fn ($state) => $state . ' دقيقة')
-                //    ->sortable(),
-                    
-                //TextColumn::make('location')
-                //    ->label('الموقع'),
-                //    
-                //TextColumn::make('status_arabic')
-                //    ->label('الحالة')
-                //    ->badge()
-                //    ->color(fn (string $state): string => match ($state) {
-                //        'scheduled' => 'warning',
-                //        'ongoing' => 'success',
-                //        'completed' => 'gray',
-                //        'cancelled' => 'danger',
-                //        default => 'gray',
-                //    }),
-            ])
-            ->actions([
-                Action::make('register_attendance')
-                    ->label('تسجيل الحضور')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->action(function (Lecture $record) {
-                        $this->registerAttendance($record);
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('تأكيد تسجيل الحضور')
-                    ->modalDescription('هل أنت متأكد من تسجيل حضورك في هذه المحاضرة؟')
-                    ->modalSubmitActionLabel('تسجيل الحضور')
-                    ->modalCancelActionLabel('إلغاء')
-                    ->visible(fn (Lecture $record) => $this->canRegisterAttendance($record))
-            ])
-            ->defaultSort('lecture_date', 'asc')
-            ->striped()
-            //->paginated([10, 25, 50])
-            ->poll('30s'); // تحديث كل 30 ثانية
-    }
+    // تحديث كل 30 ثانية
+    protected static ?string $pollingInterval = '30s';
 
-    protected function getTableQuery(): Builder
+    public function getLectures(): Collection
     {
         $studentId = Auth::id();
         $now = Carbon::now();
@@ -107,10 +49,12 @@ class ActiveLecturesWidget extends BaseWidget
             ->whereIn('status', ['scheduled', 'ongoing'])
             ->whereDoesntHave('attendances', function (Builder $query) use ($studentId) {
                 $query->where('student_id', $studentId);
-            });
+            })
+            ->orderBy('lecture_date', 'asc')
+            ->get();
     }
 
-    protected function canRegisterAttendance(Lecture $lecture): bool
+    public function canRegisterAttendance(Lecture $lecture): bool
     {
         $studentId = Auth::id();
         $now = Carbon::now();
@@ -128,8 +72,19 @@ class ActiveLecturesWidget extends BaseWidget
         return $isActive && $notRegistered;
     }
 
-    protected function registerAttendance(Lecture $lecture): void
+    public function registerAttendance(int $lectureId): void
     {
+        $lecture = Lecture::find($lectureId);
+        
+        if (!$lecture) {
+            Notification::make()
+                ->title('خطأ')
+                ->body('المحاضرة غير موجودة.')
+                ->danger()
+                ->send();
+            return;
+        }
+
         $studentId = Auth::id();
         
         try {
@@ -155,15 +110,14 @@ class ActiveLecturesWidget extends BaseWidget
                 'notes' => 'تم التسجيل من ويدجت المحاضرات النشطة'
             ]);
 
+            $lectureTitle = $lecture->lesson?->title ?? $lecture->title;
+            
             Notification::make()
-                ->title('تم تسجيل الحضور بنجاح')
-                ->body("تم تسجيل حضورك في محاضرة: {$lecture->title}")
+                ->title('تم تسجيل الحضور بنجاح ✅')
+                ->body("تم تسجيل حضورك في محاضرة: {$lectureTitle}")
                 ->success()
                 ->send();
                 
-            // تحديث الجدول
-            $this->resetTable();
-            
         } catch (\Exception $e) {
             Notification::make()
                 ->title('خطأ في تسجيل الحضور')
@@ -171,5 +125,12 @@ class ActiveLecturesWidget extends BaseWidget
                 ->danger()
                 ->send();
         }
+    }
+
+    protected function getViewData(): array
+    {
+        return [
+            'lectures' => $this->getLectures(),
+        ];
     }
 }

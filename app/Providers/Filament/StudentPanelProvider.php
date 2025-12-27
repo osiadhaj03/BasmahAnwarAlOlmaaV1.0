@@ -19,6 +19,9 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Student\Pages\StudentDashboard;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Caresome\FilamentNeobrutalism\NeobrutalismeTheme;
+use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
+use Caresome\FilamentAuthDesigner\Data\AuthPageConfig;
+use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
 
 class StudentPanelProvider extends PanelProvider
 {
@@ -28,12 +31,22 @@ class StudentPanelProvider extends PanelProvider
             ->id('student')
             ->path('student')
             ->login()
-            ->brandName('لوحة التحكم الخاصة بالطالب')
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => Color::Yellow,
             ])
             ->plugins([
                 NeobrutalismeTheme::make(),
+                AuthDesignerPlugin::make()
+                    ->login(fn (AuthPageConfig $config) => $config
+                        ->media(asset('assets/auth-bg.png'))
+                        ->mediaPosition(MediaPosition::Cover)
+                        ->blur(0)
+                    )
+                    ->registration(fn (AuthPageConfig $config) => $config
+                        ->media(asset('assets/auth-bg.png'))
+                        ->mediaPosition(MediaPosition::Cover)
+                        ->blur(2)
+                    ),
                 BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true,

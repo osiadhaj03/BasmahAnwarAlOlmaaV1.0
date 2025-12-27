@@ -30,7 +30,7 @@ class CookPanelProvider extends PanelProvider
             ->login()
             ->brandName('لوحة التحكم الخاصة بالطباخ')
             ->colors([
-                'primary' => Color::Orange,
+                'primary' => Color::Green,
             ])
             ->plugins([
                 NeobrutalismeTheme::make(),
