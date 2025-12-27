@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89db87b4a12cbd4f14a5e42b76ed96a7",
+    "content-hash": "a5ea6f37ac3a15e1b7c0feb9bd2c7d47",
     "packages": [
         {
             "name": "alperenersoy/filament-export",
@@ -8871,86 +8871,6 @@
                 }
             ],
             "time": "2025-06-26T14:11:46+00:00"
-        },
-        {
-            "name": "usamamuneerchaudhary/filament-notifier",
-            "version": "v1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/usamamuneerchaudhary/filament-notifier.git",
-                "reference": "3b4587574801b1f44f6db09a4d30ef843aaf2caa"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/usamamuneerchaudhary/filament-notifier/zipball/3b4587574801b1f44f6db09a4d30ef843aaf2caa",
-                "reference": "3b4587574801b1f44f6db09a4d30ef843aaf2caa",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^4.0",
-                "guzzlehttp/guzzle": "^7.9",
-                "illuminate/contracts": "*",
-                "illuminate/support": "*",
-                "league/commonmark": "^2.6",
-                "php": "^8.2",
-                "spatie/laravel-package-tools": "^1.19",
-                "symfony/mailer": "^7.2"
-            },
-            "require-dev": {
-                "nunomaduro/collision": "^8.6",
-                "orchestra/testbench": "^9.11",
-                "phpunit/phpunit": "^11.5"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "Analytics": "Usamamuneerchaudhary\\Notifier\\Facades\\Analytics",
-                        "Preference": "Usamamuneerchaudhary\\Notifier\\Facades\\Preference",
-                        "UrlTracking": "Usamamuneerchaudhary\\Notifier\\Facades\\UrlTracking",
-                        "NotificationRepo": "Usamamuneerchaudhary\\Notifier\\Facades\\NotificationRepo"
-                    },
-                    "providers": [
-                        "Usamamuneerchaudhary\\Notifier\\NotifierServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Usamamuneerchaudhary\\Notifier\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Usama Muneer",
-                    "email": "hello@usamamuneer.me",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A powerful notification system for FilamentPHP that handles multi-channel notifications with template management, scheduling, and real-time delivery. Built for developers who need enterprise-grade notifications without the complexity.",
-            "keywords": [
-                "filament",
-                "filamentphp",
-                "laravel",
-                "notifications",
-                "php",
-                "usamamuneerchaudhary"
-            ],
-            "support": {
-                "issues": "https://github.com/usamamuneerchaudhary/filament-notifier/issues",
-                "source": "https://github.com/usamamuneerchaudhary/filament-notifier/tree/v1.2"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/usamamuneerchaudhary",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-12-20T00:09:42+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
