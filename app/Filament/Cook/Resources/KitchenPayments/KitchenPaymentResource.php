@@ -9,18 +9,29 @@ use App\Filament\Cook\Resources\KitchenPayments\Schemas\KitchenPaymentForm;
 use App\Filament\Cook\Resources\KitchenPayments\Tables\KitchenPaymentsTable;
 use App\Models\KitchenPayment;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class KitchenPaymentResource extends Resource
 {
     protected static ?string $model = KitchenPayment::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static ?string $recordTitleAttribute = 'KitchenPayment';
+    protected static ?string $recordTitleAttribute = 'id';
+
+    protected static UnitEnum|string|null $navigationGroup = 'المالية';
+
+    protected static ?string $navigationLabel = 'الدفعات';
+
+    protected static ?string $modelLabel = 'دفعة';
+
+    protected static ?string $pluralModelLabel = 'الدفعات';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {
@@ -46,5 +57,18 @@ class KitchenPaymentResource extends Resource
             'create' => CreateKitchenPayment::route('/create'),
             'edit' => EditKitchenPayment::route('/{record}/edit'),
         ];
+    }
+
+    // فلترة الدفعات حسب مطبخ الطباخ
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+        
+        return parent::getEloquentQuery()
+            ->when($user?->kitchen_id, function ($query) use ($user) {
+                $query->whereHas('subscription', function ($q) use ($user) {
+                    $q->where('kitchen_id', $user->kitchen_id);
+                });
+            });
     }
 }

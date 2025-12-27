@@ -7,20 +7,31 @@ use App\Filament\Cook\Resources\KitchenExpenses\Pages\EditKitchenExpenses;
 use App\Filament\Cook\Resources\KitchenExpenses\Pages\ListKitchenExpenses;
 use App\Filament\Cook\Resources\KitchenExpenses\Schemas\KitchenExpensesForm;
 use App\Filament\Cook\Resources\KitchenExpenses\Tables\KitchenExpensesTable;
-use App\Models\KitchenExpenses;
+use App\Models\KitchenExpense;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class KitchenExpensesResource extends Resource
 {
-    protected static ?string $model = KitchenExpenses::class;
+    protected static ?string $model = KitchenExpense::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
 
-    protected static ?string $recordTitleAttribute = 'KitchenExpenses';
+    protected static ?string $recordTitleAttribute = 'id';
+
+    protected static UnitEnum|string|null $navigationGroup = 'المالية';
+
+    protected static ?string $navigationLabel = 'المصروفات';
+
+    protected static ?string $modelLabel = 'مصروف';
+
+    protected static ?string $pluralModelLabel = 'المصروفات';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {
@@ -46,5 +57,16 @@ class KitchenExpensesResource extends Resource
             'create' => CreateKitchenExpenses::route('/create'),
             'edit' => EditKitchenExpenses::route('/{record}/edit'),
         ];
+    }
+
+    // فلترة المصروفات حسب مطبخ الطباخ
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+        
+        return parent::getEloquentQuery()
+            ->when($user?->kitchen_id, function ($query) use ($user) {
+                $query->where('kitchen_id', $user->kitchen_id);
+            });
     }
 }

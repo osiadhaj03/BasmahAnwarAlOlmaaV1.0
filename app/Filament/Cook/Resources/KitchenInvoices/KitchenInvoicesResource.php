@@ -7,20 +7,31 @@ use App\Filament\Cook\Resources\KitchenInvoices\Pages\EditKitchenInvoices;
 use App\Filament\Cook\Resources\KitchenInvoices\Pages\ListKitchenInvoices;
 use App\Filament\Cook\Resources\KitchenInvoices\Schemas\KitchenInvoicesForm;
 use App\Filament\Cook\Resources\KitchenInvoices\Tables\KitchenInvoicesTable;
-use App\Models\KitchenInvoices;
+use App\Models\KitchenInvoice;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class KitchenInvoicesResource extends Resource
 {
-    protected static ?string $model = KitchenInvoices::class;
+    protected static ?string $model = KitchenInvoice::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $recordTitleAttribute = 'KitchenInvoices';
+    protected static ?string $recordTitleAttribute = 'invoice_number';
+
+    protected static UnitEnum|string|null $navigationGroup = 'المالية';
+
+    protected static ?string $navigationLabel = 'الفواتير';
+
+    protected static ?string $modelLabel = 'فاتورة';
+
+    protected static ?string $pluralModelLabel = 'الفواتير';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {
@@ -46,5 +57,18 @@ class KitchenInvoicesResource extends Resource
             'create' => CreateKitchenInvoices::route('/create'),
             'edit' => EditKitchenInvoices::route('/{record}/edit'),
         ];
+    }
+
+    // فلترة الفواتير حسب مطبخ الطباخ
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+        
+        return parent::getEloquentQuery()
+            ->when($user?->kitchen_id, function ($query) use ($user) {
+                $query->whereHas('subscription', function ($q) use ($user) {
+                    $q->where('kitchen_id', $user->kitchen_id);
+                });
+            });
     }
 }
