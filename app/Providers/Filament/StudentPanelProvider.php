@@ -30,7 +30,7 @@ class StudentPanelProvider extends PanelProvider
             ->login()
             ->brandName('لوحة التحكم الخاصة بالطالب')
             ->colors([
-                'primary' => Color::Indigo,
+                'primary' => Color::Blue,
             ])
             ->plugins([
                 NeobrutalismeTheme::make(),
