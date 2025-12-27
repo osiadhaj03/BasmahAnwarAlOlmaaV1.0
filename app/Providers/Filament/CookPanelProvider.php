@@ -19,6 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Caresome\FilamentNeobrutalism\NeobrutalismeTheme;
+use Usamamuneerchaudhary\Notifier\FilamentNotifierPlugin;
 
 class CookPanelProvider extends PanelProvider
 {

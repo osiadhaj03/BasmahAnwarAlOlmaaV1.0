@@ -20,6 +20,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Caresome\FilamentNeobrutalism\NeobrutalismeTheme;
+use Usamamuneerchaudhary\Notifier\FilamentNotifierPlugin;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -34,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 NeobrutalismeTheme::make(),
+                FilamentNotifierPlugin::make(),
                 BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true,
