@@ -42,6 +42,7 @@ class CookPanelProvider extends PanelProvider
                         slug: 'my-profile'
                     ),
             ])
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverResources(in: app_path('Filament/Cook/Resources'), for: 'App\\Filament\\Cook\\Resources')
             ->discoverPages(in: app_path('Filament/Cook/Pages'), for: 'App\\Filament\\Cook\\Pages')
             ->pages([
