@@ -5,4 +5,5 @@ return [
     App\Providers\AuthServiceProvider::class,
     App\Providers\Filament\AdminPanelProvider::class,
     App\Providers\Filament\StudentPanelProvider::class,
+    App\Providers\Filament\CookPanelProvider::class,
 ];
