@@ -35,6 +35,7 @@ class CookPanelProvider extends PanelProvider
             ])
             ->plugins([
                 NeobrutalismeTheme::make(),
+                FilamentNotifierPlugin::make(),
                 BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true,

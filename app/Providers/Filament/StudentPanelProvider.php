@@ -19,6 +19,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Student\Pages\StudentDashboard;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Caresome\FilamentNeobrutalism\NeobrutalismeTheme;
+use Usamamuneerchaudhary\Notifier\FilamentNotifierPlugin;
 
 class StudentPanelProvider extends PanelProvider
 {
@@ -34,6 +35,7 @@ class StudentPanelProvider extends PanelProvider
             ])
             ->plugins([
                 NeobrutalismeTheme::make(),
+                FilamentNotifierPlugin::make(),
                 BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true,
