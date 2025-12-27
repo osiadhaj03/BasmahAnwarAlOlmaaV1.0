@@ -7,7 +7,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Tables\Filters\Filter;
 
 class KitchenExpensesTable
 {
@@ -49,25 +48,6 @@ class KitchenExpensesTable
                     ->toggleable(),
             ])
             ->filters([
-                Filter::make('created_at')
-                    ->date()
-                    ->defaultRange(now()->subMonth(1), now()),
-                Filter::make('updated_at')
-                    ->date()
-                    ->defaultRange(now()->subMonth(1), now()),
-                Filter::make('creator_name')
-                    ->numeric()
-                    ->defaultRange(now()->subMonth(1), now()),
-                Filter::make('kitchen.name')
-                    ->numeric()
-                    ->defaultRange(now()->subMonth(1), now()),
-                Filter::make('supplier.name')
-                    ->numeric()
-                    ->defaultRange(now()->subMonth(1), now()),
-                Filter::make('category.name')
-                    ->numeric()
-                    ->defaultRange(now()->subMonth(1), now()),
-                    
                 //
             ])
             ->recordActions([
