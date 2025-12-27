@@ -41,7 +41,10 @@ class TeacherResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        // إخفاء مورد المعلمين عن الطلاب
+        // إخفاء عن الطلاب ولوحة الطباخ
+        if (filament()->getCurrentPanel()?->getId() === 'cook') {
+            return false;
+        }
         return Auth::check() && Auth::user()->type !== 'student';
     }
 

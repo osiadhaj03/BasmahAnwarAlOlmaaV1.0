@@ -36,6 +36,12 @@ class LessonResource extends Resource
     
     protected static ?int $navigationSort = 2;
 
+    // إخفاء من لوحة الطباخ
+    public static function shouldRegisterNavigation(): bool
+    {
+        return filament()->getCurrentPanel()?->getId() !== 'cook';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return LessonForm::configure($schema);

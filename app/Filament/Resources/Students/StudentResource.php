@@ -40,7 +40,10 @@ class StudentResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        // إخفاء مورد الطلاب عن الطلاب أنفسهم
+        // إخفاء عن الطلاب ولوحة الطباخ
+        if (filament()->getCurrentPanel()?->getId() === 'cook') {
+            return false;
+        }
         return Auth::check() && Auth::user()->type !== 'student';
     }
 

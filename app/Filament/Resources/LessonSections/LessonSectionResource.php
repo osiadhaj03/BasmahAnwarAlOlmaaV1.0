@@ -38,6 +38,12 @@ class LessonSectionResource extends Resource
     
     protected static ?string $pluralModelLabel = 'أقسام الدورات';
 
+    // إخفاء من لوحة الطباخ
+    public static function shouldRegisterNavigation(): bool
+    {
+        return filament()->getCurrentPanel()?->getId() !== 'cook';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return LessonSectionForm::configure($schema);
