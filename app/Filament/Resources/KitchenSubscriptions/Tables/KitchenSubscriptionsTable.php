@@ -33,6 +33,10 @@ class KitchenSubscriptionsTable
                     ->label('قيمة الاشتراك الشهري')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('number_meal')
+                    ->label('عدد الوجبات')
+                    ->numeric()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime()

@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class MealDeliveriesTable
@@ -15,35 +16,55 @@ class MealDeliveriesTable
         return $table
             ->columns([
                 TextColumn::make('user.name')
-                    ->searchable(),
-                TextColumn::make('meal.name')
-                    ->searchable(),
-                TextColumn::make('delivered_by')
-                    ->numeric()
+                    ->label('المشترك')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('subscription.id')
-                    ->searchable(),
                 TextColumn::make('delivery_date')
+                    ->label('تاريخ التسليم')
                     ->date()
                     ->sortable(),
-                TextColumn::make('meal_type')
-                    ->badge(),
+                TextColumn::make('meal.name')
+                    ->label('الوجبة')
+                    ->searchable(),
+
                 TextColumn::make('status')
-                    ->badge(),
+                    ->label('الحالة')
+                    ->formatStateUsing(fn (string $state): string => match($state) {
+                        'pending' => 'قيد الانتظار',
+                        'delivered' => 'تم التسليم',
+                        'missed' => 'فائت',
+                        default => $state,
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => match($state) {
+                        'pending' => 'warning',
+                        'delivered' => 'success',
+                        'missed' => 'danger',
+                        default => 'gray',
+                    }),
+                TextColumn::make('deliveredBy.name')
+                    ->label('المُسلّم')
+                    ->searchable(),
                 TextColumn::make('delivered_at')
+                    ->label('وقت التسليم')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('الحالة')
+                    ->options([
+                        'pending' => 'قيد الانتظار',
+                        'delivered' => 'تم التسليم',
+                        'missed' => 'فائت',
+                    ]),
+                SelectFilter::make('meal_type')
+                    ->label('نوع الوجبة')
+                    ->options([
+                        'breakfast' => 'فطور',
+                        'lunch' => 'غداء',
+                        'dinner' => 'عشاء',
+                    ]),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -52,6 +73,7 @@ class MealDeliveriesTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('delivery_date', 'desc');
     }
 }

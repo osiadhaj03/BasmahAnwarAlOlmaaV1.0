@@ -17,6 +17,11 @@ class Meal extends Model
         'description',
         'meal_type',
         'image',
+        'meal_date',
+    ];
+
+    protected $casts = [
+        'meal_date' => 'date',
     ];
 
     // العلاقات

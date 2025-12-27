@@ -18,6 +18,7 @@ class KitchenSubscription extends Model
         'end_date',
         'status',
         'monthly_price',
+        'number_meal',
         'notes',
     ];
 

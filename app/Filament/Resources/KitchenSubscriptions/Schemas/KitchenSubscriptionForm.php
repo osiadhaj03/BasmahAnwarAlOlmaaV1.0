@@ -86,13 +86,20 @@ class KitchenSubscriptionForm
 
                 // قسم المعلومات المالية
                 Section::make('المعلومات المالية')
-                    ->description('السعر الشهري والملاحظات')
+                    ->description('السعر الشهري وعدد الوجبات')
                     ->schema([
                         TextInput::make('monthly_price')
                             ->label('السعر الشهري')
                             ->required()
                             ->numeric()
                             ->prefix('د.أ'),
+                        TextInput::make('number_meal')
+                            ->label('عدد الوجبات اليومية')
+                            ->required()
+                            ->numeric()
+                            ->default(1)
+                            ->minValue(1)
+                            ->maxValue(3),
                         Textarea::make('notes')
                             ->label('ملاحظات')
                             ->default(null)
