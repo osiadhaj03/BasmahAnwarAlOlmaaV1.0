@@ -28,7 +28,7 @@ class CookPanelProvider extends PanelProvider
             ->id('cook')
             ->path('cook')
             ->login()
-            ->brandName('لوحة الطباخ')
+            ->brandName('لوحة التحكم الخاصة بالطباخ')
             ->colors([
                 'primary' => Color::Green,
             ])
