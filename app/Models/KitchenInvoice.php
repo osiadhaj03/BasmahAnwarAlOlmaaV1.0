@@ -57,6 +57,30 @@ class KitchenInvoice extends Model
         return $this->belongsTo(User::class, 'collected_by');
     }
 
+    /**
+     * الدفعات المرتبطة بهذه الفاتورة
+     */
+    public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(KitchenPayment::class, 'invoice_id');
+    }
+
+    /**
+     * مجموع الدفعات للفاتورة
+     */
+    public function getTotalPaidAttribute(): float
+    {
+        return (float) $this->payments()->sum('amount');
+    }
+
+    /**
+     * المبلغ المتبقي
+     */
+    public function getRemainingAmountAttribute(): float
+    {
+        return (float) ($this->amount - $this->total_paid);
+    }
+
     // Accessors
 
     /**

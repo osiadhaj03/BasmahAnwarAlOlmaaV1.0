@@ -61,6 +61,43 @@ class KitchenSubscription extends Model
         return $this->hasMany(KitchenInvoice::class, 'subscription_id');
     }
 
+    /**
+     * الدفعات
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(KitchenPayment::class, 'subscription_id');
+    }
+
+    /**
+     * حساب الرصيد
+     * موجب = للمشترك رصيد زائد
+     * سالب = عليه متأخرات
+     */
+    public function getBalanceAttribute(): float
+    {
+        $totalInvoices = $this->invoices()->sum('amount');
+        $totalPayments = $this->payments()->sum('amount');
+        
+        return (float) ($totalPayments - $totalInvoices);
+    }
+
+    /**
+     * مجموع الفواتير
+     */
+    public function getTotalInvoicesAttribute(): float
+    {
+        return (float) $this->invoices()->sum('amount');
+    }
+
+    /**
+     * مجموع الدفعات
+     */
+    public function getTotalPaymentsAttribute(): float
+    {
+        return (float) $this->payments()->sum('amount');
+    }
+
     // Accessors
 
     /**

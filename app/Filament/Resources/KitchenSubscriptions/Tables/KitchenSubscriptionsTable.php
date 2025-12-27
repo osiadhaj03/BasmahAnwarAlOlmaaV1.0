@@ -15,25 +15,31 @@ class KitchenSubscriptionsTable
         return $table
             ->columns([
                 TextColumn::make('user.name')
+                    ->label('المشترك')  
                     ->searchable(),
                 TextColumn::make('kitchen.name')
+                    ->label('المطبخ')
                     ->searchable(),
                 TextColumn::make('start_date')
-                    ->date()
+                    ->label('تاريخ البدء')
                     ->sortable(),
                 TextColumn::make('end_date')
-                    ->date()
+                    ->label('تاريخ الانتهاء')
                     ->sortable(),
                 TextColumn::make('status')
+                    ->label('الحالة')
                     ->badge(),
                 TextColumn::make('monthly_price')
+                    ->label('قيمة الاشتراك الشهري')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('تاريخ التحديث')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

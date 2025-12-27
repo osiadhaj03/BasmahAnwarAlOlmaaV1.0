@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class KitchenInvoicesTable
@@ -14,44 +15,72 @@ class KitchenInvoicesTable
     {
         return $table
             ->columns([
-                TextColumn::make('subscription.id')
-                    ->searchable(),
-                TextColumn::make('user.name')
-                    ->searchable(),
                 TextColumn::make('invoice_number')
+                    ->label('رقم الفاتورة')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('user.name')
+                    ->label('المشترك')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('subscription.kitchen.name')
+                    ->label('المطبخ')
                     ->searchable(),
                 TextColumn::make('amount')
-                    ->numeric()
+                    ->label('المبلغ المطلوب')
+                    ->money('JOD')
                     ->sortable(),
+                TextColumn::make('total_paid')
+                    ->label('المدفوع')
+                    ->money('JOD')
+                    ->color('success'),
+                TextColumn::make('remaining_amount')
+                    ->label('المتبقي')
+                    ->money('JOD')
+                    ->color(fn ($state) => $state > 0 ? 'danger' : 'success'),
                 TextColumn::make('billing_date')
+                    ->label('تاريخ الفوترة')
                     ->date()
                     ->sortable(),
                 TextColumn::make('due_date')
+                    ->label('تاريخ الاستحقاق')
                     ->date()
                     ->sortable(),
                 TextColumn::make('status')
-                    ->badge(),
-                TextColumn::make('collected_by')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('received_from')
-                    ->searchable(),
-                TextColumn::make('paid_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('payment_method')
-                    ->badge(),
+                    ->label('الحالة')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => match($state) {
+                        'pending' => 'قيد الانتظار',
+                        'paid' => 'مدفوعة',
+                        'partial' => 'مدفوعة جزئياً',
+                        'overdue' => 'متأخرة',
+                        'cancelled' => 'ملغاة',
+                        default => $state,
+                    })
+                    ->color(fn (string $state): string => match($state) {
+                        'pending' => 'warning',
+                        'paid' => 'success',
+                        'partial' => 'info',
+                        'overdue' => 'danger',
+                        'cancelled' => 'gray',
+                        default => 'gray',
+                    }),
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                    ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('الحالة')
+                    ->options([
+                        'pending' => 'قيد الانتظار',
+                        'paid' => 'مدفوعة',
+                        'partial' => 'مدفوعة جزئياً',
+                        'overdue' => 'متأخرة',
+                        'cancelled' => 'ملغاة',
+                    ]),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -60,6 +89,7 @@ class KitchenInvoicesTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('billing_date', 'desc');
     }
 }
