@@ -47,9 +47,10 @@ class ActiveLecturesWidget extends Widget
                 });
             })
             ->whereIn('status', ['scheduled', 'ongoing'])
-            ->whereDoesntHave('attendances', function (Builder $query) use ($studentId) {
-                $query->where('student_id', $studentId);
-            })
+            // تم إزالة شرط استبعاد المحاضرات التي تم حضورها لنتمكن من عرض حالة "تم التسجيل"
+            // ->whereDoesntHave('attendances', function (Builder $query) use ($studentId) {
+            //     $query->where('student_id', $studentId);
+            // })
             ->orderBy('lecture_date', 'asc')
             ->get();
     }
@@ -132,5 +133,12 @@ class ActiveLecturesWidget extends Widget
         return [
             'lectures' => $this->getLectures(),
         ];
+    }
+
+    public function hasAttended(int $lectureId): bool
+    {
+        return Attendance::where('lecture_id', $lectureId)
+            ->where('student_id', Auth::id())
+            ->exists();
     }
 }
