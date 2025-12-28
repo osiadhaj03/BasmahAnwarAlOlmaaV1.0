@@ -54,4 +54,9 @@ class MyLecturesResource extends Resource
     public static function canCreate(): bool { return false; }
     public static function canEdit($record): bool { return false; }
     public static function canDelete($record): bool { return false; }
+
+    public static function canViewAny(): bool
+    {
+        return true;
+    }
 }

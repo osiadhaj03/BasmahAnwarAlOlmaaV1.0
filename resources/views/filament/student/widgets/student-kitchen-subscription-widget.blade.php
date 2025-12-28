@@ -8,7 +8,6 @@
             {{-- No Subscription State --}}
             <div class="flex flex-col items-center justify-center py-8 text-center bg-orange-50/50 dark:bg-orange-900/10 rounded-xl border border-orange-100 dark:border-orange-800/30">
                 <div class="mb-3 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full">
-                    <x-heroicon-o-shopping-bag class="w-8 h-8 text-orange-500" />
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white">لا يوجد اشتراك نشط</h3>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 mb-4">اشترك الآن في خدمة المطبخ لتصلك وجبات يومية شهية</p>
@@ -98,7 +97,6 @@
             @if($stats['last_invoice'] && $stats['last_invoice']->status == 'pending')
                  <div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg flex items-center justify-between">
                     <div class="flex items-center gap-2 text-red-700">
-                        <x-heroicon-s-exclamation-circle class="w-5 h-5" />
                         <span class="text-sm font-bold">فاتورة غير مدفوعة: {{ $stats['last_invoice']->invoice_number }}</span>
                     </div>
                     <span class="font-bold text-red-600">{{ $stats['last_invoice']->amount }} د.أ</span>
