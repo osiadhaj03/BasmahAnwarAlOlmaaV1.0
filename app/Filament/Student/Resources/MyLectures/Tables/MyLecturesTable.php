@@ -3,9 +3,9 @@
 namespace App\Filament\Student\Resources\MyLectures\Tables;
 
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Tables\Table;
+use Filament\Support\Colors\Color;
 
 class MyLecturesTable
 {
@@ -34,8 +34,9 @@ class MyLecturesTable
                     ->label('المدة')
                     ->suffix(' دقيقة'),
 
-                BadgeColumn::make('status')
+                TextColumn::make('status')
                     ->label('الحالة')
+                    ->badge()
                     ->colors([
                         'secondary' => 'scheduled',
                         'success' => 'ongoing',

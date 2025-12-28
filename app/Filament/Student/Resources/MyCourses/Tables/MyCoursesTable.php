@@ -3,7 +3,6 @@
 namespace App\Filament\Student\Resources\MyCourses\Tables;
 
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Table;
 
 class MyCoursesTable
@@ -36,8 +35,9 @@ class MyCoursesTable
                     ->label('الوقت')
                     ->time('H:i'),
 
-                BadgeColumn::make('status')
+                TextColumn::make('status')
                     ->label('الحالة')
+                    ->badge()
                     ->colors([
                         'success' => 'active',
                         'danger' => 'cancelled',

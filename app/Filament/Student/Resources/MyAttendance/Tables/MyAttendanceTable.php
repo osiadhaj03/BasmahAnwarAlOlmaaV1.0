@@ -3,7 +3,6 @@
 namespace App\Filament\Student\Resources\MyAttendance\Tables;
 
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
@@ -28,8 +27,9 @@ class MyAttendanceTable
                     ->dateTime('Y-m-d H:i')
                     ->sortable(),
 
-                BadgeColumn::make('status')
+                TextColumn::make('status')
                     ->label('الحالة')
+                    ->badge()
                     ->colors([
                         'success' => 'present',
                         'danger' => 'absent',
@@ -44,8 +44,9 @@ class MyAttendanceTable
                         default => $state,
                     }),
 
-                BadgeColumn::make('attendance_method')
+                TextColumn::make('attendance_method')
                     ->label('طريقة التسجيل')
+                    ->badge()
                     ->colors([
                         'primary' => 'code',
                         'gray' => 'manual',
