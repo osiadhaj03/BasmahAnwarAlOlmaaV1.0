@@ -53,7 +53,7 @@ class ActiveLecturesWidget extends Widget
         $lectureEnd = $lectureStart->copy()->addMinutes($lecture->duration_minutes);
         
         // التحقق من أن المحاضرة نشطة (بدأت ولم تنته بعد)
-        $isActive = $now->between($lectureStart->copy()->subMinutes(15), $lectureEnd);
+        $isActive = $now->between($lectureStart, $lectureEnd);
         
         // التحقق من عدم تسجيل الحضور مسبقاً
         $notRegistered = !Attendance::where('lecture_id', $lecture->id)
