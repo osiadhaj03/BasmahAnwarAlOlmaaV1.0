@@ -118,6 +118,12 @@ class ActiveLecturesWidget extends Widget
                 ->success()
                 ->send();
                 
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            Notification::make()
+                ->title('تم تسجيل الحضور مسبقاً')
+                ->body('لقد تم تسجيل حضورك بالفعل لهذه المحاضرة.')
+                ->warning()
+                ->send();
         } catch (\Exception $e) {
             Notification::make()
                 ->title('خطأ في تسجيل الحضور')
