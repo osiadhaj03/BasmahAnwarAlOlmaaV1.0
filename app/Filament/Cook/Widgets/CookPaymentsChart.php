@@ -8,6 +8,7 @@ use Carbon\Carbon;
 
 class CookPaymentsChart extends ChartWidget
 {
+    protected static ?int $sort = 3;
     protected ?string $heading = 'المبالغ المحصلة (آخر 7 أيام)';
     protected ?string $maxHeight = '300px';
 

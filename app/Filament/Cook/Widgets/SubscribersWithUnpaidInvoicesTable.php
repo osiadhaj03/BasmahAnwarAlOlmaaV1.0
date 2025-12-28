@@ -9,6 +9,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class SubscribersWithUnpaidInvoicesTable extends BaseWidget
 {
+    protected static ?int $sort = 4;
     protected static ?string $heading = 'المشتركون - فواتير غير مدفوعة';
 
     protected int | string | array $columnSpan = 'full';

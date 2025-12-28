@@ -12,6 +12,7 @@ use Carbon\Carbon;
 
 class CookStatsOverview extends BaseWidget
 {
+    protected static ?int $sort = 1;
     
     
     protected function getStats(): array
