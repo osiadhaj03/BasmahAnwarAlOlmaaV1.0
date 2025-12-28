@@ -49,15 +49,13 @@ class CookPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Cook/Widgets'), for: 'App\\Filament\\Cook\\Widgets')
-            ->widgets([
-
-                CookStatsOverview::class,      // أولاً
-                CookMealsChart::class,         // ثانياً
-                CookPaymentsChart::class,      // ثالثاً
+            ->widgets(
+                CookStatsOverview::class,      
+                CookMealsChart::class,         
+                CookPaymentsChart::class,      
                 SubscribersWithUnpaidInvoicesTable::class,
-                LatestPaymentsTable::class,
-                //AccountWidget::class,
-            ])
+                LatestPaymentsTable::class,                //AccountWidget::class,
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
