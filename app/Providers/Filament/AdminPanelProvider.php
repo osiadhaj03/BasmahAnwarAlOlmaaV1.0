@@ -18,6 +18,9 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Widgets\InvoicesChart;
+use App\Filament\Widgets\LatestSubscriptionsTable;
+use App\Filament\Widgets\StatsOverview;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Caresome\FilamentNeobrutalism\NeobrutalismeTheme;
 class AdminPanelProvider extends PanelProvider
@@ -29,6 +32,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->sidebarCollapsible()
+            ->databaseNotifications()
             ->colors([
                 'primary' => Color::Blue,
             ])
@@ -56,6 +61,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
+                StatsOverview::class,
+                InvoicesChart::class,
+                LatestSubscriptionsTable::class,
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
