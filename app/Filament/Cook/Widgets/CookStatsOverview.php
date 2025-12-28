@@ -38,12 +38,11 @@ class CookStatsOverview extends BaseWidget
                 ->description('عدد الزبائن المشتركين')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('info'),
-            Stat::make('المبالغ غير المحصلة', KitchenInvoice::unpaid()->sum('amount') . ' ر.س')
+            Stat::make('المبالغ غير المحصلة', KitchenInvoice::unpaid()->sum('amount') . ' د.أ')
                 ->description('الفواتير غير المدفوعة')
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color('danger'),
-            Stat::make('رصيد الطباخ', KitchenInvoice::paid()->sum('amount') . ' ر.س')
-                ->description('إجمالي المبالغ المحصلة')
+            Stat::make('رصيد الطباخ', KitchenInvoice::paid()->sum('amount') . ' د.أ')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
         ];
