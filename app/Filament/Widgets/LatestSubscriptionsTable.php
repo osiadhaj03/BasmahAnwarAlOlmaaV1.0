@@ -9,7 +9,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestSubscriptionsTable extends BaseWidget
 {
-    protected static ?string $heading = 'آخر الاشتراكات';
+    protected ?string $heading = 'آخر الاشتراكات';
 
     protected int | string | array $columnSpan = 'full';
 

@@ -15,7 +15,7 @@ class ActiveLecturesWidget extends Widget
 {
     protected string $view = 'filament.student.widgets.active-lectures-widget';
     
-    protected static ?string $heading = 'المحاضرات النشطة';
+    protected ?string $heading = 'المحاضرات النشطة';
     
     protected int | string | array $columnSpan = 'full';
     
