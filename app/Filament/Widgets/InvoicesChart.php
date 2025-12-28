@@ -7,6 +7,7 @@ use Filament\Widgets\ChartWidget;
 
 class InvoicesChart extends ChartWidget
 {
+    protected static ?int $sort = 3;
     protected ?string $heading = 'الإيرادات الشهرية';
     protected ?string $maxHeight = '300px';
 
