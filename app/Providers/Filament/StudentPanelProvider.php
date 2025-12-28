@@ -31,6 +31,9 @@ class StudentPanelProvider extends PanelProvider
             ->id('student')
             ->path('student')
             ->login()
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->databaseNotifications()
+            ->brandName('لوحة التحكم الخاصة بالطالب')
             ->colors([
                 'primary' => Color::Yellow,
             ])

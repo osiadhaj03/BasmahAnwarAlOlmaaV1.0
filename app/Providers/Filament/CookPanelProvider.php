@@ -28,6 +28,8 @@ class CookPanelProvider extends PanelProvider
             ->id('cook')
             ->path('cook')
             ->login()
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->databaseNotifications()
             ->brandName('لوحة التحكم الخاصة بالطباخ')
             ->colors([
                 'primary' => Color::Green,
