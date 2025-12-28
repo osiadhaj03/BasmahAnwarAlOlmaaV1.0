@@ -50,7 +50,12 @@ class CookPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Cook/Widgets'), for: 'App\\Filament\\Cook\\Widgets')
             ->widgets([
-                AccountWidget::class,
+                // AccountWidget::class,
+                //CookStatsOverview::class,
+                //CookMealsChart::class,
+                //CookPaymentsChart::class,
+                //SubscribersWithUnpaidInvoicesTable::class,
+                //LatestPaymentsTable::class,
             ])
             ->middleware([
                 EncryptCookies::class,
