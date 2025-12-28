@@ -35,24 +35,14 @@ class ActiveLecturesWidget extends Widget
                 $query->where('users.id', $studentId)
                       ->where('lesson_section_student.enrollment_status', 'active');
             })
-            ->where(function (Builder $query) use ($now) {
-                // المحاضرات التي بدأت أو ستبدأ قريباً (خلال ساعة) أو ما زالت نشطة
-                $query->where(function($q) use ($now) {
-                    $q->where('lecture_date', '<=', $now->copy()->addHour())
-                      ->where('lecture_date', '>=', $now->copy()->subMinutes(30));
-                })->orWhere(function($q) use ($now) {
-                    // أو المحاضرات التي بدأت ولم تنته بعد
-                    $q->where('lecture_date', '<=', $now)
-                      ->whereRaw('DATE_ADD(lecture_date, INTERVAL duration_minutes MINUTE) > ?', [$now]);
-                });
-            })
             ->whereIn('status', ['scheduled', 'ongoing'])
-            // تم إزالة شرط استبعاد المحاضرات التي تم حضورها لنتمكن من عرض حالة "تم التسجيل"
-            // ->whereDoesntHave('attendances', function (Builder $query) use ($studentId) {
-            //     $query->where('student_id', $studentId);
-            // })
+            ->whereDoesntHave('attendances', function (Builder $query) use ($studentId) {
+                $query->where('student_id', $studentId);
+            })
             ->orderBy('lecture_date', 'asc')
-            ->get();
+            ->get()
+            ->filter(fn (Lecture $lecture) => $this->canRegisterAttendance($lecture))
+            ->values();
     }
 
     public function canRegisterAttendance(Lecture $lecture): bool

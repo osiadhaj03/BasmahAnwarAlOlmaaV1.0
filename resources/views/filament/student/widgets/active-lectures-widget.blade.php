@@ -22,21 +22,15 @@
                         
                         {{-- زر تسجيل الحضور في الأعلى --}}
                         <div>
-                            @if($this->canRegisterAttendance($lecture))
-                                <button 
-                                    wire:click="registerAttendance({{ $lecture->id }})"
-                                    wire:loading.attr="disabled"
-                                    wire:loading.class="opacity-50"
-                                    wire:target="registerAttendance({{ $lecture->id }})"
-                                    class="w-full relative py-4 px-6 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white font-black text-xl rounded-xl shadow-[0_6px_0_rgb(22,163,74)] hover:shadow-none translate-y-[-6px] hover:translate-y-0 transition-all flex items-center justify-center gap-2">
-                                    <span wire:loading.remove wire:target="registerAttendance({{ $lecture->id }})">✓ تسجيل الحضور</span>
-                                    <span wire:loading wire:target="registerAttendance({{ $lecture->id }})">جاري التسجيل...</span>
-                                </button>
-                            @else
-                                <div class="w-full py-4 text-center bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-bold rounded-xl border border-dashed border-gray-200 dark:border-gray-600">
-                                    غير متاح حالياً
-                                </div>
-                            @endif
+                            <button 
+                                wire:click="registerAttendance({{ $lecture->id }})"
+                                wire:loading.attr="disabled"
+                                wire:loading.class="opacity-50"
+                                wire:target="registerAttendance({{ $lecture->id }})"
+                                class="w-full relative py-4 px-6 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white font-black text-xl rounded-xl shadow-[0_6px_0_rgb(22,163,74)] hover:shadow-none translate-y-[-6px] hover:translate-y-0 transition-all flex items-center justify-center gap-2">
+                                <span wire:loading.remove wire:target="registerAttendance({{ $lecture->id }})">✓ تسجيل الحضور</span>
+                                <span wire:loading wire:target="registerAttendance({{ $lecture->id }})">جاري التسجيل...</span>
+                            </button>
                         </div>
 
                         {{-- معلومات المحاضرة --}}
