@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SectionsLessonsWidget extends BaseWidget
 {
-    protected ?string $heading = 'الدورات  المسجل بها';
+    protected static ?string $heading = 'الدورات  المسجل بها';
     
     protected int | string | array $columnSpan = 'full';
     

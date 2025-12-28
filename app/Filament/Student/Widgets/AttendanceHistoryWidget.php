@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AttendanceHistoryWidget extends BaseWidget
 {
-    protected ?string $heading = 'سجل الحضور للطالب في جميع الدورات المسجل فيها ';
+    protected static ?string $heading = 'سجل الحضور للطالب في جميع الدورات المسجل فيها ';
     
     protected int | string | array $columnSpan = 'full';
     

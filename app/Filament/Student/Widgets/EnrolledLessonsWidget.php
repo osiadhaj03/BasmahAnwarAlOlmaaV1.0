@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class EnrolledLessonsWidget extends BaseWidget
 {
-    protected ?string $heading = 'أسماء الدبلومات المسجل بها';
+    protected static ?string $heading = 'أسماء الدبلومات المسجل بها';
     
     protected int | string | array $columnSpan = 'full';
     
