@@ -12,9 +12,9 @@ class StudentKitchenSubscriptionWidget extends Widget
 {
     protected string $view = 'filament.student.widgets.student-kitchen-subscription-widget';
     
-    protected int | string | array $columnSpan = 'full';
+    protected int | string | array $columnSpan = 1;
     
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 3;
 
     public function getViewData(): array
     {

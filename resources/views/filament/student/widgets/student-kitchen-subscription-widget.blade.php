@@ -1,10 +1,7 @@
 <x-filament-widgets::widget>
     <x-filament::section>
         <x-slot name="heading">
-            <div class="flex items-center gap-2">
-                <x-heroicon-o-cake class="w-6 h-6 text-orange-500" />
-                <span class="text-xl font-bold tracking-tight">اشتراك المطبخ</span>
-            </div>
+            <span class="text-xl font-bold tracking-tight">اشتراك المطبخ</span>
         </x-slot>
 
         @if(!$subscription)

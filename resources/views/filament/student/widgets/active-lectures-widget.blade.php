@@ -1,10 +1,7 @@
 <x-filament-widgets::widget>
     <x-filament::section>
         <x-slot name="heading">
-            <div class="flex items-center gap-2">
-                <x-heroicon-o-video-camera class="w-6 h-6 text-primary-500" />
-                <span class="text-xl font-bold tracking-tight">المحاضرات النشطة</span>
-            </div>
+            <span class="text-xl font-bold tracking-tight">المحاضرات النشطة</span>
         </x-slot>
 
         @if($lectures->isEmpty())

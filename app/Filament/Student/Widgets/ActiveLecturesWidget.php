@@ -17,7 +17,7 @@ class ActiveLecturesWidget extends Widget
     
     protected ?string $heading = 'المحاضرات النشطة';
     
-    protected int | string | array $columnSpan = 'full';
+    protected int | string | array $columnSpan = 1;
     
     protected static ?int $sort = 3;
 
