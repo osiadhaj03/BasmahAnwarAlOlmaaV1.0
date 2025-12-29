@@ -92,7 +92,7 @@ class KitchenInvoiceForm
                             ->dehydrated() // لكن يتم إرسال القيمة
                             ->required(),
                     ])
-                    ->columns(4)
+                    ->columns(3)
                     ->columnSpan('full'),
 
                 // قسم المبلغ والتواريخ
@@ -100,9 +100,9 @@ class KitchenInvoiceForm
                     ->schema([
                         TextInput::make('amount')
                             ->label('المبلغ المطلوب')
+                            ->placeholder('يجلب المبلغ الموجود في الاشتراك')
                             ->required()
                             ->numeric()
-                            ->default(30)
                             ->prefix('د.أ'),
 
                         DatePicker::make('billing_date')
