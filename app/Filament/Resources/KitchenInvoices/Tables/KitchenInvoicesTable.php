@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\KitchenInvoices\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -84,8 +85,8 @@ class KitchenInvoicesTable
             ])
             ->recordActions([
                 EditAction::make(),
-                \Filament\Tables\Actions\DeleteAction::make()
-                    ->before(function ($record, \Filament\Tables\Actions\DeleteAction $action) {
+                DeleteAction::make()
+                    ->before(function ($record, DeleteAction $action) {
                         if ($record->allocations()->count() > 0) {
                             \Filament\Notifications\Notification::make()
                                 ->title('⚠️ لا يمكن حذف الفاتورة')
