@@ -41,7 +41,7 @@
                         <div class="text-left rtl:text-right">
                             <p class="text-xs text-gray-400 mb-1">فترة الاشتراك</p>
                             <p class="font-medium text-gray-700 dark:text-gray-200">
-                                {{ $subscription->start_date->format('Y-m-d') }} <span class="text-gray-400 mx-1">إلى</span> {{ $subscription->end_date->format('Y-m-d') }}
+                                {{ $subscription->start_date->format('Y-m-d') }} <span class="text-gray-400 mx-1">إلى</span> {{ $subscription->end_date ? $subscription->end_date->format('Y-m-d') : 'مستمر' }}
                             </p>
                         </div>
                     </div>
