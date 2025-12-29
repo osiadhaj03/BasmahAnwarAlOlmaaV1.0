@@ -15,34 +15,38 @@ class KitchenExpensesTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label('العنوان')
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('amount')
+                    ->label('المبلغ')
                     ->numeric()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('expense_date')
-                    ->date()
+                    ->label('التاريخ')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('creator_name')
-                    ->numeric()
+                    ->label('المالك')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('kitchen.name')
-                    ->searchable()
+                    ->label('المطبخ')
                     ->toggleable(),
                 TextColumn::make('supplier.name')
-                    ->searchable()
+                    ->label('المورد')
                     ->toggleable(),
                 TextColumn::make('category.name')
-                    ->searchable()
+                    ->label('القسم')
                     ->toggleable(),
                 TextColumn::make('created_at')
+                    ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('updated_at')
+                    ->label('تاريخ التحديث')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),

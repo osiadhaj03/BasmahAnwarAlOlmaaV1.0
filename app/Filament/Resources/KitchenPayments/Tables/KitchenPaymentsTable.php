@@ -24,7 +24,8 @@ class KitchenPaymentsTable
                 TextColumn::make('invoice.invoice_number')
                     ->label('رقم الفاتورة')
                     ->searchable()
-                    ->placeholder('دفعة مقدمة'),
+                    ->toggleable(),
+
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('JOD')

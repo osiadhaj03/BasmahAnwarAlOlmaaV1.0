@@ -54,9 +54,9 @@
                                 @if($todayMeal)
                                     <div class="flex items-center gap-2">
                                         @if($todayMeal->status == 'delivered')
-                                            <span class="text-green-700 dark:text-green-400 font-medium">تم التوصيل</span>
+                                            <span class="text-green-700 dark:text-green-400 font-medium">تم الإستلام</span>
                                         @elseif($todayMeal->status == 'pending')
-                                            <span class="text-orange-700 dark:text-orange-400 font-medium">قيد التوصيل</span>
+                                            <span class="text-orange-700 dark:text-orange-400 font-medium">قيد الإستلام</span>
                                         @else
                                             <span class="text-red-700 dark:text-red-400 font-medium">{{ $todayMeal->status_arabic }}</span>
                                         @endif
