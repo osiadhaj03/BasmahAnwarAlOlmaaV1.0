@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources\Subscribers\Tables;
 
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
+use App\Models\MealDelivery;
+use App\Models\Meal;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class SubscribersTable
@@ -59,7 +62,24 @@ class SubscribersTable
                         default => 'gray',
                     }),
 
-            
+                // حالة وجبة اليوم
+                TextColumn::make('today_meal_status')
+                    ->label('وجبة اليوم')
+                    ->getStateUsing(function ($record) {
+                        $todayDelivery = MealDelivery::where('user_id', $record->id)
+                            ->whereDate('delivery_date', today())
+                            ->first();
+                        
+                        if (!$todayDelivery) return 'لم تُسجّل';
+                        return $todayDelivery->status_arabic;
+                    })
+                    ->badge()
+                    ->color(fn ($state) => match($state) {
+                        'تم التسليم' => 'success',
+                        'قيد الانتظار' => 'warning',
+                        'فائت' => 'danger',
+                        default => 'gray',
+                    }),
                 
                 TextColumn::make('outstanding_balance')
                     ->label('المبالغ')
@@ -78,12 +98,6 @@ class SubscribersTable
                     ->label('نشط')
                     ->boolean()
                     ->sortable(),
-                
-                TextColumn::make('created_at')
-                    ->label('تاريخ التسجيل')
-                    ->dateTime('Y-m-d')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('subscription_status')
@@ -107,15 +121,113 @@ class SubscribersTable
                     ->falseLabel('غير نشط'),
             ])
             ->recordActions([
-//
-            ])
-            ->headerActions([
-            //
+                // زر تسليم وجبة لكل صف
+                Action::make('deliverMeal')
+                    ->label('تسليم وجبة')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('تأكيد تسليم الوجبة')
+                    ->modalDescription(fn ($record) => "هل تريد تسليم وجبة اليوم للمشترك: {$record->name}؟")
+                    ->modalSubmitActionLabel('نعم، تسليم')
+                    ->action(function ($record) {
+                        self::deliverMealToUser($record);
+                    })
+                    ->visible(fn ($record) => $record->kitchenSubscriptions()->where('status', 'active')->exists()),
             ])
             ->bulkActions([
-                
+                BulkActionGroup::make([
+                    // تسليم وجبات للمحددين
+                    BulkAction::make('deliverMeals')
+                        ->label('تسليم وجبات للمحددين')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('تأكيد التسليم الجماعي')
+                        ->modalDescription(fn (Collection $records) => "هل تريد تسليم وجبة اليوم لـ {$records->count()} مشترك؟")
+                        ->modalSubmitActionLabel('نعم، تسليم للجميع')
+                        ->action(function (Collection $records) {
+                            $count = 0;
+                            foreach ($records as $record) {
+                                if ($record->kitchenSubscriptions()->where('status', 'active')->exists()) {
+                                    self::deliverMealToUser($record);
+                                    $count++;
+                                }
+                            }
+                            
+                            Notification::make()
+                                ->title('تم التسليم')
+                                ->body("تم تسليم الوجبات لـ {$count} مشترك")
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                ]),
             ])
+            // الضغط على الصف = تسليم وجبة
+            ->recordAction('deliverMeal')
             ->defaultSort('created_at', 'desc')
             ->striped();
+    }
+
+    /**
+     * تسليم وجبة لمستخدم
+     */
+    private static function deliverMealToUser($user): void
+    {
+        $subscription = $user->kitchenSubscriptions()->where('status', 'active')->first();
+        
+        if (!$subscription) {
+            Notification::make()
+                ->title('خطأ')
+                ->body('هذا المشترك ليس لديه اشتراك فعال')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        // التحقق من وجود تسليم سابق اليوم
+        $existingDelivery = MealDelivery::where('user_id', $user->id)
+            ->whereDate('delivery_date', today())
+            ->first();
+
+        if ($existingDelivery && $existingDelivery->status === 'delivered') {
+            Notification::make()
+                ->title('تم التسليم مسبقاً')
+                ->body("الوجبة سُلّمت لـ {$user->name} في وقت سابق اليوم")
+                ->warning()
+                ->send();
+            return;
+        }
+
+        // جلب وجبة اليوم
+        $todayMeal = Meal::whereDate('meal_date', today())->first();
+
+        if ($existingDelivery) {
+            // تحديث السجل الموجود
+            $existingDelivery->update([
+                'status' => 'delivered',
+                'delivered_at' => now(),
+                'delivered_by' => Auth::id(),
+            ]);
+        } else {
+            // إنشاء سجل جديد
+            MealDelivery::create([
+                'user_id' => $user->id,
+                'meal_id' => $todayMeal?->id,
+                'subscription_id' => $subscription->id,
+                'delivery_date' => today(),
+                'meal_type' => $todayMeal?->meal_type ?? 'lunch',
+                'status' => 'delivered',
+                'delivered_at' => now(),
+                'delivered_by' => Auth::id(),
+            ]);
+        }
+
+        Notification::make()
+            ->title('✅ تم التسليم')
+            ->body("تم تسليم الوجبة للمشترك: {$user->name}")
+            ->success()
+            ->send();
     }
 }
