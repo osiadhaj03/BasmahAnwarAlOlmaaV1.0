@@ -22,7 +22,7 @@
                         {{-- Status --}}
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 w-1/3 bg-gray-50 dark:bg-gray-800/50">
-                                    :حالة الاشتراك
+حالة الاشتراك:
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
                                 <div class="flex items-center gap-2">
@@ -48,7 +48,7 @@
                         {{-- Today's Meal --}}
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
-                                وجبة اليوم
+                                وجبة اليوم:
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
                                 @if($todayMeal)
@@ -75,9 +75,9 @@
             @if($stats['last_invoice'] && $stats['last_invoice']->status == 'pending')
                  <div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg flex items-center justify-between">
                     <div class="flex items-center gap-2 text-red-700">
-                        <span class="text-sm font-bold">فاتورة غير مدفوعة: {{ $stats['last_invoice']->invoice_number }}</span>
+                        <span class="text-sm font-bold">فاتورة غير مدفوعة: {{ $stats['last_invoice']->invoice_number }} وقيمتها: {{ $stats['last_invoice']->amount }} د.أ</span>
                     </div>
-                    <span class="font-bold text-red-600">وقيمتها: {{ $stats['last_invoice']->amount }} د.أ</span>
+                    <span class="font-bold text-red-600">يرجى دفع الفاتورة</span>
                 </div>
             @endif
         @endif
