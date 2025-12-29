@@ -93,17 +93,17 @@ class KitchenPaymentsForm
                                     return new HtmlString('<div class="text-green-600 text-center py-4 font-bold">🎉 لا توجد فواتير مستحقة - جميع الفواتير مدفوعة</div>');
                                 }
                                 
-                                // بناء جدول HTML
-                                $html = '<div class="overflow-x-auto">';
-                                $html .= '<table class="w-full text-sm border-collapse">';
-                                $html .= '<thead class="bg-gray-100 dark:bg-gray-800">';
-                                $html .= '<tr>';
-                                $html .= '<th class="border p-2 text-right">رقم الفاتورة</th>';
-                                $html .= '<th class="border p-2 text-right">المبلغ الكلي</th>';
-                                $html .= '<th class="border p-2 text-right">المدفوع</th>';
-                                $html .= '<th class="border p-2 text-right">المتبقي</th>';
-                                $html .= '<th class="border p-2 text-right">الحالة</th>';
-                                $html .= '<th class="border p-2 text-right">تاريخ الاستحقاق</th>';
+                                // بناء جدول HTML مع حدود واضحة
+                                $html = '<div class="overflow-x-auto rounded-lg border border-gray-300 dark:border-gray-600">';
+                                $html .= '<table class="w-full text-sm" style="border-collapse: collapse;">';
+                                $html .= '<thead>';
+                                $html .= '<tr style="background-color: #f3f4f6;">';
+                                $html .= '<th style="border: 2px solid #d1d5db; padding: 12px; text-align: right; font-weight: bold;">رقم الفاتورة</th>';
+                                $html .= '<th style="border: 2px solid #d1d5db; padding: 12px; text-align: right; font-weight: bold;">المبلغ الكلي</th>';
+                                $html .= '<th style="border: 2px solid #d1d5db; padding: 12px; text-align: right; font-weight: bold;">المدفوع</th>';
+                                $html .= '<th style="border: 2px solid #d1d5db; padding: 12px; text-align: right; font-weight: bold;">المتبقي</th>';
+                                $html .= '<th style="border: 2px solid #d1d5db; padding: 12px; text-align: right; font-weight: bold;">الحالة</th>';
+                                $html .= '<th style="border: 2px solid #d1d5db; padding: 12px; text-align: right; font-weight: bold;">تاريخ الاستحقاق</th>';
                                 $html .= '</tr>';
                                 $html .= '</thead>';
                                 $html .= '<tbody>';
@@ -121,29 +121,29 @@ class KitchenPaymentsForm
                                     $totalRemaining += $remaining;
                                     
                                     // تحديد لون الحالة
-                                    $statusColor = match($invoice->status) {
-                                        'overdue' => 'text-red-600 font-bold',
-                                        'partial' => 'text-yellow-600',
-                                        default => 'text-gray-600',
+                                    $statusStyle = match($invoice->status) {
+                                        'overdue' => 'color: #dc2626; font-weight: bold;',
+                                        'partial' => 'color: #d97706;',
+                                        default => 'color: #4b5563;',
                                     };
                                     
-                                    $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700">';
-                                    $html .= '<td class="border p-2">' . $invoice->invoice_number . '</td>';
-                                    $html .= '<td class="border p-2">' . number_format($invoice->amount, 2) . ' د.أ</td>';
-                                    $html .= '<td class="border p-2 text-green-600">' . number_format($paid, 2) . ' د.أ</td>';
-                                    $html .= '<td class="border p-2 text-red-600 font-bold">' . number_format($remaining, 2) . ' د.أ</td>';
-                                    $html .= '<td class="border p-2 ' . $statusColor . '">' . $invoice->status_arabic . '</td>';
-                                    $html .= '<td class="border p-2">' . $invoice->due_date->format('Y-m-d') . '</td>';
+                                    $html .= '<tr style="background-color: #ffffff;">';
+                                    $html .= '<td style="border: 1px solid #d1d5db; padding: 10px; text-align: right;">' . $invoice->invoice_number . '</td>';
+                                    $html .= '<td style="border: 1px solid #d1d5db; padding: 10px; text-align: right;">' . number_format($invoice->amount, 2) . ' د.أ</td>';
+                                    $html .= '<td style="border: 1px solid #d1d5db; padding: 10px; text-align: right; color: #16a34a;">' . number_format($paid, 2) . ' د.أ</td>';
+                                    $html .= '<td style="border: 1px solid #d1d5db; padding: 10px; text-align: right; color: #dc2626; font-weight: bold;">' . number_format($remaining, 2) . ' د.أ</td>';
+                                    $html .= '<td style="border: 1px solid #d1d5db; padding: 10px; text-align: right; ' . $statusStyle . '">' . $invoice->status_arabic . '</td>';
+                                    $html .= '<td style="border: 1px solid #d1d5db; padding: 10px; text-align: right;">' . $invoice->due_date->format('Y-m-d') . '</td>';
                                     $html .= '</tr>';
                                 }
                                 
                                 // صف المجموع
-                                $html .= '<tr class="bg-gray-200 dark:bg-gray-700 font-bold">';
-                                $html .= '<td class="border p-2">المجموع</td>';
-                                $html .= '<td class="border p-2">' . number_format($totalAmount, 2) . ' د.أ</td>';
-                                $html .= '<td class="border p-2 text-green-600">' . number_format($totalPaid, 2) . ' د.أ</td>';
-                                $html .= '<td class="border p-2 text-red-600">' . number_format($totalRemaining, 2) . ' د.أ</td>';
-                                $html .= '<td class="border p-2" colspan="2"></td>';
+                                $html .= '<tr style="background-color: #e5e7eb; font-weight: bold;">';
+                                $html .= '<td style="border: 2px solid #9ca3af; padding: 12px; text-align: right;">المجموع</td>';
+                                $html .= '<td style="border: 2px solid #9ca3af; padding: 12px; text-align: right;">' . number_format($totalAmount, 2) . ' د.أ</td>';
+                                $html .= '<td style="border: 2px solid #9ca3af; padding: 12px; text-align: right; color: #16a34a;">' . number_format($totalPaid, 2) . ' د.أ</td>';
+                                $html .= '<td style="border: 2px solid #9ca3af; padding: 12px; text-align: right; color: #dc2626;">' . number_format($totalRemaining, 2) . ' د.أ</td>';
+                                $html .= '<td style="border: 2px solid #9ca3af; padding: 12px;" colspan="2"></td>';
                                 $html .= '</tr>';
                                 
                                 $html .= '</tbody>';
