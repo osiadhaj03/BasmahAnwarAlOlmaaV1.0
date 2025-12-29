@@ -48,9 +48,12 @@ class KitchenPaymentsForm
                                     if ($activeSubscription) {
                                         $set('subscription_id', $activeSubscription->id);
                                         $set('subscription_number_display', $activeSubscription->subscription_number ?? 'بدون رقم');
+                                        // عرض رصيد المحفظة
+                                        $set('credit_balance_display', number_format($activeSubscription->credit_balance ?? 0, 2) . ' د.أ');
                                     } else {
                                         $set('subscription_id', null);
                                         $set('subscription_number_display', null);
+                                        $set('credit_balance_display', '0.00 د.أ');
                                     }
                                     
                                     // إعادة تعيين الفاتورة المختارة
@@ -65,10 +68,18 @@ class KitchenPaymentsForm
                             ->dehydrated(false)
                             ->placeholder('سيظهر عند اختيار المشترك'),
 
+                        // رصيد المحفظة - للعرض فقط
+                        TextInput::make('credit_balance_display')
+                            ->label('💰 رصيد المحفظة')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->placeholder('0.00 د.أ')
+                            ->helperText('الرصيد المتاح - سيتم خصمه تلقائياً من الفواتير الجديدة'),
+
                         // حقل مخفي للاشتراك
                         \Filament\Forms\Components\Hidden::make('subscription_id'),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpan('full'),
 
                 // قسم ملخص الفواتير المستحقة
@@ -149,6 +160,7 @@ class KitchenPaymentsForm
                                 $html .= '</tbody>';
                                 $html .= '</table>';
                                 $html .= '</div>';
+                            
                                 
                                 return new HtmlString($html);
                             })
@@ -206,6 +218,7 @@ class KitchenPaymentsForm
                             ->options([
                                 'cash' => 'نقداً',
                                 'bank_transfer' => 'تحويل بنكي',
+                                'credit_balance' => 'من رصيد المحفظة',
                             ])
                             ->default('cash')
                             ->required(),
