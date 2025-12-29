@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Models\Attendance;
+use App\Models\KitchenPayment;
 use App\Observers\AttendanceObserver;
+use App\Observers\KitchenPaymentObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +25,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // تسجيل Observer للحضور
         Attendance::observe(AttendanceObserver::class);
+        
+        // تسجيل Observer للدفعات - لتحديث حالة الفواتير تلقائياً
+        KitchenPayment::observe(KitchenPaymentObserver::class);
     }
 }
+

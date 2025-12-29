@@ -2,9 +2,15 @@
 
 namespace App\Filament\Resources\KitchenInvoices\Schemas;
 
+use App\Models\KitchenInvoice;
+use App\Models\KitchenSubscription;
+use App\Models\User;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -16,24 +22,64 @@ class KitchenInvoiceForm
             ->components([
                 // قسم معلومات الفاتورة
                 Section::make('معلومات الفاتورة')
-                    ->description('الربط بالاشتراك والمستخدم')
+                    ->description('اختر المستخدم وسيتم جلب الاشتراك الفعال تلقائياً')
                     ->schema([
-                        Select::make('subscription_id')
-                            ->label('الاشتراك')
-                            ->relationship('subscription', 'id')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name . ' - ' . $record->kitchen->name)
-                            ->searchable()
-                            ->preload()
-                            ->required(),
+                        // اختيار المستخدم - هذا الحقل الوحيد الذي يدخله المستخدم
                         Select::make('user_id')
                             ->label('المستخدم')
-                            ->relationship('user', 'name')
+                            ->options(function () {
+                                // جلب المستخدمين الذين لديهم اشتراكات فعالة فقط
+                                return User::whereHas('kitchenSubscriptions', function ($query) {
+                                    $query->where('status', 'active');
+                                })->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->preload()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state) {
+                                if ($state) {
+                                    // جلب الاشتراك الفعال للمستخدم
+                                    $activeSubscription = KitchenSubscription::where('user_id', $state)
+                                        ->where('status', 'active')
+                                        ->first();
+                                    
+                                    if ($activeSubscription) {
+                                        $set('subscription_id', $activeSubscription->id);
+                                        // تعيين المبلغ من سعر الاشتراك الشهري إذا موجود، وإلا 30 دينار
+                                        $set('amount', $activeSubscription->monthly_price ?? 30);
+                                    } else {
+                                        $set('subscription_id', null);
+                                        $set('amount', 30);
+                                    }
+                                }
+                            }),
+
+                        // الاشتراك - يتم تعبئته تلقائياً ولا يمكن تعديله
+                        Select::make('subscription_id')
+                            ->label('الاشتراك')
+                            ->options(function (Get $get) {
+                                $userId = $get('user_id');
+                                if (!$userId) {
+                                    return [];
+                                }
+                                return KitchenSubscription::where('user_id', $userId)
+                                    ->where('status', 'active')
+                                    ->get()
+                                    ->mapWithKeys(fn ($sub) => [
+                                        $sub->id => $sub->kitchen->name . ' - ' . $sub->status_arabic
+                                    ]);
+                            })
+                            ->disabled() // لا يمكن تعديله
+                            ->dehydrated() // لكن يتم إرسال القيمة
                             ->required(),
+
+                        // رقم الفاتورة - تلقائي ولا يمكن تعديله
                         TextInput::make('invoice_number')
                             ->label('رقم الفاتورة')
-                            ->default(fn () => \App\Models\KitchenInvoice::generateInvoiceNumber())
+                            ->default(fn () => KitchenInvoice::generateInvoiceNumber())
+                            ->disabled() // لا يمكن تعديله
+                            ->dehydrated() // لكن يتم إرسال القيمة
                             ->required(),
                     ])
                     ->columns(3)
@@ -41,28 +87,34 @@ class KitchenInvoiceForm
 
                 // قسم المبلغ والتواريخ
                 Section::make('المبلغ والتواريخ')
-                    ->description('تفاصيل المبلغ وتواريخ الاستحقاق')
+                    ->description('المبلغ الافتراضي 30 دينار وتاريخ الاستحقاق أول الشهر')
                     ->schema([
                         TextInput::make('amount')
                             ->label('المبلغ المطلوب')
                             ->required()
                             ->numeric()
-                            ->prefix('د.أ'),
+                            ->default(30)
+                            ->prefix('د.أ')
+                            ->helperText('المبلغ الافتراضي 30 دينار، يمكنك تغييره'),
+
                         DatePicker::make('billing_date')
                             ->label('تاريخ الفوترة')
                             ->required()
                             ->default(now()),
+
+                        // تاريخ الاستحقاق - أول الشهر القادم تلقائياً
                         DatePicker::make('due_date')
                             ->label('تاريخ الاستحقاق')
                             ->required()
-                            ->default(now()->addDays(5)),
+                            ->default(fn () => now()->addMonth()->startOfMonth())
+                            ->helperText('تلقائياً أول الشهر القادم'),
                     ])
                     ->columns(3)
                     ->columnSpan('full'),
 
                 // قسم حالة الفاتورة
                 Section::make('حالة الفاتورة')
-                    ->description('حالة الفاتورة الحالية')
+                    ->description('الحالة تتغير تلقائياً بناءً على الدفعات')
                     ->schema([
                         Select::make('status')
                             ->label('الحالة')
@@ -74,10 +126,28 @@ class KitchenInvoiceForm
                                 'cancelled' => 'ملغاة',
                             ])
                             ->default('pending')
-                            ->required(),
+                            ->disabled() // لا يمكن تعديله يدوياً
+                            ->dehydrated()
+                            ->helperText('تتغير تلقائياً بناءً على الدفعات المسجلة'),
+
+                        // عرض معلومات الدفعات
+                        Placeholder::make('payment_info')
+                            ->label('معلومات الدفع')
+                            ->content(function (?KitchenInvoice $record): string {
+                                if (!$record) {
+                                    return 'لم يتم حفظ الفاتورة بعد';
+                                }
+                                
+                                $totalPaid = $record->total_paid;
+                                $remaining = $record->remaining_amount;
+                                
+                                return "المدفوع: {$totalPaid} د.أ | المتبقي: {$remaining} د.أ";
+                            })
+                            ->visibleOn(['edit', 'view']),
                     ])
-                    ->columns(1)
+                    ->columns(2)
                     ->columnSpan('full'),
             ]);
     }
 }
+
