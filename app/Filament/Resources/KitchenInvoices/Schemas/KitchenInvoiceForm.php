@@ -64,25 +64,8 @@ class KitchenInvoiceForm
                             ->dehydrated(false) // لا يتم إرساله - للعرض فقط
                             ->placeholder('سيظهر عند اختيار المستخدم'),
 
-                        // الاشتراك - يتم تعبئته تلقائياً ولا يمكن تعديله (يعرض رقم الاشتراك)
-                        Select::make('subscription_id')
-                            ->label('الاشتراك')
-                            ->options(function (Get $get) {
-                                $userId = $get('user_id');
-                                if (!$userId) {
-                                    return [];
-                                }
-                                return KitchenSubscription::where('user_id', $userId)
-                                    ->where('status', 'active')
-                                    ->get()
-                                    ->mapWithKeys(fn ($sub) => [
-                                        $sub->id => ($sub->subscription_number ?? 'بدون رقم') . ' - ' . $sub->kitchen->name
-                                    ]);
-                            })
-                            ->disabled() // لا يمكن تعديله
-                            ->dehydrated() // لكن يتم إرسال القيمة
-                            ->hidden() // يختفي عند عرض النموذج
-                            ->required(),
+                        // الاشتراك - حقل مخفي لحفظ القيمة (يتم تعبئته تلقائياً)
+                        \Filament\Forms\Components\Hidden::make('subscription_id'),
 
                         // رقم الفاتورة - تلقائي ولا يمكن تعديله
                         TextInput::make('invoice_number')
