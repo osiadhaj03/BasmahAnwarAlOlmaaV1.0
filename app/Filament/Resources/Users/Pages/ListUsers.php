@@ -35,7 +35,10 @@ class ListUsers extends ListRecords
                 ->query(fn ($query) => $query->whereHas('roles', fn ($q) => $q->where('slug', 'student'))),
             'customer' => Tab::make('المشتركين')
                 ->icon('heroicon-o-shopping-cart')
-                ->query(fn ($query) => $query->whereHas('roles', fn ($q) => $q->where('slug', 'customer'))),
+                ->query(fn ($query) => $query->where(function ($q) {
+                    $q->whereHas('roles', fn ($r) => $r->where('slug', 'customer'))
+                      ->orWhereHas('kitchenSubscriptions');
+                })),
             'cook' => Tab::make('الطباخين')
                 ->icon('heroicon-o-fire')
                 ->query(fn ($query) => $query->whereHas('roles', fn ($q) => $q->where('slug', 'cook'))),

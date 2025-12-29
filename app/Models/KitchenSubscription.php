@@ -31,6 +31,24 @@ class KitchenSubscription extends Model
     ];
 
     /**
+     * Boot method لإضافة دور الزبون تلقائياً
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // عند إنشاء اشتراك جديد، أضف دور الزبون للمستخدم
+        static::created(function ($subscription) {
+            $user = $subscription->user;
+            $customerRole = Role::where('slug', 'customer')->first();
+            
+            if ($user && $customerRole && !$user->hasRole('customer')) {
+                $user->roles()->attach($customerRole);
+            }
+        });
+    }
+
+    /**
      * الرصيد المتاح (حساب ديناميكي)
      * الرصيد = مجموع الدفعات - مجموع الفواتير
      * موجب = للمشترك رصيد زائد
