@@ -172,9 +172,9 @@ class KitchenPaymentsForm
                 // قسم تفاصيل الدفعة
                 Section::make('تفاصيل الدفعة')
                     ->schema([
-                        // اختيار الفاتورة (فواتير غير مدفوعة فقط)
-                        Select::make('invoice_id')
-                            ->label('الفاتورة المراد الدفع لها')
+                        // اختيار الفواتير المتعددة
+                        \Filament\Forms\Components\CheckboxList::make('selected_invoices')
+                            ->label('اختر الفواتير المراد الدفع لها')
                             ->options(function (Get $get) {
                                 $userId = $get('user_id_selector');
                                 if (!$userId) {
@@ -187,26 +187,40 @@ class KitchenPaymentsForm
                                         $inv->id => $inv->invoice_number . ' - متبقي: ' . number_format($inv->remaining_amount, 2) . ' د.أ'
                                     ]);
                             })
-                            ->searchable()
-                            ->preload()
+                            ->columns(1)
                             ->required()
                             ->live()
-                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state) {
-                                if ($state) {
-                                    $invoice = KitchenInvoice::find($state);
-                                    if ($invoice) {
-                                        // تعيين المبلغ المتبقي كقيمة افتراضية
-                                        $set('amount', $invoice->remaining_amount);
-                                    }
+                            ->afterStateUpdated(function (Set $set, Get $get, ?array $state) {
+                                if ($state && count($state) > 0) {
+                                    // حساب مجموع المبالغ المتبقية للفواتير المختارة
+                                    $totalRemaining = KitchenInvoice::whereIn('id', $state)
+                                        ->get()
+                                        ->sum(fn ($inv) => $inv->remaining_amount);
+                                    $set('amount', $totalRemaining);
+                                    $set('total_selected_display', number_format($totalRemaining, 2) . ' د.أ');
+                                } else {
+                                    $set('amount', 0);
+                                    $set('total_selected_display', '0.00 د.أ');
                                 }
-                            }),
+                            })
+                            ->columnSpanFull(),
+
+                        // حقل مخفي لتخزين الفاتورة الأولى (للتوافق مع النظام الحالي)
+                        \Filament\Forms\Components\Hidden::make('invoice_id'),
+
+                        // عرض مجموع المبالغ المتبقية
+                        TextInput::make('total_selected_display')
+                            ->label('📊 مجموع المتبقي للفواتير المختارة')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->placeholder('0.00 د.أ'),
 
                         TextInput::make('amount')
                             ->label('المبلغ المدفوع')
                             ->required()
                             ->numeric()
                             ->prefix('د.أ')
-                            ->helperText('يتم تعيين المبلغ المتبقي تلقائياً عند اختيار الفاتورة'),
+                            ->helperText('يمكنك دفع كامل المجموع أو جزء منه'),
 
                         DatePicker::make('payment_date')
                             ->label('تاريخ الدفع')
