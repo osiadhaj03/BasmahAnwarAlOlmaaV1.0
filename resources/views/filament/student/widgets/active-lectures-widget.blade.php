@@ -20,19 +20,6 @@
                     
                     <div class="relative group p-6 rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary-500 transition-all duration-300 flex flex-col gap-6">
                         
-                        {{-- زر تسجيل الحضور في الأعلى --}}
-                        <div>
-                            <button 
-                                wire:click="registerAttendance({{ $lecture->id }})"
-                                wire:loading.attr="disabled"
-                                wire:loading.class="opacity-50"
-                                wire:target="registerAttendance({{ $lecture->id }})"
-                                class="w-full relative py-4 px-6 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white font-black text-xl rounded-xl shadow-[0_6px_0_rgb(22,163,74)] hover:shadow-none translate-y-[-6px] hover:translate-y-0 transition-all flex items-center justify-center gap-2">
-                                <span wire:loading.remove wire:target="registerAttendance({{ $lecture->id }})">✓ تسجيل الحضور</span>
-                                <span wire:loading wire:target="registerAttendance({{ $lecture->id }})">جاري التسجيل...</span>
-                            </button>
-                        </div>
-
                         {{-- معلومات المحاضرة --}}
                         <div class="space-y-4">
                             {{-- دورة: العنوان --}}
@@ -46,8 +33,6 @@
                             {{-- السطر الثاني: رقم المحاضرة والتاريخ --}}
                             <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700">
                                 <p class="text-sm">
-                                    <span class="text-gray-500 dark:text-gray-400">محاضرة رقم</span>
-                                    <span class="font-extrabold text-gray-900 dark:text-white mx-1 text-base">{{ $lectureNumber }}</span>
                                     <span class="text-gray-500 dark:text-gray-400 mx-1 text-sm">في التاريخ</span>
                                     <span class="font-bold text-gray-900 dark:text-white text-base">{{ $lectureStart->format('Y-m-d') }}</span>
                                 </p>
@@ -65,7 +50,22 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- زر تسجيل الحضور أسفل المعلومات --}}
+                        <div class="mt-auto">
+                            <x-filament::button 
+                                color="success" 
+                                wire:click="registerAttendance({{ $lecture->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="registerAttendance({{ $lecture->id }})"
+                                class="w-full">
+                                <span wire:loading.remove wire:target="registerAttendance({{ $lecture->id }})">تسجيل الحضور</span>
+                                <span wire:loading wire:target="registerAttendance({{ $lecture->id }})">جاري التسجيل...</span>
+                            </x-filament::button>
+                        </div>
+
                     </div>
+
                 @endforeach
             </div>
         @endif
