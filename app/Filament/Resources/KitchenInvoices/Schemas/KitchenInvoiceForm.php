@@ -82,6 +82,7 @@ class KitchenInvoiceForm
                             })
                             ->disabled() // لا يمكن تعديله
                             ->dehydrated() // لكن يتم إرسال القيمة
+                            ->hidden() // يختفي عند عرض النموذج
                             ->required(),
 
                         // رقم الفاتورة - تلقائي ولا يمكن تعديله
