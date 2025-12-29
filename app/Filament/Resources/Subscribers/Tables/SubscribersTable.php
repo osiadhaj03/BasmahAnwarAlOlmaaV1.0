@@ -62,7 +62,7 @@ class SubscribersTable
             
                 
                 TextColumn::make('outstanding_balance')
-                    ->label('المبالغ المستحقة')
+                    ->label('المبالغ')
                     ->getStateUsing(function ($record) {
                         $subscription = $record->kitchenSubscriptions()->where('status', 'active')->first();
                         if (!$subscription) return 0;
