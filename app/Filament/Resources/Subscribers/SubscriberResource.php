@@ -75,4 +75,11 @@ class SubscriberResource extends Resource
     {
         return false; // لا إنشاء من هنا، بل من إدارة الاشتراكات
     }
+
+    public static function canViewAny(): bool
+    {
+        // السماح للمدير والطباخ برؤية المشتركين
+        $panelId = filament()->getCurrentPanel()?->getId();
+        return in_array($panelId, ['admin', 'cook']);
+    }
 }
