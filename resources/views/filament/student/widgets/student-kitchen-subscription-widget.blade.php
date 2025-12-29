@@ -22,7 +22,7 @@
                         {{-- Status --}}
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 w-1/3 bg-gray-50 dark:bg-gray-800/50">
-                                حالة الاشتراك
+                                    :حالة الاشتراك
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
                                 <div class="flex items-center gap-2">
@@ -40,43 +40,16 @@
                                         </span>
                                     @endif
                                 </div>
-                            </td>
-                        </tr>
+                        </div>
+                        <div class="text-left rtl:text-right">
+                            <p class="text-xs text-gray-400 mb-1">فترة الاشتراك</p>
+                            <p class="font-medium text-gray-700 dark:text-gray-200">
+                                {{ $subscription->start_date->format('Y-m-d') }} <span class="text-gray-400 mx-1">إلى</span> {{ $subscription->end_date->format('Y-m-d') }}
+                            </p>
+                        </div>
+                    </div>
 
-                        {{-- Period --}}
-                        <tr>
-                            <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
-                                فترة الاشتراك
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white dir-ltr text-right">
-                                <span class="font-mono">{{ $subscription->start_date->format('Y-m-d') }}</span>
-                                <span class="mx-2 text-gray-400">-></span>
-                                <span class="font-mono">{{ $subscription->end_date ? $subscription->end_date->format('Y-m-d') : 'مستمر' }}</span>
-                            </td>
-                        </tr>
-
-                        {{-- Balance --}}
-                        <tr>
-                            <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
-                                الرصيد
-                            </td>
-                            <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">
-                                <span class="text-lg {{ $stats['balance'] < 0 ? 'text-red-600' : 'text-gray-900 dark:text-white' }}">
-                                    {{ number_format($stats['balance'], 2) }}
-                                </span>
-                                <span class="text-xs text-gray-500">د.أ</span>
-                            </td>
-                        </tr>
-
-                        {{-- Monthly Meals --}}
-                        <tr>
-                            <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
-                                وجبات الشهر
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                {{ $stats['monthly_meals'] }} <span class="text-xs text-gray-500">وجبة</span>
-                            </td>
-                        </tr>
+                       
 
                         {{-- Today's Meal --}}
                         <tr>
@@ -110,7 +83,7 @@
                     <div class="flex items-center gap-2 text-red-700">
                         <span class="text-sm font-bold">فاتورة غير مدفوعة: {{ $stats['last_invoice']->invoice_number }}</span>
                     </div>
-                    <span class="font-bold text-red-600">{{ $stats['last_invoice']->amount }} د.أ</span>
+                    <span class="font-bold text-red-600">وقيمتها: {{ $stats['last_invoice']->amount }} د.أ</span>
                 </div>
             @endif
         @endif
