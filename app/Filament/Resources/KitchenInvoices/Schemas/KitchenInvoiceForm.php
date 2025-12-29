@@ -55,7 +55,7 @@ class KitchenInvoiceForm
                                 }
                             }),
 
-                        // الاشتراك - يتم تعبئته تلقائياً ولا يمكن تعديله
+                        // الاشتراك - يتم تعبئته تلقائياً ولا يمكن تعديله (يعرض رقم الاشتراك)
                         Select::make('subscription_id')
                             ->label('الاشتراك')
                             ->options(function (Get $get) {
@@ -67,7 +67,7 @@ class KitchenInvoiceForm
                                     ->where('status', 'active')
                                     ->get()
                                     ->mapWithKeys(fn ($sub) => [
-                                        $sub->id => $sub->kitchen->name . ' - ' . $sub->status_arabic
+                                        $sub->id => ($sub->subscription_number ?? 'بدون رقم') . ' - ' . $sub->kitchen->name
                                     ]);
                             })
                             ->disabled() // لا يمكن تعديله
