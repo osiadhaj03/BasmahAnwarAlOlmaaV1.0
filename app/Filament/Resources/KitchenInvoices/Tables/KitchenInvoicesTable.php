@@ -84,10 +84,37 @@ class KitchenInvoicesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Tables\Actions\DeleteAction::make()
+                    ->before(function ($record, \Filament\Tables\Actions\DeleteAction $action) {
+                        if ($record->allocations()->count() > 0) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('⚠️ لا يمكن حذف الفاتورة')
+                                ->body('هذه الفاتورة مرتبطة بدفعات. يرجى حذف الدفعات أولاً قبل حذف الفاتورة.')
+                                ->danger()
+                                ->persistent()
+                                ->send();
+                            
+                            $action->cancel();
+                        }
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->before(function ($records, DeleteBulkAction $action) {
+                            $hasPayments = $records->filter(fn ($record) => $record->allocations()->count() > 0);
+                            
+                            if ($hasPayments->isNotEmpty()) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('⚠️ لا يمكن حذف بعض الفواتير')
+                                    ->body('الفواتير التالية مرتبطة بدفعات ولا يمكن حذفها: ' . $hasPayments->pluck('invoice_number')->join(', '))
+                                    ->danger()
+                                    ->persistent()
+                                    ->send();
+                                
+                                $action->cancel();
+                            }
+                        }),
                 ]),
             ])
             ->defaultSort('billing_date', 'desc');
