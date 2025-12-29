@@ -48,8 +48,8 @@ class KitchenPaymentsForm
                                     if ($activeSubscription) {
                                         $set('subscription_id', $activeSubscription->id);
                                         $set('subscription_number_display', $activeSubscription->subscription_number ?? 'بدون رقم');
-                                        // عرض رصيد المحفظة
-                                        $set('credit_balance_display', number_format($activeSubscription->credit_balance ?? 0, 2) . ' د.أ');
+                                        // عرض الرصيد المحسوب ديناميكياً (مجموع الدفعات - مجموع الفواتير)
+                                        $set('credit_balance_display', number_format($activeSubscription->available_credit, 2) . ' د.أ');
                                     } else {
                                         $set('subscription_id', null);
                                         $set('subscription_number_display', null);
@@ -68,13 +68,13 @@ class KitchenPaymentsForm
                             ->dehydrated(false)
                             ->placeholder('سيظهر عند اختيار المشترك'),
 
-                        // رصيد المحفظة - للعرض فقط
+                        // الرصيد المتاح - محسوب ديناميكياً (مجموع الدفعات - مجموع الفواتير)
                         TextInput::make('credit_balance_display')
-                            ->label('💰 رصيد المحفظة')
+                            ->label('💰 الرصيد المتاح')
                             ->disabled()
                             ->dehydrated(false)
                             ->placeholder('0.00 د.أ')
-                            ->helperText('الرصيد المتاح - سيتم خصمه تلقائياً من الفواتير الجديدة'),
+                            ->helperText('الرصيد = مجموع الدفعات - مجموع الفواتير'),
 
                         // حقل مخفي للاشتراك
                         \Filament\Forms\Components\Hidden::make('subscription_id'),

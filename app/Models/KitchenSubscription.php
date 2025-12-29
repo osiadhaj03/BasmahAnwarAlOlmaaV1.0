@@ -21,43 +21,25 @@ class KitchenSubscription extends Model
         'monthly_price',
         'number_meal',
         'notes',
-        'credit_balance', // رصيد المحفظة
+        // لا نخزن credit_balance - يحسب ديناميكياً
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
         'monthly_price' => 'decimal:2',
-        'credit_balance' => 'decimal:2',
     ];
 
     /**
-     * إضافة رصيد للمحفظة
-     */
-    public function addCredit(float $amount): void
-    {
-        $this->credit_balance = ($this->credit_balance ?? 0) + $amount;
-        $this->save();
-    }
-
-    /**
-     * خصم من رصيد المحفظة
-     */
-    public function deductCredit(float $amount): float
-    {
-        $currentBalance = $this->credit_balance ?? 0;
-        $deducted = min($currentBalance, $amount);
-        $this->credit_balance = $currentBalance - $deducted;
-        $this->save();
-        return $deducted;
-    }
-
-    /**
-     * الرصيد المتاح
+     * الرصيد المتاح (حساب ديناميكي)
+     * الرصيد = مجموع الدفعات - مجموع الفواتير
+     * موجب = للمشترك رصيد زائد
+     * صفر أو سالب = لا يوجد رصيد متاح
      */
     public function getAvailableCreditAttribute(): float
     {
-        return (float) ($this->credit_balance ?? 0);
+        $balance = $this->balance; // يستخدم getBalanceAttribute()
+        return $balance > 0 ? $balance : 0;
     }
 
     /**
