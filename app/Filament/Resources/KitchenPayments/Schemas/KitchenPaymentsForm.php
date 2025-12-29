@@ -68,18 +68,10 @@ class KitchenPaymentsForm
                             ->dehydrated(false)
                             ->placeholder('سيظهر عند اختيار المشترك'),
 
-                        // الرصيد المتاح - محسوب ديناميكياً (مجموع الدفعات - مجموع الفواتير)
-                        TextInput::make('credit_balance_display')
-                            ->label('💰 الرصيد المتاح')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->placeholder('0.00 د.أ')
-                            ->helperText('الرصيد = مجموع الدفعات - مجموع الفواتير'),
-
                         // حقل مخفي للاشتراك
                         \Filament\Forms\Components\Hidden::make('subscription_id'),
                     ])
-                    ->columns(3)
+                    ->columns(2)
                     ->columnSpan('full'),
 
                 // قسم ملخص الفواتير المستحقة
