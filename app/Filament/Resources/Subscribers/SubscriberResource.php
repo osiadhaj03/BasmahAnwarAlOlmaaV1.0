@@ -27,7 +27,7 @@ class SubscriberResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
-    protected static UnitEnum|string|null $navigationGroup = 'إدارة المطبخ';
+    protected static UnitEnum|string|null $navigationGroup ='إدارة الاشتراكات و الدفعات';
 
     protected static ?int $navigationSort = 1;
 
