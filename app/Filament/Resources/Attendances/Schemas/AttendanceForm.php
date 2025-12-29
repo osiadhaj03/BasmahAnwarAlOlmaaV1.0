@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Attendances\Schemas;
 
 use App\Models\Lesson;
 use App\Models\Lecture;
-use App\Models\User;
+use App\Models\Attendance;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
@@ -12,6 +12,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Schema;
+use Filament\Forms\Get;
+use Closure;
 
 class AttendanceForm
 {
@@ -68,7 +70,15 @@ class AttendanceForm
                             ->options(User::where('type', 'student')->pluck('name', 'id'))
                             ->required()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->rules([
+                                fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                    $lectureId = $get('lecture_id');
+                                    if ($lectureId && Attendance::where('lecture_id', $lectureId)->where('student_id', $value)->exists()) {
+                                        $fail('لقد تم تسجيل حضور هذا الطالب بالفعل لهذه المحاضرة.');
+                                    }
+                                },
+                            ]),
                         
                         Select::make('status')
                             ->label('حالة الحضور')
