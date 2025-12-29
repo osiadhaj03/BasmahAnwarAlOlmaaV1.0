@@ -59,11 +59,6 @@ class UsersTable
                     ->toggleable()
                     ->visible(fn ($record) => in_array($record?->type, ['admin', 'teacher'])),
                 
-                TextColumn::make('department')
-                    ->label('القسم')
-                    ->searchable()
-                    ->toggleable(),
-                
                 IconColumn::make('is_active')
                     ->label('نشط')
                     ->boolean()
