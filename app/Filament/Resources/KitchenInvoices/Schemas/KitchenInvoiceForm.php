@@ -46,14 +46,24 @@ class KitchenInvoiceForm
                                     
                                     if ($activeSubscription) {
                                         $set('subscription_id', $activeSubscription->id);
+                                        // تعيين رقم الاشتراك للعرض
+                                        $set('subscription_number_display', $activeSubscription->subscription_number ?? 'بدون رقم');
                                         // تعيين المبلغ من سعر الاشتراك الشهري إذا موجود، وإلا 30 دينار
                                         $set('amount', $activeSubscription->monthly_price ?? 30);
                                     } else {
                                         $set('subscription_id', null);
+                                        $set('subscription_number_display', null);
                                         $set('amount', 30);
                                     }
                                 }
                             }),
+
+                        // رقم الاشتراك - للعرض فقط
+                        TextInput::make('subscription_number_display')
+                            ->label('رقم الاشتراك')
+                            ->disabled()
+                            ->dehydrated(false) // لا يتم إرساله - للعرض فقط
+                            ->placeholder('سيظهر عند اختيار المستخدم'),
 
                         // الاشتراك - يتم تعبئته تلقائياً ولا يمكن تعديله (يعرض رقم الاشتراك)
                         Select::make('subscription_id')
@@ -82,7 +92,7 @@ class KitchenInvoiceForm
                             ->dehydrated() // لكن يتم إرسال القيمة
                             ->required(),
                     ])
-                    ->columns(3)
+                    ->columns(4)
                     ->columnSpan('full'),
 
                 // قسم المبلغ والتواريخ

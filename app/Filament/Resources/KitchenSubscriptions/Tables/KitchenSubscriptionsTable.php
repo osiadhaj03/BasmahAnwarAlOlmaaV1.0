@@ -14,6 +14,9 @@ class KitchenSubscriptionsTable
     {
         return $table
             ->columns([
+                TextColumn::make('subscription_number')
+                    ->label('رقم الاشتراك')
+                    ->searchable(),
                 TextColumn::make('user.name')
                     ->label('المشترك')  
                     ->searchable(),
