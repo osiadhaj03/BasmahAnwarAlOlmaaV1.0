@@ -142,26 +142,13 @@ class SubscribersTable
                     ->falseLabel('غير نشط'),
             ])
             ->recordActions([
-                ViewAction::make()
-                    ->label('عرض'),
-                EditAction::make()
-                    ->label('تعديل'),
+//
             ])
             ->headerActions([
-                FilamentExportHeaderAction::make('export')
-                    ->label('تصدير')
-                    ->fileName('Subscribers')
-                    ->defaultFormat('xlsx')
-                    ->defaultPageOrientation('landscape'),
+            //
             ])
             ->bulkActions([
-                BulkActionGroup::make([
-                    FilamentExportBulkAction::make('export')
-                        ->label('تصدير المحدد')
-                        ->fileName('Selected_Subscribers')
-                        ->defaultFormat('xlsx')
-                        ->defaultPageOrientation('landscape'),
-                ]),
+                
             ])
             ->defaultSort('created_at', 'desc')
             ->striped();
