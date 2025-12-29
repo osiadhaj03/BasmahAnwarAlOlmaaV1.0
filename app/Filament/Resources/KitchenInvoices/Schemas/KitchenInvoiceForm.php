@@ -22,7 +22,6 @@ class KitchenInvoiceForm
             ->components([
                 // قسم معلومات الفاتورة
                 Section::make('معلومات الفاتورة')
-                    ->description('اختر المستخدم وسيتم جلب الاشتراك الفعال تلقائياً')
                     ->schema([
                         // اختيار المستخدم - هذا الحقل الوحيد الذي يدخله المستخدم
                         Select::make('user_id')
@@ -98,15 +97,13 @@ class KitchenInvoiceForm
 
                 // قسم المبلغ والتواريخ
                 Section::make('المبلغ والتواريخ')
-                    ->description('المبلغ الافتراضي 30 دينار وتاريخ الاستحقاق أول الشهر')
                     ->schema([
                         TextInput::make('amount')
                             ->label('المبلغ المطلوب')
                             ->required()
                             ->numeric()
                             ->default(30)
-                            ->prefix('د.أ')
-                            ->helperText('المبلغ الافتراضي 30 دينار، يمكنك تغييره'),
+                            ->prefix('د.أ'),
 
                         DatePicker::make('billing_date')
                             ->label('تاريخ الفوترة')
