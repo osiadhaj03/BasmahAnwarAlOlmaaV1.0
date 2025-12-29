@@ -64,4 +64,74 @@ class KitchenPayment extends Model
             default => $this->payment_method,
         };
     }
+
+    // العلاقات الجديدة
+
+    /**
+     * توزيعات الدفعة على الفواتير
+     */
+    public function allocations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PaymentInvoiceAllocation::class, 'payment_id');
+    }
+
+    // Methods
+
+    /**
+     * توزيع الدفعة على الفواتير بنظام FIFO
+     * الأقدم أولاً
+     */
+    public function allocateToInvoices(): void
+    {
+        // حذف التوزيعات السابقة إن وجدت (لإعادة التوزيع)
+        $this->allocations()->delete();
+
+        // جلب الفواتير غير المدفوعة بالكامل مرتبة من الأقدم
+        $unpaidInvoices = KitchenInvoice::where('subscription_id', $this->subscription_id)
+            ->whereIn('status', ['pending', 'partial', 'overdue'])
+            ->orderBy('billing_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $remainingAmount = (float) $this->amount;
+
+        foreach ($unpaidInvoices as $invoice) {
+            if ($remainingAmount <= 0) {
+                break;
+            }
+
+            // المبلغ المتبقي على الفاتورة
+            $invoiceRemaining = $invoice->remaining_amount;
+
+            if ($invoiceRemaining <= 0) {
+                continue;
+            }
+
+            // المبلغ المخصص لهذه الفاتورة
+            $allocatedAmount = min($remainingAmount, $invoiceRemaining);
+
+            // إنشاء سجل التوزيع
+            PaymentInvoiceAllocation::create([
+                'payment_id' => $this->id,
+                'invoice_id' => $invoice->id,
+                'amount_allocated' => $allocatedAmount,
+            ]);
+
+            $remainingAmount -= $allocatedAmount;
+
+            // تحديث حالة الفاتورة
+            $invoice->updatePaymentStatus();
+        }
+    }
+
+    /**
+     * حساب إجمالي المستحق على الاشتراك
+     */
+    public static function getTotalOutstandingForSubscription(int $subscriptionId): float
+    {
+        return KitchenInvoice::where('subscription_id', $subscriptionId)
+            ->whereIn('status', ['pending', 'partial', 'overdue'])
+            ->get()
+            ->sum(fn ($invoice) => $invoice->remaining_amount);
+    }
 }

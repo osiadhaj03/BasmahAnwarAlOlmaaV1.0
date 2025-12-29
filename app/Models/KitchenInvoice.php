@@ -58,7 +58,7 @@ class KitchenInvoice extends Model
     }
 
     /**
-     * الدفعات المرتبطة بهذه الفاتورة
+     * الدفعات المرتبطة بهذه الفاتورة (علاقة قديمة - للتوافق)
      */
     public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -66,11 +66,19 @@ class KitchenInvoice extends Model
     }
 
     /**
-     * مجموع الدفعات للفاتورة
+     * توزيعات الدفعات على هذه الفاتورة
+     */
+    public function allocations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PaymentInvoiceAllocation::class, 'invoice_id');
+    }
+
+    /**
+     * مجموع الدفعات للفاتورة (من جدول التوزيعات)
      */
     public function getTotalPaidAttribute(): float
     {
-        return (float) $this->payments()->sum('amount');
+        return (float) $this->allocations()->sum('amount_allocated');
     }
 
     /**
@@ -90,6 +98,7 @@ class KitchenInvoice extends Model
     {
         return match($this->status) {
             'pending' => 'قيد الانتظار',
+            'partial' => 'مدفوعة جزئياً',
             'paid' => 'مدفوعة',
             'overdue' => 'متأخرة',
             'cancelled' => 'ملغية',
@@ -146,7 +155,29 @@ class KitchenInvoice extends Model
 
     public function scopeUnpaid($query)
     {
-        return $query->whereIn('status', ['pending', 'overdue']);
+        return $query->whereIn('status', ['pending', 'partial', 'overdue']);
+    }
+
+    /**
+     * تحديث حالة الدفع للفاتورة بناءً على المبالغ المدفوعة
+     */
+    public function updatePaymentStatus(): void
+    {
+        $this->refresh(); // إعادة تحميل البيانات
+        
+        $totalPaid = $this->total_paid;
+        $amount = (float) $this->amount;
+
+        if ($totalPaid >= $amount) {
+            $this->status = 'paid';
+            $this->paid_at = now();
+        } elseif ($totalPaid > 0) {
+            $this->status = 'partial';
+        } elseif ($this->due_date < today() && $this->status !== 'cancelled') {
+            $this->status = 'overdue';
+        }
+        
+        $this->save();
     }
 
     // Methods
