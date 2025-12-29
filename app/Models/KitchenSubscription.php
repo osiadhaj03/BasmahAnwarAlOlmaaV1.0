@@ -12,6 +12,7 @@ class KitchenSubscription extends Model
     use HasFactory;
 
     protected $fillable = [
+        'subscription_number',
         'user_id',
         'kitchen_id',
         'start_date',
@@ -27,6 +28,27 @@ class KitchenSubscription extends Model
         'end_date' => 'date',
         'monthly_price' => 'decimal:2',
     ];
+
+    /**
+     * توليد رقم اشتراك جديد
+     * الصيغة: SUB-YYYYMM-0001
+     */
+    public static function generateSubscriptionNumber(): string
+    {
+        $prefix = 'SUB-' . date('Ym');
+        $lastSubscription = static::where('subscription_number', 'like', $prefix . '%')
+            ->orderBy('subscription_number', 'desc')
+            ->first();
+
+        if ($lastSubscription) {
+            $lastNumber = (int) substr($lastSubscription->subscription_number, -4);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+
+        return $prefix . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+    }
 
     // العلاقات
 

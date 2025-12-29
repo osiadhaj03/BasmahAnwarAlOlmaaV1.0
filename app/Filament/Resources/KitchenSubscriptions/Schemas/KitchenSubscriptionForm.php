@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\KitchenSubscriptions\Schemas;
 
 use App\Models\Kitchen;
+use App\Models\KitchenSubscription;
 use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -22,6 +23,14 @@ class KitchenSubscriptionForm
                 Section::make('معلومات الاشتراك')
                     ->description('الربط بين المشترك والمطبخ')
                     ->schema([
+                        // رقم الاشتراك - تلقائي ولا يمكن تعديله
+                        TextInput::make('subscription_number')
+                            ->label('رقم الاشتراك')
+                            ->default(fn () => KitchenSubscription::generateSubscriptionNumber())
+                            ->disabled() // لا يمكن تعديله
+                            ->dehydrated() // لكن يتم إرسال القيمة
+                            ->required()
+                            ->helperText('رقم تلقائي بصيغة SUB-سنةشهر-رقم'),
                         Select::make('user_id')
                             ->label('المشترك')
                             ->relationship('user', 'name')
@@ -57,7 +66,7 @@ class KitchenSubscriptionForm
                                 return Kitchen::create($data)->id;
                             }),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpan('full'),
 
                 // قسم مدة الاشتراك
