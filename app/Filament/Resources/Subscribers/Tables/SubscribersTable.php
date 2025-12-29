@@ -114,12 +114,43 @@ class SubscribersTable
                         }
                     }),
                 
+                // فلتر استلام وجبة اليوم
+                SelectFilter::make('today_meal')
+                    ->label('وجبة اليوم')
+                    ->options([
+                        'delivered' => ' استلم',
+                        'pending' => ' لم يستلم',
+                        
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (!$data['value']) return;
+                        
+                        if ($data['value'] === 'delivered') {
+                            $query->whereHas('mealDeliveries', fn ($q) => 
+                                $q->whereDate('delivery_date', today())->where('status', 'delivered')
+                            );
+                        } elseif ($data['value'] === 'pending') {
+                            $query->whereHas('mealDeliveries', fn ($q) => 
+                                $q->whereDate('delivery_date', today())->where('status', 'pending')
+                            );
+                        } elseif ($data['value'] === 'missed') {
+                            $query->whereHas('mealDeliveries', fn ($q) => 
+                                $q->whereDate('delivery_date', today())->where('status', 'missed')
+                            );
+                        } elseif ($data['value'] === 'none') {
+                            $query->whereDoesntHave('mealDeliveries', fn ($q) => 
+                                $q->whereDate('delivery_date', today())
+                            );
+                        }
+                    }),
+                
                 TernaryFilter::make('is_active')
                     ->label('الحالة')
                     ->placeholder('الجميع')
                     ->trueLabel('نشط')
                     ->falseLabel('غير نشط'),
             ])
+
             ->recordActions([
                 // زر تسليم وجبة لكل صف
                 Action::make('deliverMeal')
