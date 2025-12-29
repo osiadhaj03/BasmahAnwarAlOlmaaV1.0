@@ -201,4 +201,18 @@ class KitchenInvoice extends Model
 
         return $prefix . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
+
+    /**
+     * Boot method للتحقق قبل الحذف
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($invoice) {
+            if ($invoice->allocations()->count() > 0) {
+                throw new \Exception('لا يمكن حذف فاتورة مرتبطة بدفعات. يرجى حذف الدفعات أولاً.');
+            }
+        });
+    }
 }

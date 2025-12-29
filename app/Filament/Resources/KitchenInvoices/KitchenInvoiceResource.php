@@ -57,4 +57,12 @@ class KitchenInvoiceResource extends Resource
             'edit' => EditKitchenInvoice::route('/{record}/edit'),
         ];
     }
+
+    /**
+     * منع حذف الفواتير المرتبطة بدفعات
+     */
+    public static function canDelete($record): bool
+    {
+        return $record->allocations()->count() === 0;
+    }
 }
