@@ -2,12 +2,19 @@
 
 namespace App\Filament\Resources\KitchenPayments\Schemas;
 
+use App\Models\KitchenInvoice;
+use App\Models\KitchenSubscription;
+use App\Models\User;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class KitchenPaymentsForm
 {
@@ -15,40 +22,185 @@ class KitchenPaymentsForm
     {
         return $schema
             ->components([
-                // قسم معلومات الدفعة
-                Section::make('معلومات الدفعة')
-                    ->description('ربط الدفعة بالاشتراك والفاتورة')
+                // قسم اختيار المستخدم
+                Section::make('اختيار المشترك')
                     ->schema([
-                        Select::make('subscription_id')
-                            ->label('الاشتراك')
-                            ->relationship('subscription', 'id')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name . ' - ' . $record->kitchen->name)
+                        // اختيار المستخدم أولاً
+                        Select::make('user_id_selector')
+                            ->label('المشترك')
+                            ->options(function () {
+                                // جلب المستخدمين الذين لديهم اشتراكات فعالة
+                                return User::whereHas('kitchenSubscriptions', function ($query) {
+                                    $query->where('status', 'active');
+                                })->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->preload()
-                            ->required(),
-                        Select::make('invoice_id')
-                            ->label('الفاتورة (اختياري)')
-                            ->relationship('invoice', 'invoice_number')
-                            ->searchable()
-                            ->preload()
-                            ->default(null),
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state) {
+                                if ($state) {
+                                    // جلب الاشتراك الفعال للمستخدم
+                                    $activeSubscription = KitchenSubscription::where('user_id', $state)
+                                        ->where('status', 'active')
+                                        ->first();
+                                    
+                                    if ($activeSubscription) {
+                                        $set('subscription_id', $activeSubscription->id);
+                                        $set('subscription_number_display', $activeSubscription->subscription_number ?? 'بدون رقم');
+                                    } else {
+                                        $set('subscription_id', null);
+                                        $set('subscription_number_display', null);
+                                    }
+                                    
+                                    // إعادة تعيين الفاتورة المختارة
+                                    $set('invoice_id', null);
+                                }
+                            }),
+
+                        // رقم الاشتراك - للعرض فقط
+                        TextInput::make('subscription_number_display')
+                            ->label('رقم الاشتراك')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->placeholder('سيظهر عند اختيار المشترك'),
+
+                        // حقل مخفي للاشتراك
+                        \Filament\Forms\Components\Hidden::make('subscription_id'),
                     ])
                     ->columns(2)
                     ->columnSpan('full'),
 
-                // قسم تفاصيل الدفع
-                Section::make('تفاصيل الدفع')
-                    ->description('المبلغ وتاريخ الدفع')
+                // قسم ملخص الفواتير المستحقة
+                Section::make('الفواتير المستحقة')
                     ->schema([
+                        // عرض جدول الفواتير المستحقة
+                        Placeholder::make('invoices_summary')
+                            ->label('')
+                            ->content(function (Get $get): HtmlString {
+                                $userId = $get('user_id_selector');
+                                
+                                if (!$userId) {
+                                    return new HtmlString('<div class="text-gray-500 text-center py-4">اختر المشترك لعرض الفواتير المستحقة</div>');
+                                }
+                                
+                                // جلب الفواتير غير المدفوعة بالكامل
+                                $invoices = KitchenInvoice::where('user_id', $userId)
+                                    ->whereIn('status', ['pending', 'partial', 'overdue'])
+                                    ->get();
+                                
+                                if ($invoices->isEmpty()) {
+                                    return new HtmlString('<div class="text-green-600 text-center py-4 font-bold">🎉 لا توجد فواتير مستحقة - جميع الفواتير مدفوعة</div>');
+                                }
+                                
+                                // بناء جدول HTML
+                                $html = '<div class="overflow-x-auto">';
+                                $html .= '<table class="w-full text-sm border-collapse">';
+                                $html .= '<thead class="bg-gray-100 dark:bg-gray-800">';
+                                $html .= '<tr>';
+                                $html .= '<th class="border p-2 text-right">رقم الفاتورة</th>';
+                                $html .= '<th class="border p-2 text-right">المبلغ الكلي</th>';
+                                $html .= '<th class="border p-2 text-right">المدفوع</th>';
+                                $html .= '<th class="border p-2 text-right">المتبقي</th>';
+                                $html .= '<th class="border p-2 text-right">الحالة</th>';
+                                $html .= '<th class="border p-2 text-right">تاريخ الاستحقاق</th>';
+                                $html .= '</tr>';
+                                $html .= '</thead>';
+                                $html .= '<tbody>';
+                                
+                                $totalAmount = 0;
+                                $totalPaid = 0;
+                                $totalRemaining = 0;
+                                
+                                foreach ($invoices as $invoice) {
+                                    $paid = $invoice->total_paid;
+                                    $remaining = $invoice->remaining_amount;
+                                    
+                                    $totalAmount += $invoice->amount;
+                                    $totalPaid += $paid;
+                                    $totalRemaining += $remaining;
+                                    
+                                    // تحديد لون الحالة
+                                    $statusColor = match($invoice->status) {
+                                        'overdue' => 'text-red-600 font-bold',
+                                        'partial' => 'text-yellow-600',
+                                        default => 'text-gray-600',
+                                    };
+                                    
+                                    $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700">';
+                                    $html .= '<td class="border p-2">' . $invoice->invoice_number . '</td>';
+                                    $html .= '<td class="border p-2">' . number_format($invoice->amount, 2) . ' د.أ</td>';
+                                    $html .= '<td class="border p-2 text-green-600">' . number_format($paid, 2) . ' د.أ</td>';
+                                    $html .= '<td class="border p-2 text-red-600 font-bold">' . number_format($remaining, 2) . ' د.أ</td>';
+                                    $html .= '<td class="border p-2 ' . $statusColor . '">' . $invoice->status_arabic . '</td>';
+                                    $html .= '<td class="border p-2">' . $invoice->due_date->format('Y-m-d') . '</td>';
+                                    $html .= '</tr>';
+                                }
+                                
+                                // صف المجموع
+                                $html .= '<tr class="bg-gray-200 dark:bg-gray-700 font-bold">';
+                                $html .= '<td class="border p-2">المجموع</td>';
+                                $html .= '<td class="border p-2">' . number_format($totalAmount, 2) . ' د.أ</td>';
+                                $html .= '<td class="border p-2 text-green-600">' . number_format($totalPaid, 2) . ' د.أ</td>';
+                                $html .= '<td class="border p-2 text-red-600">' . number_format($totalRemaining, 2) . ' د.أ</td>';
+                                $html .= '<td class="border p-2" colspan="2"></td>';
+                                $html .= '</tr>';
+                                
+                                $html .= '</tbody>';
+                                $html .= '</table>';
+                                $html .= '</div>';
+                                
+                                return new HtmlString($html);
+                            })
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpan('full')
+                    ->visible(fn (Get $get) => $get('user_id_selector') !== null),
+
+                // قسم تفاصيل الدفعة
+                Section::make('تفاصيل الدفعة')
+                    ->schema([
+                        // اختيار الفاتورة (فواتير غير مدفوعة فقط)
+                        Select::make('invoice_id')
+                            ->label('الفاتورة المراد الدفع لها')
+                            ->options(function (Get $get) {
+                                $userId = $get('user_id_selector');
+                                if (!$userId) {
+                                    return [];
+                                }
+                                return KitchenInvoice::where('user_id', $userId)
+                                    ->whereIn('status', ['pending', 'partial', 'overdue'])
+                                    ->get()
+                                    ->mapWithKeys(fn ($inv) => [
+                                        $inv->id => $inv->invoice_number . ' - متبقي: ' . number_format($inv->remaining_amount, 2) . ' د.أ'
+                                    ]);
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state) {
+                                if ($state) {
+                                    $invoice = KitchenInvoice::find($state);
+                                    if ($invoice) {
+                                        // تعيين المبلغ المتبقي كقيمة افتراضية
+                                        $set('amount', $invoice->remaining_amount);
+                                    }
+                                }
+                            }),
+
                         TextInput::make('amount')
                             ->label('المبلغ المدفوع')
                             ->required()
                             ->numeric()
-                            ->prefix('د.أ'),
+                            ->prefix('د.أ')
+                            ->helperText('يتم تعيين المبلغ المتبقي تلقائياً عند اختيار الفاتورة'),
+
                         DatePicker::make('payment_date')
                             ->label('تاريخ الدفع')
                             ->required()
                             ->default(now()),
+
                         Select::make('payment_method')
                             ->label('طريقة الدفع')
                             ->options([
@@ -58,12 +210,12 @@ class KitchenPaymentsForm
                             ->default('cash')
                             ->required(),
                     ])
-                    ->columns(3)
-                    ->columnSpan('full'),
+                    ->columns(2)
+                    ->columnSpan('full')
+                    ->visible(fn (Get $get) => $get('user_id_selector') !== null),
 
                 // قسم معلومات التحصيل
                 Section::make('معلومات التحصيل')
-                    ->description('من قام بالتحصيل والملاحظات')
                     ->schema([
                         Select::make('collected_by')
                             ->label('المحصّل')
@@ -76,7 +228,8 @@ class KitchenPaymentsForm
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
-                    ->columnSpan('full'),
+                    ->columnSpan('full')
+                    ->visible(fn (Get $get) => $get('user_id_selector') !== null),
             ]);
     }
 }
