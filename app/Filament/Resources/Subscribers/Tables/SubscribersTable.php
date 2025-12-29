@@ -33,14 +33,7 @@ class SubscribersTable
                     ->copyable()
                     ->placeholder('غير محدد')
                     ->icon('heroicon-o-phone'),
-                
-                TextColumn::make('email')
-                    ->label('البريد الإلكتروني')
-                    ->searchable()
-                    ->copyable()
-                    ->placeholder('غير محدد')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                
+                               
                 TextColumn::make('kitchenSubscriptions.subscription_number')
                     ->label('رقم الاشتراك')
                     ->badge()
@@ -65,39 +58,11 @@ class SubscribersTable
                         'pending' => 'warning',
                         default => 'gray',
                     }),
-                
-                TextColumn::make('kitchenSubscriptions.kitchen.name')
-                    ->label('المطبخ')
-                    ->badge()
-                    ->color('info')
-                    ->placeholder('-'),
-                
-                TextColumn::make('monthly_meals_count')
-                    ->label('وجبات الشهر')
-                    ->getStateUsing(function ($record) {
-                        return $record->mealDeliveries()
-                            ->where('status', 'delivered')
-                            ->whereMonth('delivery_date', Carbon::now()->month)
-                            ->whereYear('delivery_date', Carbon::now()->year)
-                            ->count();
-                    })
-                    ->badge()
-                    ->color('success')
-                    ->icon('heroicon-o-cake'),
-                
-                TextColumn::make('missed_meals_count')
-                    ->label('الفائتة')
-                    ->getStateUsing(function ($record) {
-                        return $record->mealDeliveries()
-                            ->where('status', 'missed')
-                            ->count();
-                    })
-                    ->badge()
-                    ->color(fn ($state) => $state > 0 ? 'danger' : 'gray')
-                    ->icon('heroicon-o-x-circle'),
+
+            
                 
                 TextColumn::make('outstanding_balance')
-                    ->label('المستحق')
+                    ->label('المبالغ المستحقة')
                     ->getStateUsing(function ($record) {
                         $subscription = $record->kitchenSubscriptions()->where('status', 'active')->first();
                         if (!$subscription) return 0;
