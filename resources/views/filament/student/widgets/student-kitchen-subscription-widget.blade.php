@@ -16,82 +16,93 @@
                 </x-filament::button>
             </div>
         @else
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {{-- Subscription Meta --}}
-                <div class="col-span-1 md:col-span-2 space-y-4">
-                    {{-- Status Banner --}}
-                    <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
-                        <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">حالة الاشتراك</p>
-                            <div class="flex items-center gap-2">
-                                @if($subscription->status == 'active')
-                                    <span class="flex h-3 w-3 rounded-full bg-green-500 relative">
-                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                    </span>
-                                    <span class="font-bold text-lg text-green-600 dark:text-green-400">نشط</span>
-                                @elseif($subscription->status == 'paused')
-                                    <span class="h-3 w-3 rounded-full bg-yellow-500"></span>
-                                    <span class="font-bold text-lg text-yellow-600 dark:text-yellow-400">موقوف مؤقتاً</span>
-                                @else
-                                    <span class="h-3 w-3 rounded-full bg-red-500"></span>
-                                    <span class="font-bold text-lg text-red-600 dark:text-red-400">{{ $subscription->status_arabic }}</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="text-left rtl:text-right">
-                            <p class="text-xs text-gray-400 mb-1">فترة الاشتراك</p>
-                            <p class="font-medium text-gray-700 dark:text-gray-200">
-                                {{ $subscription->start_date->format('Y-m-d') }} <span class="text-gray-400 mx-1">إلى</span> {{ $subscription->end_date ? $subscription->end_date->format('Y-m-d') : 'مستمر' }}
-                            </p>
-                        </div>
-                    </div>
-
-                    {{-- Today's Meal Status --}}
-                    <div class="p-4 rounded-xl border border-dashed {{ $todayMeal ? 'bg-green-50/50 border-green-200' : 'bg-gray-50 border-gray-200' }}">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 rounded-lg {{ $todayMeal ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500' }}">
-                                <x-heroicon-m-truck class="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-gray-900 dark:text-white">وجبة اليوم</h4>
-                                @if($todayMeal)
-                                    @if($todayMeal->status == 'delivered')
-                                        <p class="text-sm text-green-600 font-medium">تم التوصيل بنجاح ✓</p>
-                                    @elseif($todayMeal->status == 'pending')
-                                        <p class="text-sm text-orange-600 font-medium">قيد التوصيل...</p>
+            <div class="overflow-hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                        {{-- Status --}}
+                        <tr>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 w-1/3 bg-gray-50 dark:bg-gray-800/50">
+                                حالة الاشتراك
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                                <div class="flex items-center gap-2">
+                                    @if($subscription->status == 'active')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                            نشط
+                                        </span>
+                                    @elseif($subscription->status == 'paused')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                            موقوف مؤقتاً
+                                        </span>
                                     @else
-                                        <p class="text-sm text-red-600 font-medium">{{ $todayMeal->status_arabic }}</p>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                            {{ $subscription->status_arabic }}
+                                        </span>
                                     @endif
+                                </div>
+                            </td>
+                        </tr>
+
+                        {{-- Period --}}
+                        <tr>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
+                                فترة الاشتراك
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white dir-ltr text-right">
+                                <span class="font-mono">{{ $subscription->start_date->format('Y-m-d') }}</span>
+                                <span class="mx-2 text-gray-400">-></span>
+                                <span class="font-mono">{{ $subscription->end_date ? $subscription->end_date->format('Y-m-d') : 'مستمر' }}</span>
+                            </td>
+                        </tr>
+
+                        {{-- Balance --}}
+                        <tr>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
+                                الرصيد
+                            </td>
+                            <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">
+                                <span class="text-lg {{ $stats['balance'] < 0 ? 'text-red-600' : 'text-gray-900 dark:text-white' }}">
+                                    {{ number_format($stats['balance'], 2) }}
+                                </span>
+                                <span class="text-xs text-gray-500">د.أ</span>
+                            </td>
+                        </tr>
+
+                        {{-- Monthly Meals --}}
+                        <tr>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
+                                وجبات الشهر
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                                {{ $stats['monthly_meals'] }} <span class="text-xs text-gray-500">وجبة</span>
+                            </td>
+                        </tr>
+
+                        {{-- Today's Meal --}}
+                        <tr>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
+                                وجبة اليوم
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                                @if($todayMeal)
+                                    <div class="flex items-center gap-2">
+                                        @if($todayMeal->status == 'delivered')
+                                            <x-heroicon-s-check-circle class="w-5 h-5 text-green-500" />
+                                            <span class="text-green-700 dark:text-green-400 font-medium">تم التوصيل</span>
+                                        @elseif($todayMeal->status == 'pending')
+                                            <x-heroicon-o-clock class="w-5 h-5 text-orange-500" />
+                                            <span class="text-orange-700 dark:text-orange-400 font-medium">قيد التوصيل</span>
+                                        @else
+                                            <span class="text-red-700 dark:text-red-400 font-medium">{{ $todayMeal->status_arabic }}</span>
+                                        @endif
+                                    </div>
                                 @else
-                                    <p class="text-sm text-gray-500">لا توجد وجبة مجدولة لليوم</p>
+                                    <span class="text-gray-400 italic">لا توجد وجبة اليوم</span>
                                 @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Stats Column --}}
-                <div class="col-span-1 space-y-3">
-                    <div class="p-4 rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-800/30">
-                        <p class="text-xs font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-1">رصيد الحساب</p>
-                        <p class="text-2xl font-black text-gray-900 dark:text-white dir-ltr text-right">
-                            {{ number_format($stats['balance'], 2) }} <span class="text-sm font-medium text-gray-500">د.أ</span>
-                        </p>
-                        @if($stats['balance'] < 0)
-                            <p class="text-xs text-red-500 mt-1 font-bold">يرجى سداد المبلغ المستحق</p>
-                        @else
-                            <p class="text-xs text-green-500 mt-1 font-bold">رصيد متوفر</p>
-                        @endif
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30">
-                        <p class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">وجبات الشهر</p>
-                        <div class="flex items-baseline gap-1">
-                            <p class="text-2xl font-black text-gray-900 dark:text-white">{{ $stats['monthly_meals'] }}</p>
-                            <span class="text-sm text-gray-500">وجبة مستلمة</span>
-                        </div>
-                    </div>
-                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             
             @if($stats['last_invoice'] && $stats['last_invoice']->status == 'pending')
