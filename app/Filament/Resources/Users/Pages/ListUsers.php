@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Users\Pages;
 
 use App\Filament\Resources\Users\UserResource;
+use App\Models\Role;
 use Filament\Actions\CreateAction;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 
 class ListUsers extends ListRecords
@@ -14,6 +16,29 @@ class ListUsers extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('الكل')
+                ->icon('heroicon-o-users'),
+            'admin' => Tab::make('المدراء')
+                ->icon('heroicon-o-cog-6-tooth')
+                ->query(fn ($query) => $query->whereHas('roles', fn ($q) => $q->where('slug', 'admin'))),
+            'teacher' => Tab::make('المعلمين')
+                ->icon('heroicon-o-academic-cap')
+                ->query(fn ($query) => $query->whereHas('roles', fn ($q) => $q->where('slug', 'teacher'))),
+            'student' => Tab::make('الطلاب')
+                ->icon('heroicon-o-user-group')
+                ->query(fn ($query) => $query->whereHas('roles', fn ($q) => $q->where('slug', 'student'))),
+            'customer' => Tab::make('المشتركين')
+                ->icon('heroicon-o-shopping-cart')
+                ->query(fn ($query) => $query->whereHas('roles', fn ($q) => $q->where('slug', 'customer'))),
+            'cook' => Tab::make('الطباخين')
+                ->icon('heroicon-o-fire')
+                ->query(fn ($query) => $query->whereHas('roles', fn ($q) => $q->where('slug', 'cook'))),
         ];
     }
 }
