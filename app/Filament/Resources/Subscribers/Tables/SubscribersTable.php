@@ -128,12 +128,23 @@ class SubscribersTable
                     ->color('success')
                     ->requiresConfirmation()
                     ->modalHeading('تأكيد تسليم الوجبة')
-                    ->modalDescription(fn ($record) => "هل تريد تسليم وجبة اليوم للمشترك: {$record->name}؟")
+                    ->modalDescription(function ($record) {
+                        $todayMeal = Meal::whereDate('meal_date', today())->first();
+                        if (!$todayMeal) {
+                            return '⚠️ لا توجد وجبة مسجلة لهذا اليوم!';
+                        }
+                        return "هل تريد تسليم وجبة ({$todayMeal->name}) للمشترك: {$record->name}؟";
+                    })
                     ->modalSubmitActionLabel('نعم، تسليم')
                     ->action(function ($record) {
                         self::deliverMealToUser($record);
                     })
-                    ->visible(fn ($record) => $record->kitchenSubscriptions()->where('status', 'active')->exists()),
+                    ->visible(function ($record) {
+                        // لازم اشتراك فعال + وجبة اليوم موجودة
+                        $hasActiveSubscription = $record->kitchenSubscriptions()->where('status', 'active')->exists();
+                        $todayMealExists = Meal::whereDate('meal_date', today())->exists();
+                        return $hasActiveSubscription && $todayMealExists;
+                    }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
@@ -144,9 +155,26 @@ class SubscribersTable
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('تأكيد التسليم الجماعي')
-                        ->modalDescription(fn (Collection $records) => "هل تريد تسليم وجبة اليوم لـ {$records->count()} مشترك؟")
+                        ->modalDescription(function (Collection $records) {
+                            $todayMeal = Meal::whereDate('meal_date', today())->first();
+                            if (!$todayMeal) {
+                                return '⚠️ لا توجد وجبة مسجلة لهذا اليوم! لا يمكن التسليم.';
+                            }
+                            return "هل تريد تسليم وجبة ({$todayMeal->name}) لـ {$records->count()} مشترك؟";
+                        })
                         ->modalSubmitActionLabel('نعم، تسليم للجميع')
                         ->action(function (Collection $records) {
+                            // التحقق من وجود وجبة اليوم
+                            $todayMeal = Meal::whereDate('meal_date', today())->first();
+                            if (!$todayMeal) {
+                                Notification::make()
+                                    ->title('⚠️ لا توجد وجبة')
+                                    ->body('يرجى إضافة وجبة لليوم أولاً قبل التسليم')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+                            
                             $count = 0;
                             foreach ($records as $record) {
                                 if ($record->kitchenSubscriptions()->where('status', 'active')->exists()) {
@@ -156,8 +184,8 @@ class SubscribersTable
                             }
                             
                             Notification::make()
-                                ->title('تم التسليم')
-                                ->body("تم تسليم الوجبات لـ {$count} مشترك")
+                                ->title('✅ تم التسليم')
+                                ->body("تم تسليم وجبة ({$todayMeal->name}) لـ {$count} مشترك")
                                 ->success()
                                 ->send();
                         })
