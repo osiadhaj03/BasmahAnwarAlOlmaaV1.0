@@ -36,6 +36,10 @@ class KitchenSubscriptionsTable
                     ->label('قيمة الاشتراك الشهري')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('available_credit')
+                    ->label('رصيد المحفظة المتاح')
+                    ->numeric()
+                    ->sortable(),
                 TextColumn::make('number_meal')
                     ->label('عدد الوجبات')
                     ->numeric()
