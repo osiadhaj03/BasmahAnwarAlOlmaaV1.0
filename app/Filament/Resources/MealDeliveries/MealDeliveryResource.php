@@ -25,11 +25,11 @@ class MealDeliveryResource extends Resource
 
      protected static UnitEnum|string|null $navigationGroup = 'إدارة الوجبات والتسليم';
 
-    protected static ?string $navigationLabel = 'تسليم الوجبات';
+    protected static ?string $navigationLabel = 'سجل تسليم الوجبات';
 
-    protected static ?string $modelLabel = 'تسليم الوجبات';
+    protected static ?string $modelLabel = 'سجل تسليم الوجبات';
 
-    protected static ?string $pluralModelLabel = 'تسليم الوجبات';   
+    protected static ?string $pluralModelLabel = 'سجل تسليم الوجبات';   
 
 
     public static function form(Schema $schema): Schema

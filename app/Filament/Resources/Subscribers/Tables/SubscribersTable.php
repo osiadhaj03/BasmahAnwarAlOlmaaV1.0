@@ -118,8 +118,8 @@ class SubscribersTable
                 SelectFilter::make('today_meal')
                     ->label('وجبة اليوم')
                     ->options([
-                        'delivered' => ' استلم',
-                        'pending' => ' لم يستلم',
+                        'delivered' => 'استلم',
+                        'pending' => 'لم يستلم',
                         
                     ])
                     ->query(function ($query, array $data) {
