@@ -99,7 +99,7 @@ class StudentsTable
                             ->where('status', 'present')
                             ->whereMonth('attendance_date', Carbon::now()->month)
                             ->whereYear('attendance_date', Carbon::now()->year)
-                            ->whereHas('lecture.lesson.lessonSection', function ($query) {
+                            ->whereHas('lecture.lesson', function ($query) {
                                 $query->where('is_mandatory', true);
                             })
                             ->count();
@@ -138,7 +138,7 @@ class StudentsTable
                         
                         // حساب المحاضرات فقط للدورات الإجبارية
                         $query = Lecture::query()
-                            ->whereHas('lesson.lessonSection', function ($q) {
+                            ->whereHas('lesson', function ($q) {
                                 $q->where('is_mandatory', true);
                             });
                         
@@ -169,7 +169,7 @@ class StudentsTable
                         // حساب الحضور فقط للدورات الإجبارية
                         $query = Attendance::where('student_id', $record->id)
                             ->whereIn('status', ['present', 'late'])
-                            ->whereHas('lecture.lesson.lessonSection', function ($q) {
+                            ->whereHas('lecture.lesson', function ($q) {
                                 $q->where('is_mandatory', true);
                             });
                         
@@ -204,7 +204,7 @@ class StudentsTable
                         // حساب الغياب فقط للدورات الإجبارية
                         $query = Attendance::where('student_id', $record->id)
                             ->where('status', 'absent')
-                            ->whereHas('lecture.lesson.lessonSection', function ($q) {
+                            ->whereHas('lecture.lesson', function ($q) {
                                 $q->where('is_mandatory', true);
                             });
                         
@@ -238,7 +238,7 @@ class StudentsTable
                         
                         // حساب المحاضرات فقط للدورات الإجبارية
                         $lectureQuery = Lecture::query()
-                            ->whereHas('lesson.lessonSection', function ($q) {
+                            ->whereHas('lesson', function ($q) {
                                 $q->where('is_mandatory', true);
                             });
                         if ($from) {
@@ -255,7 +255,7 @@ class StudentsTable
                         
                         $attendanceQuery = Attendance::where('student_id', $record->id)
                             ->whereIn('status', ['present', 'late'])
-                            ->whereHas('lecture.lesson.lessonSection', function ($q) {
+                            ->whereHas('lecture.lesson', function ($q) {
                                 $q->where('is_mandatory', true);
                             });
                         

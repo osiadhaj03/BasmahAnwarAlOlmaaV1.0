@@ -63,6 +63,11 @@ class LessonForm
                             ->rows(3)
                             ->columnSpan('full'),
                         
+                        Toggle::make('is_mandatory')
+                            ->label('إجبارية (تحسب الحضور والغياب)')
+                            ->default(true)
+                            ->helperText('إذا كانت اختيارية، لن يتم حساب الحضور والغياب لهذه الدورة')
+                            ->columnSpan('full'),
                         
                     ]) ->columnSpan('full') ->columns(3),
                 

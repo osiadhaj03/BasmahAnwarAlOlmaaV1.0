@@ -22,11 +22,6 @@ class LessonSectionForm
                     ->label('نشط')
                     ->default(true)
                     ->required(),
-                Toggle::make('is_mandatory')
-                    ->label('إجبارية (تحسب الحضور والغياب)')
-                    ->default(true)
-                    ->helperText('إذا كانت اختيارية، لن يتم حساب الحضور والغياب لهذه الدورة')
-                    ->required(),
                 //TextInput::make('color')
                 //    ->default(null),
                 //TextInput::make('sort_order')

@@ -24,6 +24,7 @@ class Lesson extends Model
         'location_details',
         'meeting_link',
         'is_recurring',
+        'is_mandatory',
         'status',
         'max_students',
         'notes',
@@ -36,6 +37,7 @@ class Lesson extends Model
         'end_time' => 'datetime:H:i',
         'lesson_days' => 'array',
         'is_recurring' => 'boolean',
+        'is_mandatory' => 'boolean',
         'max_students' => 'integer',
     ];
 

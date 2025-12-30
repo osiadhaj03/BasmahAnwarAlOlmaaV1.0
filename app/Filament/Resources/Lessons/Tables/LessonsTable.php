@@ -109,6 +109,14 @@ class LessonsTable
                     ])
                     ->toggleable(isToggledHiddenByDefault: true),
                 
+                BadgeColumn::make('is_mandatory')
+                    ->label('إجبارية')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'نعم' : 'لا')
+                    ->colors([
+                        'success' => true,
+                        'warning' => false,
+                    ]),
+                
                 TextColumn::make('attendances_count')
                     ->label('عدد الحضور')
                     ->counts('attendances')

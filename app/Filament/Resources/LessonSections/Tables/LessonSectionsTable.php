@@ -21,13 +21,6 @@ class LessonSectionsTable
                 IconColumn::make('is_active')
                     ->label('نشط')
                     ->boolean(),
-                IconColumn::make('is_mandatory')
-                    ->label('إجبارية')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('success')
-                    ->falseColor('warning'),
                 TextColumn::make('color')
                     ->searchable(),
                 TextColumn::make('sort_order')
