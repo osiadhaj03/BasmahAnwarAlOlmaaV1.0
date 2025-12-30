@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Attendances\Schemas;
 use App\Models\Lesson;
 use App\Models\Lecture;
 use App\Models\Attendance;
+use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
