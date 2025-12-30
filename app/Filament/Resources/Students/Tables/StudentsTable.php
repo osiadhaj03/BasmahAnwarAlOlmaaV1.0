@@ -111,6 +111,38 @@ class StudentsTable
                     ->sortable()
                     ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
+                TextColumn::make('absence_price')
+                    ->label('سعر الغياب')
+                    ->getStateUsing(function ($record) {
+                        $data = $record->calculateAbsencePenalty();
+                        return $data['absence_price'];
+                    })
+                    ->badge()
+                    ->color('warning')
+                    ->formatStateUsing(fn ($state) => number_format($state, 2))
+                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
+                
+                TextColumn::make('monthly_absence_count')
+                    ->label('عدد الغيابات')
+                    ->getStateUsing(function ($record) {
+                        $data = $record->calculateAbsencePenalty();
+                        return $data['absence_count'];
+                    })
+                    ->badge()
+                    ->color('danger')
+                    ->icon('heroicon-o-x-circle')
+                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
+                
+                TextColumn::make('absence_penalty')
+                    ->label('غرامة الغياب')
+                    ->getStateUsing(function ($record) {
+                        $data = $record->calculateAbsencePenalty();
+                        return $data['penalty_amount'];
+                    })
+                    ->badge()
+                    ->color('danger')
+                    ->formatStateUsing(fn ($state) => $state . ' ₪')
+                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
                 
                 TextColumn::make('created_at')

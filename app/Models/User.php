@@ -295,4 +295,49 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     {
         return $query->where('type', $type);
     }
+
+    /**
+     * حساب غرامة الغياب الشهرية
+     * الصيغة: floor((20 / عدد المحاضرات الإجبارية الشهرية) × عدد الغيابات + 10)
+     * 
+     * @return array ['absence_price' => float, 'absence_count' => int, 'penalty_amount' => int]
+     */
+    public function calculateAbsencePenalty(): array
+    {
+        // حساب عدد المحاضرات في الشهر الحالي لجميع الدورات الإجبارية
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
+        // الحصول على جميع المحاضرات الإجبارية في الشهر الحالي
+        $totalMonthlyLectures = \App\Models\Lecture::whereHas('lesson', function ($query) {
+                $query->where('is_mandatory', true);
+            })
+            ->whereMonth('lecture_date', $currentMonth)
+            ->whereYear('lecture_date', $currentYear)
+            ->count();
+        
+        // حساب سعر الغياب الواحد
+        $absencePrice = $totalMonthlyLectures > 0 ? (20 / $totalMonthlyLectures) : 0;
+        
+        // حساب عدد الغيابات للطالب في الدورات الإجبارية فقط
+        $absenceCount = $this->attendances()
+            ->where('status', 'absent')
+            ->whereMonth('attendance_date', $currentMonth)
+            ->whereYear('attendance_date', $currentYear)
+            ->whereHas('lecture.lesson', function ($query) {
+                $query->where('is_mandatory', true);
+            })
+            ->count();
+        
+        // حساب المبلغ النهائي: floor((سعر_الغياب × عدد_الغيابات) + 10)
+        $penaltyAmount = $totalMonthlyLectures > 0 
+            ? (int) floor(($absencePrice * $absenceCount) + 10)
+            : 0;
+        
+        return [
+            'absence_price' => round($absencePrice, 2),
+            'absence_count' => $absenceCount,
+            'penalty_amount' => $penaltyAmount,
+        ];
+    }
 }
