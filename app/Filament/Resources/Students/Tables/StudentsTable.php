@@ -69,14 +69,15 @@ class StudentsTable
                     ->label('عدد المحاضرات هذا الشهر')
                     ->getStateUsing(function ($record) {
                         // عدد المحاضرات المفتوحة هذا الشهر في الدورات الإجبارية المسجل فيها
-                        $sectionIds = $record->enrolledSections()
-                            ->where('is_mandatory', true)
-                            ->pluck('lessons_sections.id')
-                            ->toArray();
+                        $sectionIds = $record->enrolledSections()->pluck('lessons_sections.id')->toArray();
                         if (empty($sectionIds)) {
                             return 0;
                         }
-                        $lessonIds = Lesson::whereIn('lesson_section_id', $sectionIds)->pluck('id')->toArray();
+                        // الحصول على الدورات الإجبارية فقط
+                        $lessonIds = Lesson::whereIn('lesson_section_id', $sectionIds)
+                            ->where('is_mandatory', true)
+                            ->pluck('id')
+                            ->toArray();
                         if (empty($lessonIds)) {
                             return 0;
                         }
