@@ -68,10 +68,9 @@ class StudentsTable
                 TextColumn::make('monthly_lectures_count')
                     ->label('عدد المحاضرات هذا الشهر')
                     ->getStateUsing(function ($record) {
-                        // عدد المحاضرات المفتوحة هذا الشهر في الدورات المسجل فيها (بدون دورة الفتاوى المعاصرة)
-                        $excludedSectionIds = LessonSection::where('name', 'دورة الفتاوى المعاصرة')->pluck('id')->toArray();
+                        // عدد المحاضرات المفتوحة هذا الشهر في الدورات الإجبارية المسجل فيها
                         $sectionIds = $record->enrolledSections()
-                            ->whereNotIn('lessons_sections.id', $excludedSectionIds)
+                            ->where('is_mandatory', true)
                             ->pluck('lessons_sections.id')
                             ->toArray();
                         if (empty($sectionIds)) {
@@ -95,15 +94,13 @@ class StudentsTable
                 TextColumn::make('monthly_attendances_count')
                     ->label('الحضور هذا الشهر')
                     ->getStateUsing(function ($record) {
-                        // حساب الحضور بدون دورة الفتاوى المعاصرة
-                        $excludedSectionIds = LessonSection::where('name', 'دورة الفتاوى المعاصرة')->pluck('id')->toArray();
-                        
+                        // حساب الحضور فقط للدورات الإجبارية
                         return $record->attendances()
                             ->where('status', 'present')
                             ->whereMonth('attendance_date', Carbon::now()->month)
                             ->whereYear('attendance_date', Carbon::now()->year)
-                            ->whereHas('lecture.lesson', function ($query) use ($excludedSectionIds) {
-                                $query->whereNotIn('lesson_section_id', $excludedSectionIds);
+                            ->whereHas('lecture.lesson.lessonSection', function ($query) {
+                                $query->where('is_mandatory', true);
                             })
                             ->count();
                     })

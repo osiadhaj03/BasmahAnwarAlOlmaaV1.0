@@ -23,6 +23,7 @@ class LessonSection extends Model
         'name',
         'description',
         'is_active',
+        'is_mandatory',
         'color',
         'sort_order',
     ];
@@ -34,6 +35,7 @@ class LessonSection extends Model
      */
     protected $casts = [
         'is_active' => 'boolean',
+        'is_mandatory' => 'boolean',
         'sort_order' => 'integer',
     ];
 
