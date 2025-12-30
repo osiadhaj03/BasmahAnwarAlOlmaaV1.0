@@ -30,7 +30,8 @@ class AttendanceResource extends Resource
 
     protected static ?string $pluralModelLabel = 'الحضور';
     
-    protected static UnitEnum|string|null $navigationGroup = 'إدارة الدورات ';
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الدورات';
+
 
 
     protected static ?int $navigationSort = 3;
