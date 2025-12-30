@@ -134,7 +134,7 @@ class StudentsTable
                     ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
                 TextColumn::make('absence_penalty')
-                    ->label('غرامة الغياب')
+                    ->label('قيمة اشتراك المطبخ')
                     ->getStateUsing(function ($record) {
                         $data = $record->calculateAbsencePenalty();
                         return $data['penalty_amount'];
