@@ -319,15 +319,18 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         // حساب سعر الغياب الواحد
         $absencePrice = $totalMonthlyLectures > 0 ? (20 / $totalMonthlyLectures) : 0;
         
-        // حساب عدد الغيابات للطالب في الدورات الإجبارية فقط
-        $absenceCount = $this->attendances()
-            ->where('status', 'absent')
+        // حساب عدد المحاضرات التي حضرها الطالب في الدورات الإجبارية
+        $attendedLectures = $this->attendances()
+            ->whereIn('status', ['present', 'late'])
             ->whereMonth('attendance_date', $currentMonth)
             ->whereYear('attendance_date', $currentYear)
             ->whereHas('lecture.lesson', function ($query) {
                 $query->where('is_mandatory', true);
             })
             ->count();
+        
+        // عدد الغيابات = جميع المحاضرات الإجبارية - المحاضرات التي حضرها
+        $absenceCount = $totalMonthlyLectures - $attendedLectures;
         
         // حساب المبلغ النهائي: floor((سعر_الغياب × عدد_الغيابات) + 10)
         $penaltyAmount = $totalMonthlyLectures > 0 
