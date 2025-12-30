@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\Lesson;
 use App\Models\Lecture;
+use App\Models\LessonSection;
 
 class StudentsTable
 {
@@ -67,8 +68,12 @@ class StudentsTable
                 TextColumn::make('monthly_lectures_count')
                     ->label('عدد المحاضرات هذا الشهر')
                     ->getStateUsing(function ($record) {
-                        // عدد المحاضرات المفتوحة هذا الشهر في الدورات المسجل فيها
-                        $sectionIds = $record->enrolledSections()->pluck('lessons_sections.id')->toArray();
+                        // عدد المحاضرات المفتوحة هذا الشهر في الدورات المسجل فيها (بدون دورة الفتاوى المعاصرة)
+                        $excludedSectionIds = LessonSection::where('name', 'دورة الفتاوى المعاصرة')->pluck('id')->toArray();
+                        $sectionIds = $record->enrolledSections()
+                            ->whereNotIn('lessons_sections.id', $excludedSectionIds)
+                            ->pluck('lessons_sections.id')
+                            ->toArray();
                         if (empty($sectionIds)) {
                             return 0;
                         }
@@ -89,17 +94,17 @@ class StudentsTable
                                 
                 TextColumn::make('monthly_attendances_count')
                     ->label('الحضور هذا الشهر')
-                    ->counts([
-                        'attendances' => fn (Builder $query) => $query
-                            ->where('status', 'present')
-                            ->whereMonth('attendance_date', Carbon::now()->month)
-                            ->whereYear('attendance_date', Carbon::now()->year),
-                    ])
                     ->getStateUsing(function ($record) {
+                        // حساب الحضور بدون دورة الفتاوى المعاصرة
+                        $excludedSectionIds = LessonSection::where('name', 'دورة الفتاوى المعاصرة')->pluck('id')->toArray();
+                        
                         return $record->attendances()
                             ->where('status', 'present')
                             ->whereMonth('attendance_date', Carbon::now()->month)
                             ->whereYear('attendance_date', Carbon::now()->year)
+                            ->whereHas('lecture.lesson', function ($query) use ($excludedSectionIds) {
+                                $query->whereNotIn('lesson_section_id', $excludedSectionIds);
+                            })
                             ->count();
                     })
                     ->badge()
