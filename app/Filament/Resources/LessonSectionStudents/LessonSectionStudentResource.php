@@ -26,7 +26,7 @@ class LessonSectionStudentResource extends Resource
 
     protected static ?string $pluralModelLabel = 'تسجيل الطلاب';
 
-    protected static UnitEnum|string|null $navigationGroup = 'إدارة التسجيل';
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الدورات';
 
     protected static ?int $navigationSort = 1;
 
