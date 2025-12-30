@@ -5,9 +5,7 @@ namespace App\Filament\Resources\Attendances;
 use App\Filament\Resources\Attendances\Pages\CreateAttendance;
 use App\Filament\Resources\Attendances\Pages\EditAttendance;
 use App\Filament\Resources\Attendances\Pages\ListAttendances;
-use App\Filament\Resources\Attendances\Pages\ViewAttendance;
 use App\Filament\Resources\Attendances\Schemas\AttendanceForm;
-use App\Filament\Resources\Attendances\Schemas\AttendanceInfolist;
 use App\Filament\Resources\Attendances\Tables\AttendancesTable;
 use App\Models\Attendance;
 use BackedEnum;
@@ -51,10 +49,6 @@ class AttendanceResource extends Resource
         return AttendanceForm::configure($schema);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return AttendanceInfolist::configure($schema);
-    }
 
     public static function table(Table $table): Table
     {
@@ -162,7 +156,6 @@ class AttendanceResource extends Resource
         return [
             'index' => ListAttendances::route('/'),
             'create' => CreateAttendance::route('/create'),
-            'view' => ViewAttendance::route('/{record}'),
             'edit' => EditAttendance::route('/{record}/edit'),
         ];
     }

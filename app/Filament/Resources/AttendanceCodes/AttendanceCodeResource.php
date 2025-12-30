@@ -5,9 +5,7 @@ namespace App\Filament\Resources\AttendanceCodes;
 use App\Filament\Resources\AttendanceCodes\Pages\CreateAttendanceCode;
 use App\Filament\Resources\AttendanceCodes\Pages\EditAttendanceCode;
 use App\Filament\Resources\AttendanceCodes\Pages\ListAttendanceCodes;
-use App\Filament\Resources\AttendanceCodes\Pages\ViewAttendanceCode;
 use App\Filament\Resources\AttendanceCodes\Schemas\AttendanceCodeForm;
-use App\Filament\Resources\AttendanceCodes\Schemas\AttendanceCodeInfolist;
 use App\Filament\Resources\AttendanceCodes\Tables\AttendanceCodesTable;
 use App\Models\AttendanceCode;
 use BackedEnum;
@@ -49,10 +47,6 @@ class AttendanceCodeResource extends Resource
         return AttendanceCodeForm::configure($schema);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return AttendanceCodeInfolist::configure($schema);
-    }
 
     public static function table(Table $table): Table
     {
@@ -71,7 +65,6 @@ class AttendanceCodeResource extends Resource
         return [
             'index' => ListAttendanceCodes::route('/'),
             'create' => CreateAttendanceCode::route('/create'),
-            'view' => ViewAttendanceCode::route('/{record}'),
             'edit' => EditAttendanceCode::route('/{record}/edit'),
         ];
     }

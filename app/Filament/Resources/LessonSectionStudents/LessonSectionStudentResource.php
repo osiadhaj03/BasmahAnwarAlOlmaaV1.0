@@ -5,9 +5,7 @@ namespace App\Filament\Resources\LessonSectionStudents;
 use App\Filament\Resources\LessonSectionStudents\Pages\CreateLessonSectionStudent;
 use App\Filament\Resources\LessonSectionStudents\Pages\EditLessonSectionStudent;
 use App\Filament\Resources\LessonSectionStudents\Pages\ListLessonSectionStudents;
-use App\Filament\Resources\LessonSectionStudents\Pages\ViewLessonSectionStudent;
 use App\Filament\Resources\LessonSectionStudents\Schemas\LessonSectionStudentForm;
-use App\Filament\Resources\LessonSectionStudents\Schemas\LessonSectionStudentInfolist;
 use App\Filament\Resources\LessonSectionStudents\Tables\LessonSectionStudentsTable;
 use App\Models\LessonSectionStudent;
 use BackedEnum;
@@ -43,10 +41,6 @@ class LessonSectionStudentResource extends Resource
         return LessonSectionStudentForm::configure($schema);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return LessonSectionStudentInfolist::configure($schema);
-    }
 
     public static function table(Table $table): Table
     {
@@ -65,7 +59,6 @@ class LessonSectionStudentResource extends Resource
         return [
             'index' => ListLessonSectionStudents::route('/'),
             'create' => CreateLessonSectionStudent::route('/create'),
-            'view' => ViewLessonSectionStudent::route('/{record}'),
             'edit' => EditLessonSectionStudent::route('/{record}/edit'),
         ];
     }
