@@ -7,7 +7,6 @@ use App\Filament\Resources\Lessons\Pages\EditLesson;
 use App\Filament\Resources\Lessons\Pages\ListLessons;
 use App\Filament\Resources\Lessons\Pages\ViewLesson;
 use App\Filament\Resources\Lessons\Schemas\LessonForm;
-use App\Filament\Resources\Lessons\Schemas\LessonInfolist;
 use App\Filament\Resources\Lessons\Tables\LessonsTable;
 use App\Models\Lesson;
 use BackedEnum;
@@ -47,11 +46,7 @@ class LessonResource extends Resource
         return LessonForm::configure($schema);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return LessonInfolist::configure($schema);
-    }
-
+    
     public static function table(Table $table): Table
     {
         return LessonsTable::configure($table);

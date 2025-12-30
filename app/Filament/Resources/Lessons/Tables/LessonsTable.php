@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Lessons\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -170,8 +169,6 @@ class LessonsTable
                     ]),
             ])
             ->recordActions([
-                ViewAction::make()
-                    ->label('عرض'),
                 EditAction::make()
                     ->label('تعديل'),
             ])
