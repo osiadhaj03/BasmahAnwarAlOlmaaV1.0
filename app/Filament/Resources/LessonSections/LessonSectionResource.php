@@ -7,7 +7,6 @@ use App\Filament\Resources\LessonSections\Pages\EditLessonSection;
 use App\Filament\Resources\LessonSections\Pages\ListLessonSections;
 use App\Filament\Resources\LessonSections\Pages\ViewLessonSection;
 use App\Filament\Resources\LessonSections\Schemas\LessonSectionForm;
-use App\Filament\Resources\LessonSections\Schemas\LessonSectionInfolist;
 use App\Filament\Resources\LessonSections\Tables\LessonSectionsTable;
 use App\Models\LessonSection;
 use BackedEnum;
@@ -47,11 +46,6 @@ class LessonSectionResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return LessonSectionForm::configure($schema);
-    }
-
-    public static function infolist(Schema $schema): Schema
-    {
-        return LessonSectionInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
