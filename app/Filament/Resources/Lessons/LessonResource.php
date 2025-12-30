@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Lessons;
 use App\Filament\Resources\Lessons\Pages\CreateLesson;
 use App\Filament\Resources\Lessons\Pages\EditLesson;
 use App\Filament\Resources\Lessons\Pages\ListLessons;
-use App\Filament\Resources\Lessons\Pages\ViewLesson;
 use App\Filament\Resources\Lessons\Schemas\LessonForm;
 use App\Filament\Resources\Lessons\Tables\LessonsTable;
 use App\Models\Lesson;
@@ -127,7 +126,6 @@ class LessonResource extends Resource
         return [
             'index' => ListLessons::route('/'),
             'create' => CreateLesson::route('/create'),
-            'view' => ViewLesson::route('/{record}'),
             'edit' => EditLesson::route('/{record}/edit'),
         ];
     }

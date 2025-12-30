@@ -5,7 +5,6 @@ namespace App\Filament\Resources\LessonSections;
 use App\Filament\Resources\LessonSections\Pages\CreateLessonSection;
 use App\Filament\Resources\LessonSections\Pages\EditLessonSection;
 use App\Filament\Resources\LessonSections\Pages\ListLessonSections;
-use App\Filament\Resources\LessonSections\Pages\ViewLessonSection;
 use App\Filament\Resources\LessonSections\Schemas\LessonSectionForm;
 use App\Filament\Resources\LessonSections\Tables\LessonSectionsTable;
 use App\Models\LessonSection;
@@ -65,7 +64,6 @@ class LessonSectionResource extends Resource
         return [
             'index' => ListLessonSections::route('/'),
             'create' => CreateLessonSection::route('/create'),
-            'view' => ViewLessonSection::route('/{record}'),
             'edit' => EditLessonSection::route('/{record}/edit'),
         ];
     }
