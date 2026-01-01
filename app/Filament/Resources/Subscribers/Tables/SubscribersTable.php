@@ -70,14 +70,13 @@ class SubscribersTable
                             ->whereDate('delivery_date', today())
                             ->first();
                         
-                        if (!$todayDelivery) return 'لم تُسجّل';
-                        return $todayDelivery->status_arabic;
+                        if (!$todayDelivery) return 'لم يتم التسليم';
+                        return $todayDelivery->status === 'delivered' ? 'تم التسليم' : 'لم يتم التسليم';
                     })
                     ->badge()
                     ->color(fn ($state) => match($state) {
                         'تم التسليم' => 'success',
-                        'قيد الانتظار' => 'warning',
-                        'فائت' => 'danger',
+                        'لم يتم التسليم' => 'warning',
                         default => 'gray',
                     }),
                 
