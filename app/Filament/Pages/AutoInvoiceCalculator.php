@@ -21,6 +21,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use UnitEnum;
 
 class AutoInvoiceCalculator extends Page implements HasForms, HasTable
 {
@@ -31,7 +32,7 @@ class AutoInvoiceCalculator extends Page implements HasForms, HasTable
     protected static ?string $navigationLabel = 'حساب الفواتير التلقائي';
     protected static ?string $title = 'حساب الفواتير التلقائي';
     protected static ?string $slug = 'auto-invoice-calculator';
-    protected static ?string $navigationGroup = 'إدارة الاشتراكات و الدفعات';
+    protected static UnitEnum|string|null $navigationGroup = 'إدارة الاشتراكات و الدفعات';
     protected static ?int $navigationSort = 10;
 
     protected static string $view = 'filament.pages.auto-invoice-calculator';
