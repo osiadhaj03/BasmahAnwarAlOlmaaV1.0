@@ -15,6 +15,8 @@ use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Filters\DateRangeFilter;
+
 use Carbon\Carbon;
 
 class SubscribersTable

@@ -5,7 +5,7 @@ namespace App\Filament\Resources\Subscribers\Pages;
 use App\Filament\Resources\Subscribers\SubscriberResource;
 use App\Models\MealDelivery;
 use App\Models\User;
-use Filament\Resources\Components\Tab;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Resources\Pages\ListRecords;
 
 class ListSubscribers extends ListRecords
