@@ -88,8 +88,8 @@ class StudentsTable
                     })
                     ->badge()
                     ->color('warning')
-                    ->icon('heroicon-o-calendar-days')
-                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
+                    ->icon('heroicon-o-calendar-days'),
+                    //->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
                                 
                 TextColumn::make('monthly_attendances_count')
@@ -108,8 +108,8 @@ class StudentsTable
                     ->badge()
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
-                    ->sortable()
-                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
+                    ->sortable(),
+                    //->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
                 TextColumn::make('absence_price')
                     ->label('سعر الغياب')
@@ -119,8 +119,8 @@ class StudentsTable
                     })
                     ->badge()
                     ->color('warning')
-                    ->formatStateUsing(fn ($state) => number_format($state, 2))
-                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
+                    ->formatStateUsing(fn ($state) => number_format($state, 2)),
+                    //->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
                 TextColumn::make('monthly_absence_count')
                     ->label('عدد الغيابات')
@@ -130,8 +130,8 @@ class StudentsTable
                     })
                     ->badge()
                     ->color('danger')
-                    ->icon('heroicon-o-x-circle')
-                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
+                    ->icon('heroicon-o-x-circle'),
+                    //->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
                 TextColumn::make('absence_penalty')
                     ->label('قيمة اشتراك المطبخ')
@@ -141,8 +141,8 @@ class StudentsTable
                     })
                     ->badge()
                     ->color('danger')
-                    ->formatStateUsing(fn ($state) => $state . ' ₪')
-                    ->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
+                    ->formatStateUsing(fn ($state) => $state . ' ₪'),
+                    //->hidden(fn ($livewire) => !empty($livewire->tableFilters['date_range']['from']) || !empty($livewire->tableFilters['date_range']['to'])),
                 
                 
                 TextColumn::make('created_at')
@@ -342,25 +342,25 @@ class StudentsTable
                         return "الفترة: {$from} - {$to}";
                     }),
 
-                SelectFilter::make('status')
-                    ->label('حالة الطالب')
-                    ->options([
-                        'active' => 'نشط',
-                        'inactive' => 'غير نشط',
-                        'graduated' => 'متخرج',
-                        'suspended' => 'موقوف',
-                        'transferred' => 'محول',
-                    ]),
-                
-                SelectFilter::make('level')
-                    ->label('المستوى الدراسي')
-                    ->options([
-                        'freshman' => 'السنة الأولى',
-                        'sophomore' => 'السنة الثانية',
-                        'junior' => 'السنة الثالثة',
-                        'senior' => 'السنة الرابعة',
-                        'graduate' => 'دراسات عليا',
-                    ]),
+                //SelectFilter::make('status')
+                //    ->label('حالة الطالب')
+                //    ->options([
+                //        'active' => 'نشط',
+                //        'inactive' => 'غير نشط',
+                //        'graduated' => 'متخرج',
+                //        'suspended' => 'موقوف',
+                //        'transferred' => 'محول',
+                //    ]),
+                //
+                //SelectFilter::make('level')
+                //    ->label('المستوى الدراسي')
+                //    ->options([
+                //        'freshman' => 'السنة الأولى',
+                //        'sophomore' => 'السنة الثانية',
+                //        'junior' => 'السنة الثالثة',
+                //        'senior' => 'السنة الرابعة',
+                //        'graduate' => 'دراسات عليا',
+                //    ]),
             ])
             ->recordActions([
                 ViewAction::make()

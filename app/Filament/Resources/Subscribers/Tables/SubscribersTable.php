@@ -99,20 +99,20 @@ class SubscribersTable
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('subscription_status')
-                    ->label('حالة الاشتراك')
-                    ->options([
-                        'active' => 'فعال',
-                        'expired' => 'منتهي',
-                        'cancelled' => 'ملغي',
-                        'pending' => 'قيد الانتظار',
-                    ])
-                    ->query(function ($query, array $data) {
-                        if ($data['value']) {
-                            $query->whereHas('kitchenSubscriptions', fn ($q) => $q->where('status', $data['value']));
-                        }
-                    }),
-                
+                //SelectFilter::make('subscription_status')
+                //    ->label('حالة الاشتراك')
+                //    ->options([
+                //        'active' => 'فعال',
+                //        'expired' => 'منتهي',
+                //        'cancelled' => 'ملغي',
+                //        'pending' => 'قيد الانتظار',
+                //    ])
+                //    ->query(function ($query, array $data) {
+                //        if ($data['value']) {
+                //            $query->whereHas('kitchenSubscriptions', fn ($q) => $q->where('status', $data['value']));
+                //        }
+                //    }),
+                //
                 // فلتر استلام وجبة اليوم
                 SelectFilter::make('today_meal')
                     ->label('وجبة اليوم')
@@ -143,11 +143,11 @@ class SubscribersTable
                         }
                     }),
                 
-                TernaryFilter::make('is_active')
-                    ->label('الحالة')
-                    ->placeholder('الجميع')
-                    ->trueLabel('نشط')
-                    ->falseLabel('غير نشط'),
+                //TernaryFilter::make('is_active')
+                //    ->label('الحالة')
+                //    ->placeholder('الجميع')
+                //    ->trueLabel('نشط')
+                //    ->falseLabel('غير نشط'),
             ])
 
             ->recordActions([
