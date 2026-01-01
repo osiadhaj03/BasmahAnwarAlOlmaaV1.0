@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\KitchenInvoices\Tables;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -99,7 +101,14 @@ class KitchenInvoicesTable
                         }
                     }),
             ])
-            ->toolbarActions([
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->label('تصدير')
+                    ->fileName('Kitchen_Invoices')
+                    ->defaultFormat('xlsx')
+                    ->defaultPageOrientation('landscape'),
+            ])
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->before(function ($records, DeleteBulkAction $action) {
@@ -116,8 +125,14 @@ class KitchenInvoicesTable
                                 $action->cancel();
                             }
                         }),
+                    FilamentExportBulkAction::make('export')
+                        ->label('تصدير المحدد')
+                        ->fileName('Selected_Invoices')
+                        ->defaultFormat('xlsx')
+                        ->defaultPageOrientation('landscape'),
                 ]),
             ])
             ->defaultSort('billing_date', 'desc');
     }
 }
+
