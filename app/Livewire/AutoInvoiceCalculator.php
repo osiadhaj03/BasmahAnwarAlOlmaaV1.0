@@ -5,23 +5,33 @@ namespace App\Livewire;
 use App\Models\KitchenInvoice;
 use App\Models\KitchenSubscription;
 use App\Models\User;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
-class AutoInvoiceCalculator extends Component
+class AutoInvoiceCalculator extends Component implements HasForms, HasTable
 {
+    use InteractsWithForms;
+    use InteractsWithTable;
+
     public bool $showModal = false;
     public ?string $fromDate = null;
     public ?string $toDate = null;
-    public array $subscribers = [];
-    public array $selectedSubscribers = [];
-    public bool $calculated = false;
-    public float $totalAmount = 0;
 
     public function mount()
     {
-        // تعيين الفترة الافتراضية: أول الشهر الحالي إلى اليوم
         $this->fromDate = now()->startOfMonth()->format('Y-m-d');
         $this->toDate = now()->format('Y-m-d');
     }
@@ -29,162 +39,181 @@ class AutoInvoiceCalculator extends Component
     public function openModal()
     {
         $this->showModal = true;
-        $this->calculated = false;
-        $this->subscribers = [];
-        $this->selectedSubscribers = [];
-        $this->totalAmount = 0;
     }
 
     public function closeModal()
     {
         $this->showModal = false;
-        $this->reset(['subscribers', 'selectedSubscribers', 'calculated', 'totalAmount']);
     }
 
-    public function calculate()
+    public function table(Table $table): Table
     {
-        $this->validate([
-            'fromDate' => 'required|date',
-            'toDate' => 'required|date|after_or_equal:fromDate',
-        ]);
+        return $table
+            ->query($this->getTableQuery())
+            ->columns([
+                TextColumn::make('name')
+                    ->label('الاسم')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+                    
+                TextColumn::make('subscriber_type')
+                    ->label('النوع')
+                    ->getStateUsing(fn ($record) => $this->getSubscriberType($record))
+                    ->badge()
+                    ->color(fn ($state) => str_contains($state, 'طالب') ? 'info' : 'success'),
+                    
+                TextColumn::make('lectures_count')
+                    ->label('المحاضرات')
+                    ->getStateUsing(fn ($record) => $this->getLecturesCount($record)),
+                    
+                TextColumn::make('attendance_count')
+                    ->label('الحضور')
+                    ->getStateUsing(fn ($record) => $this->getAttendanceCount($record))
+                    ->color('success'),
+                    
+                TextColumn::make('absence_count')
+                    ->label('الغيابات')
+                    ->getStateUsing(fn ($record) => $this->getAbsenceCount($record))
+                    ->color('danger'),
+                    
+                TextColumn::make('invoice_amount')
+                    ->label('المبلغ')
+                    ->getStateUsing(fn ($record) => $this->getInvoiceAmount($record))
+                    ->money('ILS')
+                    ->color(fn ($record) => $this->isFullPrice($record) ? 'danger' : 'primary')
+                    ->weight('bold'),
+                    
+                IconColumn::make('is_full_price')
+                    ->label('كامل')
+                    ->getStateUsing(fn ($record) => $this->isFullPrice($record))
+                    ->boolean()
+                    ->trueIcon('heroicon-o-exclamation-circle')
+                    ->falseIcon('heroicon-o-check-circle')
+                    ->trueColor('danger')
+                    ->falseColor('success'),
+            ])
+            ->filters([
+                //
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    BulkAction::make('generateInvoices')
+                        ->label('✅ إنشاء فواتير للمحددين')
+                        ->icon('heroicon-o-document-plus')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('تأكيد إنشاء الفواتير')
+                        ->modalDescription(fn (Collection $records) => "سيتم إنشاء {$records->count()} فاتورة. هل أنت متأكد؟")
+                        ->action(function (Collection $records) {
+                            $this->generateInvoicesForUsers($records);
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                ]),
+            ])
+            ->checkIfRecordIsSelectableUsing(fn ($record) => $record->hasActiveKitchenSubscription())
+            ->striped()
+            ->defaultSort('name');
+    }
 
-        // جلب جميع المشتركين الذين لديهم اشتراكات فعالة
-        $activeSubscriptions = KitchenSubscription::where('status', 'active')
-            ->with('user.roles')
-            ->get();
+    protected function getTableQuery(): Builder
+    {
+        // جلب المستخدمين الذين لديهم اشتراكات فعالة
+        return User::query()
+            ->whereHas('kitchenSubscriptions', fn ($q) => $q->where('status', 'active'))
+            ->with(['kitchenSubscriptions' => fn ($q) => $q->where('status', 'active'), 'roles']);
+    }
 
-        $this->subscribers = [];
+    protected function getSubscriberType($record): string
+    {
+        $isStudent = $record->hasRole('student');
+        $isCustomer = $record->hasRole('customer');
         
-        foreach ($activeSubscriptions as $subscription) {
-            $user = $subscription->user;
-            if (!$user) continue;
+        return match(true) {
+            $isStudent && $isCustomer => 'طالب + زبون',
+            $isStudent => 'طالب',
+            $isCustomer => 'زبون',
+            default => 'مشترك',
+        };
+    }
 
-            // تحديد نوع المشترك
-            $isStudent = $user->hasRole('student');
-            $isCustomer = $user->hasRole('customer');
-            
-            $subscriberType = match(true) {
-                $isStudent && $isCustomer => 'طالب + زبون',
-                $isStudent => 'طالب',
-                $isCustomer => 'زبون',
-                default => 'مشترك',
-            };
+    protected function getLecturesCount($record): string
+    {
+        if (!$record->hasRole('student')) return '-';
+        
+        $data = $record->calculateAbsencePenaltyForPeriod($this->fromDate, $this->toDate);
+        return $data['total_lectures'] > 0 ? (string) $data['total_lectures'] : '-';
+    }
 
-            // حساب الغياب والمبلغ
-            if ($isStudent) {
-                $penaltyData = $user->calculateAbsencePenaltyForPeriod($this->fromDate, $this->toDate);
-                
-                // إذا لا توجد محاضرات أو لا يوجد حضور = الاشتراك الكامل
-                if ($penaltyData['total_lectures'] == 0 || $penaltyData['attended_lectures'] == 0) {
-                    $amount = (float) $subscription->monthly_price;
-                    $absenceCount = '-';
-                    $attendanceCount = '-';
-                    $lecturesCount = '-';
-                    $absencePrice = '-';
-                    $isFullPrice = true;
-                } else {
-                    $amount = $penaltyData['penalty_amount'];
-                    $absenceCount = $penaltyData['absence_count'];
-                    $attendanceCount = $penaltyData['attended_lectures'];
-                    $lecturesCount = $penaltyData['total_lectures'];
-                    $absencePrice = $penaltyData['absence_price'];
-                    $isFullPrice = false;
-                }
-            } else {
-                // زبون فقط = الاشتراك الكامل
-                $amount = (float) $subscription->monthly_price;
-                $absenceCount = '-';
-                $attendanceCount = '-';
-                $lecturesCount = '-';
-                $absencePrice = '-';
-                $isFullPrice = true;
-            }
+    protected function getAttendanceCount($record): string
+    {
+        if (!$record->hasRole('student')) return '-';
+        
+        $data = $record->calculateAbsencePenaltyForPeriod($this->fromDate, $this->toDate);
+        return $data['total_lectures'] > 0 ? (string) $data['attended_lectures'] : '-';
+    }
 
-            $this->subscribers[] = [
-                'user_id' => $user->id,
-                'subscription_id' => $subscription->id,
-                'name' => $user->name,
-                'type' => $subscriberType,
-                'lectures_count' => $lecturesCount,
-                'attendance_count' => $attendanceCount,
-                'absence_count' => $absenceCount,
-                'absence_price' => $absencePrice,
-                'amount' => $amount,
-                'monthly_price' => (float) $subscription->monthly_price,
-                'is_full_price' => $isFullPrice,
-            ];
+    protected function getAbsenceCount($record): string
+    {
+        if (!$record->hasRole('student')) return '-';
+        
+        $data = $record->calculateAbsencePenaltyForPeriod($this->fromDate, $this->toDate);
+        return $data['total_lectures'] > 0 ? (string) $data['absence_count'] : '-';
+    }
+
+    protected function getInvoiceAmount($record): float
+    {
+        $subscription = $record->kitchenSubscriptions->first();
+        if (!$subscription) return 0;
+
+        if (!$record->hasRole('student')) {
+            return (float) $subscription->monthly_price;
         }
 
-        // تحديد الكل افتراضياً
-        $this->selectedSubscribers = array_column($this->subscribers, 'user_id');
-        $this->calculateTotal();
-        $this->calculated = true;
-    }
-
-    public function toggleSubscriber($userId)
-    {
-        if (in_array($userId, $this->selectedSubscribers)) {
-            $this->selectedSubscribers = array_filter($this->selectedSubscribers, fn($id) => $id != $userId);
-        } else {
-            $this->selectedSubscribers[] = $userId;
-        }
-        $this->calculateTotal();
-    }
-
-    public function selectAll()
-    {
-        $this->selectedSubscribers = array_column($this->subscribers, 'user_id');
-        $this->calculateTotal();
-    }
-
-    public function deselectAll()
-    {
-        $this->selectedSubscribers = [];
-        $this->totalAmount = 0;
-    }
-
-    protected function calculateTotal()
-    {
-        $this->totalAmount = 0;
-        foreach ($this->subscribers as $subscriber) {
-            if (in_array($subscriber['user_id'], $this->selectedSubscribers)) {
-                $this->totalAmount += $subscriber['amount'];
-            }
-        }
-    }
-
-    public function generateInvoices()
-    {
-        if (empty($this->selectedSubscribers)) {
-            Notification::make()
-                ->title('خطأ')
-                ->body('يرجى اختيار مشترك واحد على الأقل')
-                ->danger()
-                ->send();
-            return;
+        $data = $record->calculateAbsencePenaltyForPeriod($this->fromDate, $this->toDate);
+        
+        // إذا لا توجد محاضرات أو لا يوجد حضور = الاشتراك الكامل
+        if ($data['total_lectures'] == 0 || $data['attended_lectures'] == 0) {
+            return (float) $subscription->monthly_price;
         }
 
+        return (float) $data['penalty_amount'];
+    }
+
+    protected function isFullPrice($record): bool
+    {
+        $subscription = $record->kitchenSubscriptions->first();
+        if (!$subscription) return false;
+
+        if (!$record->hasRole('student')) return true;
+
+        $data = $record->calculateAbsencePenaltyForPeriod($this->fromDate, $this->toDate);
+        return $data['total_lectures'] == 0 || $data['attended_lectures'] == 0;
+    }
+
+    protected function generateInvoicesForUsers(Collection $users): void
+    {
         $createdCount = 0;
         $totalAmount = 0;
 
-        foreach ($this->subscribers as $subscriber) {
-            if (!in_array($subscriber['user_id'], $this->selectedSubscribers)) {
-                continue;
-            }
+        foreach ($users as $user) {
+            $subscription = $user->kitchenSubscriptions->first();
+            if (!$subscription) continue;
 
-            // إنشاء الفاتورة
+            $amount = $this->getInvoiceAmount($user);
+
             KitchenInvoice::create([
-                'subscription_id' => $subscriber['subscription_id'],
-                'user_id' => $subscriber['user_id'],
+                'subscription_id' => $subscription->id,
+                'user_id' => $user->id,
                 'invoice_number' => KitchenInvoice::generateInvoiceNumber(),
-                'amount' => $subscriber['amount'],
+                'amount' => $amount,
                 'billing_date' => now(),
                 'due_date' => now()->addDays(7),
                 'status' => 'pending',
             ]);
 
             $createdCount++;
-            $totalAmount += $subscriber['amount'];
+            $totalAmount += $amount;
         }
 
         Notification::make()
@@ -194,9 +223,13 @@ class AutoInvoiceCalculator extends Component
             ->send();
 
         $this->closeModal();
-        
-        // إعادة تحميل الصفحة
         $this->dispatch('refresh');
+    }
+
+    public function updateDates()
+    {
+        // trigger table refresh when dates change
+        $this->resetTable();
     }
 
     public function render()
