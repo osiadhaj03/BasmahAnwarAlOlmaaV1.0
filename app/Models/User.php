@@ -343,4 +343,68 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
             'penalty_amount' => $penaltyAmount,
         ];
     }
+
+    /**
+     * حساب غرامة الغياب لفترة محددة
+     * الصيغة: floor((20 / عدد المحاضرات الإجبارية في الفترة) × عدد الغيابات + 10)
+     * 
+     * @param string|null $from تاريخ البداية
+     * @param string|null $to تاريخ النهاية
+     * @return array ['absence_price' => float, 'absence_count' => int, 'penalty_amount' => int, 'total_lectures' => int, 'attended_lectures' => int]
+     */
+    public function calculateAbsencePenaltyForPeriod(?string $from = null, ?string $to = null): array
+    {
+        // بناء query للمحاضرات الإجبارية في الفترة المحددة
+        $lecturesQuery = \App\Models\Lecture::whereHas('lesson', function ($query) {
+            $query->where('is_mandatory', true);
+        });
+        
+        if ($from) {
+            $lecturesQuery->whereDate('lecture_date', '>=', $from);
+        }
+        if ($to) {
+            $lecturesQuery->whereDate('lecture_date', '<=', $to);
+        }
+        
+        $totalLectures = $lecturesQuery->count();
+        
+        // حساب سعر الغياب الواحد
+        $absencePrice = $totalLectures > 0 ? (20 / $totalLectures) : 0;
+        
+        // حساب عدد المحاضرات التي حضرها الطالب في الدورات الإجبارية
+        $attendanceQuery = $this->attendances()
+            ->whereIn('status', ['present', 'late'])
+            ->whereHas('lecture.lesson', function ($query) {
+                $query->where('is_mandatory', true);
+            });
+        
+        if ($from || $to) {
+            $attendanceQuery->whereHas('lecture', function ($q) use ($from, $to) {
+                if ($from) {
+                    $q->whereDate('lecture_date', '>=', $from);
+                }
+                if ($to) {
+                    $q->whereDate('lecture_date', '<=', $to);
+                }
+            });
+        }
+        
+        $attendedLectures = $attendanceQuery->count();
+        
+        // عدد الغيابات = جميع المحاضرات الإجبارية - المحاضرات التي حضرها
+        $absenceCount = $totalLectures - $attendedLectures;
+        
+        // حساب المبلغ النهائي: floor((سعر_الغياب × عدد_الغيابات) + 10)
+        $penaltyAmount = $totalLectures > 0 
+            ? (int) floor(($absencePrice * $absenceCount) + 10)
+            : 0;
+        
+        return [
+            'absence_price' => round($absencePrice, 2),
+            'absence_count' => $absenceCount,
+            'penalty_amount' => $penaltyAmount,
+            'total_lectures' => $totalLectures,
+            'attended_lectures' => $attendedLectures,
+        ];
+    }
 }

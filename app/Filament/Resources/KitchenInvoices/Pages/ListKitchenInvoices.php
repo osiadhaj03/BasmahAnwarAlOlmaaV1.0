@@ -5,6 +5,7 @@ namespace App\Filament\Resources\KitchenInvoices\Pages;
 use App\Filament\Resources\KitchenInvoices\KitchenInvoiceResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Livewire\Attributes\On;
 
 class ListKitchenInvoices extends ListRecords
 {
@@ -16,4 +17,18 @@ class ListKitchenInvoices extends ListRecords
             CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\AutoInvoiceWidget::class,
+        ];
+    }
+
+    #[On('refresh')]
+    public function refresh(): void
+    {
+        // إعادة تحميل الجدول
+    }
 }
+

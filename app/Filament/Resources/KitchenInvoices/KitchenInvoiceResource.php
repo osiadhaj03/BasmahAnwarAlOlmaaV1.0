@@ -7,6 +7,7 @@ use App\Filament\Resources\KitchenInvoices\Pages\EditKitchenInvoice;
 use App\Filament\Resources\KitchenInvoices\Pages\ListKitchenInvoices;
 use App\Filament\Resources\KitchenInvoices\Schemas\KitchenInvoiceForm;
 use App\Filament\Resources\KitchenInvoices\Tables\KitchenInvoicesTable;
+use App\Filament\Widgets\AutoInvoiceWidget;
 use App\Models\KitchenInvoice;
 use BackedEnum;
 use UnitEnum;
@@ -49,6 +50,13 @@ class KitchenInvoiceResource extends Resource
         ];
     }
 
+    public static function getWidgets(): array
+    {
+        return [
+            AutoInvoiceWidget::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
@@ -66,3 +74,4 @@ class KitchenInvoiceResource extends Resource
         return $record->allocations()->count() === 0;
     }
 }
+
