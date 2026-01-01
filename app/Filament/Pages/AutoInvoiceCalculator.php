@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\KitchenInvoice;
 use App\Models\KitchenSubscription;
 use App\Models\User;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Forms\Components\DatePicker;
@@ -28,7 +29,7 @@ class AutoInvoiceCalculator extends Page implements HasForms, HasTable
     use InteractsWithForms;
     use InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calculator';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-calculator';
     protected static ?string $navigationLabel = 'حساب الفواتير التلقائي';
     protected static ?string $title = 'حساب الفواتير التلقائي';
     protected static ?string $slug = 'auto-invoice-calculator';
