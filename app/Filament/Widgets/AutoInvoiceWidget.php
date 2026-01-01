@@ -6,7 +6,7 @@ use Filament\Widgets\Widget;
 
 class AutoInvoiceWidget extends Widget
 {
-    protected static string $view = 'filament.widgets.auto-invoice-widget';
+    protected string $view = 'filament.widgets.auto-invoice-widget';
     
     protected int | string | array $columnSpan = 'full';
 }
