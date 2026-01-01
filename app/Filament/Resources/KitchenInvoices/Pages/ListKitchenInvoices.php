@@ -4,8 +4,8 @@ namespace App\Filament\Resources\KitchenInvoices\Pages;
 
 use App\Filament\Resources\KitchenInvoices\KitchenInvoiceResource;
 use Filament\Actions\CreateAction;
-use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
+use Livewire\Attributes\On;
 
 class ListKitchenInvoices extends ListRecords
 {
@@ -14,14 +14,23 @@ class ListKitchenInvoices extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('autoInvoice')
-                ->label('📊 حساب الفواتير التلقائي')
-                ->icon('heroicon-o-calculator')
-                ->color('primary')
-                ->url(route('filament.admin.pages.auto-invoice-calculator')),
             CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\AutoInvoiceWidget::class,
+        ];
+    }
+
+    #[On('refresh')]
+    public function refresh(): void
+    {
+        // إعادة تحميل الجدول
+    }
 }
+
 
 
