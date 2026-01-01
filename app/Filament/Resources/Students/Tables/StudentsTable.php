@@ -341,26 +341,8 @@ class StudentsTable
                         
                         return "الفترة: {$from} - {$to}";
                     }),
-
-                //SelectFilter::make('status')
-                //    ->label('حالة الطالب')
-                //    ->options([
-                //        'active' => 'نشط',
-                //        'inactive' => 'غير نشط',
-                //        'graduated' => 'متخرج',
-                //        'suspended' => 'موقوف',
-                //        'transferred' => 'محول',
-                //    ]),
-                //
-                //SelectFilter::make('level')
-                //    ->label('المستوى الدراسي')
-                //    ->options([
-                //        'freshman' => 'السنة الأولى',
-                //        'sophomore' => 'السنة الثانية',
-                //        'junior' => 'السنة الثالثة',
-                //        'senior' => 'السنة الرابعة',
-                //        'graduate' => 'دراسات عليا',
-                //    ]),
+//////////////////////////////////////////////////////////////////////
+                
             ])
             ->recordActions([
                 ViewAction::make()
