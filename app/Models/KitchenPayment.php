@@ -134,4 +134,26 @@ class KitchenPayment extends Model
             ->get()
             ->sum(fn ($invoice) => $invoice->remaining_amount);
     }
+
+    /**
+     * Boot method لتحديث حالات الفواتير عند حذف الدفعة
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // عند حذف الدفعة، نحدث حالات الفواتير المرتبطة
+        static::deleting(function ($payment) {
+            // جلب جميع الفواتير المرتبطة بهذه الدفعة
+            $invoiceIds = $payment->allocations()->pluck('invoice_id')->unique();
+            
+            // حذف التوزيعات أولاً (سيتم تفعيل event listener للتوزيع)
+            $payment->allocations()->delete();
+            
+            // تحديث حالة كل فاتورة مرتبطة
+            KitchenInvoice::whereIn('id', $invoiceIds)->get()->each(function ($invoice) {
+                $invoice->updatePaymentStatus();
+            });
+        });
+    }
 }

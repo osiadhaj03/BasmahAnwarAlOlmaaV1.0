@@ -35,7 +35,9 @@ class KitchenInvoiceForm
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->live()
+                            ->disabled(fn (?KitchenInvoice $record) => $record !== null) // تعطيل في وضع التعديل
+                            ->dehydrated() // حفظ القيمة حتى عند التعطيل
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state) {
                                 if ($state) {
                                     // جلب الاشتراك الفعال للمستخدم

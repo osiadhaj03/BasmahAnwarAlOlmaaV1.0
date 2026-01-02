@@ -35,4 +35,19 @@ class PaymentInvoiceAllocation extends Model
     {
         return $this->belongsTo(KitchenInvoice::class, 'invoice_id');
     }
+
+    /**
+     * Boot method لتحديث حالة الفاتورة عند حذف التوزيع
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // عند حذف التوزيع، نحدث حالة الفاتورة المرتبطة
+        static::deleted(function ($allocation) {
+            if ($allocation->invoice) {
+                $allocation->invoice->updatePaymentStatus();
+            }
+        });
+    }
 }

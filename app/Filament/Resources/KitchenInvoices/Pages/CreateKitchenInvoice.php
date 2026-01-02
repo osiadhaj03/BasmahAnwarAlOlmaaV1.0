@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\KitchenInvoices\Pages;
 
 use App\Filament\Resources\KitchenInvoices\KitchenInvoiceResource;
+use App\Filament\Resources\KitchenPayments\KitchenPaymentsResource;
 use App\Models\KitchenInvoice;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -23,5 +24,13 @@ class CreateKitchenInvoice extends CreateRecord
         unset($data['subscription_number_display']);
         
         return $data;
+    }
+
+    /**
+     * الانتقال إلى صفحة الدفعات بعد إنشاء الفاتورة
+     */
+    protected function getRedirectUrl(): string
+    {
+        return KitchenPaymentsResource::getUrl('index');
     }
 }
