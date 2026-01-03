@@ -11,7 +11,9 @@
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white">لا يوجد اشتراك نشط</h3>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 mb-4">اشترك الآن في خدمة المطبخ لتصلك وجبات يومية شهية</p>
-                <x-filament::button color="warning" tag="a" href="#">
+                <x-filament::button 
+                    color="warning" 
+                    wire:click="mountAction('requestSubscription')">
                     طلب اشتراك جديد
                 </x-filament::button>
             </div>
@@ -80,4 +82,6 @@
             @endif
         @endif
     </x-filament::section>
+    
+    <x-filament-actions::modals />
 </x-filament-widgets::widget>
