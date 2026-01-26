@@ -34,17 +34,17 @@ class CookStatsOverview extends BaseWidget
                 ->description('جميع الاشتراكات')
                 ->descriptionIcon('heroicon-m-clipboard-document-list')
                 ->color('info'),
-            Stat::make('إجمالي المشتركين', KitchenSubscription::distinct('user_id')->count('user_id'))
-                ->description('عدد الزبائن المشتركين')
-                ->descriptionIcon('heroicon-m-users')
-                ->color('info'),
-            Stat::make('المبالغ غير المحصلة', KitchenInvoice::unpaid()->sum('amount') . ' د.أ')
-                ->description('الفواتير غير المدفوعة')
-                ->descriptionIcon('heroicon-m-exclamation-triangle')
-                ->color('danger'),
-            Stat::make('رصيد الطباخ', KitchenInvoice::paid()->sum('amount') . ' د.أ')
-                ->descriptionIcon('heroicon-m-banknotes')
-                ->color('success'),
+            //Stat::make('إجمالي المشتركين', KitchenSubscription::distinct('user_id')->count('user_id'))
+            //    ->description('عدد الزبائن المشتركين')
+            //    ->descriptionIcon('heroicon-m-users')
+            //    ->color('info'),
+            //Stat::make('المبالغ غير المحصلة', KitchenInvoice::unpaid()->sum('amount') . ' د.أ')
+            //    ->description('الفواتير غير المدفوعة')
+            //    ->descriptionIcon('heroicon-m-exclamation-triangle')
+            //    ->color('danger'),
+            //Stat::make('رصيد الطباخ', KitchenInvoice::paid()->sum('amount') . ' د.أ')
+            //    ->descriptionIcon('heroicon-m-banknotes')
+            //    ->color('success'),
         ];
     }
 }
