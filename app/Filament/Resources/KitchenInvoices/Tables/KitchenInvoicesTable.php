@@ -11,6 +11,9 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Actions\BulkAction;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Collection;
 
 class KitchenInvoicesTable
 {
@@ -110,6 +113,18 @@ class KitchenInvoicesTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    BulkAction::make('calculate_total')
+                        ->label('حساب المجموع')
+                        ->icon('heroicon-o-calculator')
+                        ->action(function (Collection $records) {
+                            $total = $records->sum('amount');
+                            Notification::make()
+                                ->title('المجموع: ' . number_format($total, 2) . ' JOD')
+                                ->success()
+                                ->persistent()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()
                         ->before(function ($records, DeleteBulkAction $action) {
                             $hasPayments = $records->filter(fn ($record) => $record->allocations()->count() > 0);
