@@ -10,6 +10,9 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Collection;
 
 class KitchenPaymentsTable
 {
@@ -64,6 +67,18 @@ class KitchenPaymentsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('calculate_total')
+                        ->label('حساب المجموع')
+                        ->icon('heroicon-o-calculator')
+                        ->action(function (Collection $records) {
+                            $total = $records->sum('amount');
+                            Notification::make()
+                                ->title('المجموع: ' . number_format($total, 2) . ' JOD')
+                                ->success()
+                                ->persistent()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
